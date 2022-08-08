@@ -31,9 +31,9 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends Activity imp
         superLayout.addView(navigationView);
 
         binding = creatBinding();
+        binding.getRoot().setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
         superLayout.addView(binding.getRoot());
         setContentView(superLayout);
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
 
