@@ -50,19 +50,21 @@ public class FLNavigationView extends LinearLayout {
     private TextView textView;
     private LinearLayout rightLayout;
     private void creatLayout(Context context) {
+        setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        setOrientation(HORIZONTAL);
         setBackgroundColor(defaultBackgroundColor);
 
         leftLayout = new LinearLayout(context);
         leftLayout.setBackgroundColor(defaultBackgroundColor);
         leftLayout.setBackgroundColor(Color.YELLOW);
-        leftLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        leftLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dipToPx(context, 44)));
         leftLayout.setOrientation(LinearLayout.HORIZONTAL);
         leftLayout.setGravity(Gravity.CENTER);
         addView(leftLayout);
 
         textView = new TextView(context);
-        textView.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-        textView.setPadding(pxTodp(context, 15), 0, pxTodp(context, 15), 0);
+        textView.setLayoutParams(new LinearLayout.LayoutParams(0, dipToPx(context, 44), 1));
+        textView.setPadding(dipToPx(context, 15), 0, dipToPx(context, 15), 0);
         textView.setGravity(Gravity.CENTER);
         textView.setMaxLines(1);
         textView.setEllipsize(TextUtils.TruncateAt.END);
@@ -73,7 +75,7 @@ public class FLNavigationView extends LinearLayout {
         rightLayout = new LinearLayout(context);
         rightLayout.setBackgroundColor(defaultBackgroundColor);
         rightLayout.setBackgroundColor(Color.BLUE);
-        rightLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        rightLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dipToPx(context, 44)));
         rightLayout.setOrientation(LinearLayout.HORIZONTAL);
         rightLayout.setGravity(Gravity.CENTER);
         addView(rightLayout);
@@ -83,7 +85,7 @@ public class FLNavigationView extends LinearLayout {
         textView.setText(text);
     }
 
-    private int pxTodp(Context context, float pxValue) {
+    private int dipToPx(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue * scale + 0.5f);
     }

@@ -15,7 +15,7 @@ public class TableViewActivity extends FLBaseActivity<ActivityTableViewBinding> 
 
     @Override
     protected void didLoad() {
-        binding.navigationView.setTitle("tableView");
+        navigationView.setTitle("哈哈");
     }
 
     @Override

@@ -389,7 +389,7 @@ public class FLTableView extends RecyclerView {
 
         @SuppressLint("ResourceType")
         private void createView() {
-            headerHeight = pxTodp(getContext(), 50);
+            headerHeight = dipToPx(getContext(), 50);
             //将Header高度设置为0
             contentLayout = new ConstraintLayout(getContext());
             contentLayout.setId(99);
@@ -413,17 +413,17 @@ public class FLTableView extends RecyclerView {
             progressBar.setId(101);
             contentLayout.addView(progressBar);
             set.connect(progressBar.getId(), ConstraintSet.LEFT, contentLayout.getId(), ConstraintSet.LEFT, 0);
-            set.connect(progressBar.getId(), ConstraintSet.TOP, contentLayout.getId(), ConstraintSet.TOP, pxTodp(getContext(), 10));
+            set.connect(progressBar.getId(), ConstraintSet.TOP, contentLayout.getId(), ConstraintSet.TOP, dipToPx(getContext(), 10));
             set.connect(progressBar.getId(), ConstraintSet.RIGHT, contentLayout.getId(), ConstraintSet.RIGHT, 0);
-            set.connect(progressBar.getId(), ConstraintSet.BOTTOM, contentLayout.getId(), ConstraintSet.BOTTOM, pxTodp(getContext(), 10));
-            set.constrainWidth(progressBar.getId(), pxTodp(getContext(), 30));
-            set.constrainHeight(progressBar.getId(), pxTodp(getContext(), 30));
+            set.connect(progressBar.getId(), ConstraintSet.BOTTOM, contentLayout.getId(), ConstraintSet.BOTTOM, dipToPx(getContext(), 10));
+            set.constrainWidth(progressBar.getId(), dipToPx(getContext(), 30));
+            set.constrainHeight(progressBar.getId(), dipToPx(getContext(), 30));
 
             set.applyTo(contentLayout);
             progressBar.setVisibility(View.INVISIBLE);
         }
 
-        private int pxTodp(Context context, float pxValue) {
+        private int dipToPx(Context context, float pxValue) {
             final float scale = context.getResources().getDisplayMetrics().density;
             return (int) (pxValue * scale + 0.5f);
         }
@@ -525,7 +525,7 @@ public class FLTableView extends RecyclerView {
 
         @SuppressLint("ResourceType")
         private void createView() {
-            footerHeight = pxTodp(getContext(), 50);
+            footerHeight = dipToPx(getContext(), 50);
             //将Header高度设置为0
             contentLayout = new ConstraintLayout(getContext());
             contentLayout.setId(99);
@@ -550,17 +550,17 @@ public class FLTableView extends RecyclerView {
             progressBar.setId(101);
             contentLayout.addView(progressBar);
             set.connect(progressBar.getId(), ConstraintSet.LEFT, contentLayout.getId(), ConstraintSet.LEFT, 0);
-            set.connect(progressBar.getId(), ConstraintSet.TOP, contentLayout.getId(), ConstraintSet.TOP, pxTodp(getContext(), 10));
+            set.connect(progressBar.getId(), ConstraintSet.TOP, contentLayout.getId(), ConstraintSet.TOP, dipToPx(getContext(), 10));
             set.connect(progressBar.getId(), ConstraintSet.RIGHT, contentLayout.getId(), ConstraintSet.RIGHT, 0);
-            set.connect(progressBar.getId(), ConstraintSet.BOTTOM, contentLayout.getId(), ConstraintSet.BOTTOM, pxTodp(getContext(), 10));
-            set.constrainWidth(progressBar.getId(), pxTodp(getContext(), 30));
-            set.constrainHeight(progressBar.getId(), pxTodp(getContext(), 30));
+            set.connect(progressBar.getId(), ConstraintSet.BOTTOM, contentLayout.getId(), ConstraintSet.BOTTOM, dipToPx(getContext(), 10));
+            set.constrainWidth(progressBar.getId(), dipToPx(getContext(), 30));
+            set.constrainHeight(progressBar.getId(), dipToPx(getContext(), 30));
 
             set.applyTo(contentLayout);
             progressBar.setVisibility(View.INVISIBLE);
         }
 
-        private int pxTodp(Context context, float pxValue) {
+        private int dipToPx(Context context, float pxValue) {
             final float scale = context.getResources().getDisplayMetrics().density;
             return (int) (pxValue * scale + 0.5f);
         }
