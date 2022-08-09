@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class FLTableView extends RecyclerView {
     public interface DataSource <T extends FLTableViewCell> {
-        void errorRetryRequest();
         int itemCount();
         int itemType(int index);
         @LayoutRes
@@ -41,9 +40,19 @@ public class FLTableView extends RecyclerView {
         T createItem(View itemView, int viewType);
         void bindItem(T view, int index);
     }
+    public void setDataSource(DataSource dataSource) {
+        setDataSource("暂无数据", dataSource);
+    }
     public void setDataSource(String empty, DataSource dataSource) {
         this.empty = empty;
         this.dataSource = dataSource;
+    }
+    public interface RetryRequest {
+        void retryRequest();
+    }
+
+    public void setRetryRequest(RetryRequest retryRequest) {
+        this.retryRequest = retryRequest;
     }
 
     public final void startLoading() {
@@ -132,6 +141,7 @@ public class FLTableView extends RecyclerView {
 
     private Adapter adapter;
     private DataSource dataSource;
+    private RetryRequest retryRequest;
     private int itemCount = 0;
     private int startIndex = 0;
     private int endIndex = 0;
@@ -265,9 +275,14 @@ public class FLTableView extends RecyclerView {
             default:
                 lastY = -1; // reset
                 if (header != null && header.getParent() != null) {
-                    if (!header.refreshing && header.readyRefresh) {
-                        header.enterRefresh();
-                        headerAction.enterRefreshing();
+                    if (!header.refreshing) {
+                        if (header.readyRefresh) {
+                            header.enterRefresh();
+                            headerAction.enterRefreshing();
+                        }
+                        else  {
+                            header.changeRefreshing(false);
+                        }
                     }
                 }
                 break;
@@ -328,7 +343,9 @@ public class FLTableView extends RecyclerView {
             textView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    dataSource.errorRetryRequest();
+                    if (retryRequest != null) {
+                        retryRequest.retryRequest();
+                    }
                 }
             });
         }

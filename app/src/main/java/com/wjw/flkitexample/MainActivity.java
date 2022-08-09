@@ -12,6 +12,7 @@ import com.wjw.flkit.FLTableView;
 
 import java.util.ArrayList;
 
+import com.wjw.flkit.base.FLBaseActivity;
 import com.wjw.flkitexample.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,16 +21,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FLBaseActivity.setDefalutBackImgaeID(R.mipmap.ptbzjttb);
         strings.add("分页tableView");
+        strings.add("加载dialog");
 
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this));
         setContentView(binding.getRoot());
         FLTableView.DataSource<MainCell> dataSource = new FLTableView.DataSource<MainCell>() {
-            @Override
-            public void errorRetryRequest() {
-
-            }
-
             @Override
             public int itemCount() {
                 return strings.size();
@@ -72,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
                     switch (itemIndex) {
                         case 0:
                             startActivity(new Intent(MainActivity.this, TableViewActivity.class));
+                            break;
+                        case 1:
+                            startActivity(new Intent(MainActivity.this, DialogActivity.class));
                             break;
                     }
                 }
