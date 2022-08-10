@@ -118,6 +118,9 @@ public class TableViewActivity extends FLBaseActivity<ActivityTableViewBinding> 
                     binding.tableView.reloadData(size < 50);
                 }
                 else {
+                    if (size > 0) {
+                        showTip("错误示例");
+                    }
                     binding.tableView.reloadData("错误示例");
                 }
             }

@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         FLBaseActivity.setDefalutBackImgaeID(R.mipmap.ptbzjttb);
         strings.add("分页tableView");
         strings.add("加载dialog");
+        strings.add("加载loading");
 
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this));
         setContentView(binding.getRoot());
@@ -32,22 +33,18 @@ public class MainActivity extends AppCompatActivity {
             public int itemCount() {
                 return strings.size();
             }
-
             @Override
             public int itemType(int index) {
                 return 0;
             }
-
             @Override
             public int getItemLayout(int itemType) {
                 return R.layout.cell_main;
             }
-
             @Override
             public MainCell createItem(View itemView, int viewType) {
                 return new MainCell(itemView);
             }
-
             @Override
             public void bindItem(MainCell view, int index) {
                 view.bindData(index, strings.get(index));
@@ -61,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         public MainCell(@NonNull View itemView) {
             super(itemView);
         }
-
         @Override
         protected void configItem() {
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -74,11 +70,13 @@ public class MainActivity extends AppCompatActivity {
                         case 1:
                             startActivity(new Intent(MainActivity.this, DialogActivity.class));
                             break;
+                        case 2:
+                            startActivity(new Intent(MainActivity.this, LoadingActivity.class));
+                            break;
                     }
                 }
             });
         }
-
         @Override
         protected void dataUpdated(String oldData) {
             setText(R.id.text, itemData);

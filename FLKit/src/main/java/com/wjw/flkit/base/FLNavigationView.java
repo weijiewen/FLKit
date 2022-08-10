@@ -24,32 +24,25 @@ public class FLNavigationView extends LinearLayout {
     public static void setDefaultBackgroundColor(int defaultBackgroundColor) {
         FLNavigationView.defaultBackgroundColor = defaultBackgroundColor;
     }
-
     public static void setDefaultForegroundColor(int defaultForegroundColor) {
         FLNavigationView.defaultForegroundColor = defaultForegroundColor;
     }
-
     public static void setDefaultTitleSize(int defaultTitleSize) {
         FLNavigationView.defaultTitleSize = defaultTitleSize;
     }
-
     public FLNavigationView(Context context) {
         this(context, null);
     }
-
     public FLNavigationView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
-
     public FLNavigationView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         this(context, attrs, defStyleAttr, 0);
     }
-
     public FLNavigationView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         creatLayout(context);
     }
-
     private FLNavigationLinearLayout leftLayout;
     private TextView textView;
     private FLNavigationLinearLayout rightLayout;
@@ -92,32 +85,27 @@ public class FLNavigationView extends LinearLayout {
         rightLayout.setGravity(Gravity.CENTER);
         addView(rightLayout);
     }
-
     public final void setTitle(String text) {
         textView.setText(text);
     }
-
     public final void addBack(View.OnClickListener listener) {
         FLNavigationBackButton backButton = new FLNavigationBackButton(getContext());
         backButton.setLayoutParams(new LinearLayout.LayoutParams(dipToPx(44), dipToPx(44)));
         backButton.setOnClickListener(listener);
         addLeftItem(backButton);
     }
-
     public final void addLeftItem(View view) {
         leftLayout.addView(view);
     }
     public final void removeLeftItem(View view) {
         leftLayout.removeView(view);
     }
-
     public final void addRightItem(View view) {
         rightLayout.addView(view);
     }
     public final void removeRightItem(View view) {
         rightLayout.removeView(view);
     }
-
     private void reloadTextMargins() {
         int leftWidth = leftLayout.getWidth();
         int rightWidth = rightLayout.getWidth();
@@ -127,12 +115,10 @@ public class FLNavigationView extends LinearLayout {
         params.setMargins(marginLeft, 0, marginRight, 0);
         textView.setLayoutParams(params);
     }
-
     private int dipToPx(float pxValue) {
         final float scale = getContext().getResources().getDisplayMetrics().density;
         return (int) (pxValue * scale + 0.5f);
     }
-
     private interface LinearChange {
         void onSizeChanged(int w, int h);
     }
@@ -149,7 +135,6 @@ public class FLNavigationView extends LinearLayout {
             change.onSizeChanged(w, h);
         }
     }
-
     private class FLNavigationBackButton extends View {
         public FLNavigationBackButton(Context context) {
             super(context);

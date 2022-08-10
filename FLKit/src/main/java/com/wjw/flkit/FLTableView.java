@@ -50,26 +50,21 @@ public class FLTableView extends RecyclerView {
     public interface RetryRequest {
         void retryRequest();
     }
-
     public void setRetryRequest(RetryRequest retryRequest) {
         this.retryRequest = retryRequest;
     }
-
     public final void startLoading() {
         if (!isRefreshing()) {
             loadingView = new LoadingView(getContext());
             reloadAdapter();
         }
     }
-
     public final void reloadData(String error) {
         reloadData(error, true);
     }
-
     public final void reloadData(boolean hasMore) {
         reloadData(null, hasMore);
     }
-
     public final FLTableView removeItem(int index) {
         if (index >= 0 && index < itemCount) {
             adapter.notifyItemRemoved(startIndex + index);
@@ -78,7 +73,6 @@ public class FLTableView extends RecyclerView {
         }
         return this;
     }
-
     public interface RefreshInterface {
         void enterRefreshing();
     }
@@ -86,7 +80,6 @@ public class FLTableView extends RecyclerView {
         header = new Header(getContext());
         headerAction = action;
     }
-
     public void addFooter(RefreshInterface action) {
         footer = new Footer(getContext());
         footerAction = action;
@@ -104,7 +97,6 @@ public class FLTableView extends RecyclerView {
         }
         return false;
     }
-
     private void reloadData(String error, boolean hasMore) {
         if (header != null) {
             header.endRefresh();
@@ -138,7 +130,6 @@ public class FLTableView extends RecyclerView {
             adapter.notifyDataSetChanged();
         }
     }
-
     private Adapter adapter;
     private DataSource dataSource;
     private RetryRequest retryRequest;
@@ -227,20 +218,16 @@ public class FLTableView extends RecyclerView {
         };
         setAdapter(adapter);
     }
-
     public FLTableView(@NonNull Context context) {
         this(context, null);
     }
-
     public FLTableView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
-
     public FLTableView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setLayoutManager(new LinearLayoutManager(context));
     }
-
     private float lastY = -1;
     private float sumOffSet;
     @Override
@@ -289,18 +276,15 @@ public class FLTableView extends RecyclerView {
         }
         return super.onTouchEvent(e);
     }
-
     private int dipToPx(float dpValue) {
         final float scale = getContext().getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
-
     private class PlaceHolderViewHolder extends ViewHolder {
         public PlaceHolderViewHolder(@NonNull View itemView) {
             super(itemView);
         }
     }
-
     //loading
     private static int loadingViewType = 10086;
     private class LoadingView extends LinearLayout {
@@ -313,7 +297,6 @@ public class FLTableView extends RecyclerView {
             addView(progressBar);
         }
     }
-
     private static int errorViewType = 10087;
     private class ErrorView extends LinearLayout {
         public ErrorView(Context context, String error) {
@@ -350,7 +333,6 @@ public class FLTableView extends RecyclerView {
             });
         }
     }
-
     private static int emptyViewType = 10088;
     private class EmptyView extends LinearLayout {
         public EmptyView(Context context) {
@@ -372,7 +354,6 @@ public class FLTableView extends RecyclerView {
             addView(textView);
         }
     }
-
     //header
     private static int headerViewType = 99998;
     private class Header extends LinearLayout {
@@ -507,7 +488,6 @@ public class FLTableView extends RecyclerView {
             changeRefreshing(false);
         }
     }
-
     //footer
     private static int footerViewType = 99999;
     private class Footer extends LinearLayout {
@@ -626,7 +606,6 @@ public class FLTableView extends RecyclerView {
         }
         public boolean getHasData() { return hasData; }
     }
-
     //baseViewHolder
     public abstract static class FLTableViewCell<DataType> extends ViewHolder {
         protected View itemView;

@@ -22,17 +22,14 @@ public class DialogActivity extends FLBaseActivity<ActivityDialogBinding> {
 
     @Override
     protected void didLoad() {
-        navigationView.setTitle("加载loading");
-        strings.add("loading加载");
-        strings.add("tip提示");
-        strings.add("loading后提示");
-        strings.add("提示时loading");
+        navigationView.setTitle("加载dialog");
         strings.add("dialog-alert单选项弹窗");
         strings.add("dialog-alert多选项弹窗");
         strings.add("dialog-actionSheet标题内容弹窗");
         strings.add("dialog-actionSheet单标题弹窗");
         strings.add("dialog-actionSheet单内容弹窗");
         strings.add("dialog-actionSheet无标题内容弹窗");
+        strings.add("dialog-actionSheet无标题内容无取消弹窗");
         FLTableView.DataSource<DialogCell> dataSource = new FLTableView.DataSource<DialogCell>() {
             @Override
             public int itemCount() {
@@ -82,42 +79,6 @@ public class DialogActivity extends FLBaseActivity<ActivityDialogBinding> {
                 public void onClick(View view) {
                     switch (itemIndex) {
                         case 0:
-                            showLoading();
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dismissLoading();
-                                }
-                            }, 1000);
-                            break;
-                        case 1:
-                            showTip(tip);
-                            break;
-                        case 2:
-                            showLoading();
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    showTip(tip);
-                                }
-                            }, 1000);
-                            break;
-                        case 3:
-                            showTip(tip);
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    showLoading();
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            dismissLoading();
-                                        }
-                                    }, 1200);
-                                }
-                            }, 1000);
-                            break;
-                        case 4:
                             showDialogAlert("测试", tip, FLDialogStyle.Alert, new FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLAlertDialog dialog) {
@@ -136,7 +97,7 @@ public class DialogActivity extends FLBaseActivity<ActivityDialogBinding> {
                                 }
                             });
                             break;
-                        case 5:
+                        case 1:
                             showDialogAlert("测试", tip, FLDialogStyle.Alert, new FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLAlertDialog dialog) {
@@ -161,7 +122,7 @@ public class DialogActivity extends FLBaseActivity<ActivityDialogBinding> {
                                 }
                             });
                             break;
-                        case 6:
+                        case 2:
                             showDialogAlert("测试", tip, FLDialogStyle.ActionSheet, new FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLAlertDialog dialog) {
@@ -186,7 +147,7 @@ public class DialogActivity extends FLBaseActivity<ActivityDialogBinding> {
                                 }
                             });
                             break;
-                        case 7:
+                        case 3:
                             showDialogAlert("测试", "", FLDialogStyle.ActionSheet, new FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLAlertDialog dialog) {
@@ -211,8 +172,33 @@ public class DialogActivity extends FLBaseActivity<ActivityDialogBinding> {
                                 }
                             });
                             break;
-                        case 8:
+                        case 4:
                             showDialogAlert("", tip, FLDialogStyle.ActionSheet, new FLAlertDialogConfig() {
+                                @Override
+                                public void addItems(FLAlertDialog dialog) {
+//                                    dialog.addCancel(new FLAlertDialogTouch() {
+//                                        @Override
+//                                        public void touch() {
+//                                            showTip("点击取消");
+//                                        }
+//                                    });
+                                    dialog.addItem("确认", new FLAlertDialogTouch() {
+                                        @Override
+                                        public void touch() {
+                                            showTip("点击确认");
+                                        }
+                                    });
+                                    dialog.addItem("测试", new FLAlertDialogTouch() {
+                                        @Override
+                                        public void touch() {
+                                            showTip("点击测试");
+                                        }
+                                    });
+                                }
+                            });
+                            break;
+                        case 5:
+                            showDialogAlert("", "", FLDialogStyle.ActionSheet, new FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLAlertDialog dialog) {
                                     dialog.addCancel(new FLAlertDialogTouch() {
@@ -236,16 +222,10 @@ public class DialogActivity extends FLBaseActivity<ActivityDialogBinding> {
                                 }
                             });
                             break;
-                        case 9:
+                        case 6:
                             showDialogAlert("", "", FLDialogStyle.ActionSheet, new FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLAlertDialog dialog) {
-                                    dialog.addCancel(new FLAlertDialogTouch() {
-                                        @Override
-                                        public void touch() {
-                                            showTip("点击取消");
-                                        }
-                                    });
                                     dialog.addItem("确认", new FLAlertDialogTouch() {
                                         @Override
                                         public void touch() {
