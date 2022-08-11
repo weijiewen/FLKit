@@ -121,6 +121,7 @@ public class LoadingActivity extends FLBaseActivity<ActivityLoadingBinding> {
                                     progress += 0.1;
                                     changeProgress(progress);
                                     if (progress >= 1) {
+                                        progress = 0;
                                         stopTimer();
                                         dismissLoading();
                                     }

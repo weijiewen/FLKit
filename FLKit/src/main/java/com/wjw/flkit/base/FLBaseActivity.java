@@ -8,6 +8,7 @@ import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.TypedValue;
@@ -432,7 +433,12 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends Activity imp
         if (currentProgress > 1000) {
             currentProgress = 1000;
         }
-        progressBar.setProgress(currentProgress);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            progressBar.setProgress(currentProgress, true);
+        }
+        else {
+            progressBar.setProgress(currentProgress);
+        }
         progressTextView.setText(currentProgress / 10 + "%");
     }
 
