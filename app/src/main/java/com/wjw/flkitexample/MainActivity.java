@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
         strings.add("分页tableView");
         strings.add("加载dialog");
         strings.add("加载loading");
+        strings.add("图片浏览器");
 
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this));
         setContentView(binding.getRoot());
@@ -72,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case 2:
                             startActivity(new Intent(MainActivity.this, LoadingActivity.class));
+                            break;
+                        case 3:
+                            startActivity(new Intent(MainActivity.this, ImageBrowserActivity.class));
                             break;
                     }
                 }

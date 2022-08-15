@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.wjw.flkitexample">
-
+    <!-- 网络权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,14 +13,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FLKit"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".ImageBrowserActivity"
+            android:exported="false" />
         <activity
             android:name=".LoadingActivity"
             android:exported="false" />
-        <activity
-            android:name=".TabbarActivity"
-            android:exported="false"
-            android:label="@string/title_activity_tabbar" />
         <activity
             android:name=".DialogActivity"
             android:exported="false" />

@@ -29,14 +29,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewbinding.ViewBinding;
 
-import java.lang.ref.WeakReference;
+import com.wjw.flkit.FLImageBrowser;
+
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public abstract class FLBaseActivity<T extends ViewBinding> extends Activity implements View.OnClickListener {
+public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActivity implements View.OnClickListener {
     private static int defaultBackgroundColor = Color.parseColor("#F4F4F3");
     private static int defalutBackImgaeID = 0;
 
@@ -355,6 +358,7 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends Activity imp
     private ProgressBar progressBar;
     private TextView progressTextView;
     protected final void showProgress() {
+
         dismissLoading(false);
         RelativeLayout.LayoutParams linearParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         linearParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -782,5 +786,41 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends Activity imp
                 });
             }
         }
+    }
+
+    private FLImageBrowser imageBrowser;
+    protected interface BrowserImageListence {
+        void config(int index, ImageView imageView);
+    }
+    protected final void browserImage(int showIndex, int size, BrowserImageListence listence) {
+        if (imageBrowser != null) {
+            superLayout.removeView(imageBrowser);
+            imageBrowser = null;
+        }
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        imageBrowser = new FLImageBrowser(this, getSupportFragmentManager(), showIndex, size, new FLImageBrowser.FLImageBrowserListence() {
+            @Override
+            public void config(int index, ImageView imageView) {
+                listence.config(index, imageView);
+            }
+
+            @Override
+            public void touch(int index) {
+                superLayout.removeView(imageBrowser);
+                imageBrowser = null;
+            }
+        });
+        imageBrowser.setBackgroundColor(Color.BLACK);
+        imageBrowser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                superLayout.removeView(imageBrowser);
+                imageBrowser = null;
+            }
+        });
+        imageBrowser.setLayoutParams(layoutParams);
+        superLayout.addView(imageBrowser);
     }
 }
