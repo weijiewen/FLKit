@@ -84,6 +84,8 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
         navigationView = new FLNavigationView(this);
         navigationView.setLayoutParams(navigationParams);
         navigationView.setPadding(0, getStatusHeight(), 0, 0);
+        configNavigation(navigationView);
+        navigationView.creatLayout();
 
         RelativeLayout.LayoutParams loadingParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         loadingParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -166,8 +168,6 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
                 navigationView.addLeftItem(backImage);
             }
         }
-        configNavigation(navigationView);
-        navigationView.creatLayout();
         didLoad();
     }
 
