@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import com.wjw.flkit.FLAsyncTask;
 import com.wjw.flkit.FLTableView;
 import com.wjw.flkit.base.FLBaseActivity;
+import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.databinding.ActivityTableViewBinding;
 
 import java.util.Random;
@@ -22,6 +23,11 @@ import java.util.Random;
 public class TableViewActivity extends FLBaseActivity<ActivityTableViewBinding> {
     private int size = 0;
     private int page = 0;
+
+    @Override
+    protected void configNavigation(FLNavigationView navigationView) {
+        
+    }
 
     @Override
     protected void didLoad() {

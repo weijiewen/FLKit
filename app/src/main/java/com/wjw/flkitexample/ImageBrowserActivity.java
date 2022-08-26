@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.wjw.flkit.FLImageBrowser;
 import com.wjw.flkit.base.FLBaseActivity;
+import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.databinding.ActivityImageBrowserBinding;
 
 import java.util.ArrayList;
@@ -24,6 +25,11 @@ import java.util.List;
 public class ImageBrowserActivity extends FLBaseActivity<ActivityImageBrowserBinding> {
     private List<String> urls = new ArrayList<>();
     private List<ImageView> imageViews = new ArrayList<>();
+
+    @Override
+    protected void configNavigation(FLNavigationView navigationView) {
+        
+    }
 
     @Override
     protected void didLoad() {

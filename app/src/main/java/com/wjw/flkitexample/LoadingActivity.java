@@ -10,12 +10,18 @@ import android.view.View;
 
 import com.wjw.flkit.FLTableView;
 import com.wjw.flkit.base.FLBaseActivity;
+import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.databinding.ActivityLoadingBinding;
 
 import java.util.ArrayList;
 
 public class LoadingActivity extends FLBaseActivity<ActivityLoadingBinding> {
     private ArrayList<String> strings = new ArrayList();
+
+    @Override
+    protected void configNavigation(FLNavigationView navigationView) {
+
+    }
 
     @Override
     protected void didLoad() {

@@ -9,12 +9,18 @@ import androidx.annotation.NonNull;
 
 import com.wjw.flkit.FLTableView;
 import com.wjw.flkit.base.FLBaseActivity;
+import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.databinding.ActivityDialogBinding;
 
 import java.util.ArrayList;
 
 public class DialogActivity extends FLBaseActivity<ActivityDialogBinding> {
     private ArrayList<String> strings = new ArrayList();
+
+    @Override
+    protected void configNavigation(FLNavigationView navigationView) {
+
+    }
 
     @Override
     protected void didLoad() {
