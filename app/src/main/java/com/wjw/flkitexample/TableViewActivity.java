@@ -22,10 +22,6 @@ import java.util.Random;
 public class TableViewActivity extends FLBaseActivity<ActivityTableViewBinding> {
     private int size = 0;
     private int page = 0;
-    @Override
-    protected ActivityTableViewBinding creatBinding() {
-        return ActivityTableViewBinding.inflate(LayoutInflater.from(this));
-    }
 
     @Override
     protected void didLoad() {

@@ -1,9 +1,12 @@
 package com.wjw.flkit.base;
 
 import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -13,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -35,6 +39,8 @@ import androidx.viewbinding.ViewBinding;
 
 import com.wjw.flkit.FLImageBrowser;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -49,6 +55,12 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
 
     public final static void setDefalutBackImgaeID(int defalutBackImgaeID) {
         FLBaseActivity.defalutBackImgaeID = defalutBackImgaeID;
+    }
+    private int backgroundColor;
+
+    public void setBackgroundColor(int backgroundColor) {
+        this.backgroundColor = backgroundColor;
+        superLayout.setBackgroundColor(backgroundColor);
     }
 
     protected RelativeLayout superLayout;
@@ -104,8 +116,14 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
             @Override
             public void onAnimationRepeat(Animator animator) {}
         });
-
-        binding = creatBinding();
+        ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
+        Class cls = (Class) type.getActualTypeArguments()[0];
+        try {
+            Method inflate = cls.getDeclaredMethod("inflate", LayoutInflater.class);
+            binding = (T) inflate.invoke(null, getLayoutInflater());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         RelativeLayout.LayoutParams rootParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         if (!isFillParent()) {
             rootParams.topMargin = getStatusHeight() + dipToPx(44);
@@ -148,7 +166,8 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
                 navigationView.addLeftItem(backImage);
             }
         }
-
+        configNavigation(navigationView);
+        navigationView.creatLayout();
         didLoad();
     }
 
@@ -171,8 +190,7 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
         endEdit();
         didClick(view);
     }
-
-    protected abstract T creatBinding();
+    protected abstract void configNavigation(FLNavigationView navigationView);
     protected abstract void didLoad();
     protected abstract void didClick(View view);
     //是否填充整个activity，返回false向下偏移一个导航栏的高度
@@ -184,11 +202,16 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
         return this;
     }
 
-    enum StatusStyle {
+    public enum StatusStyle {
         light,
         drak,
     }
-    protected final void setStatusStyle(StatusStyle style) {
+    private StatusStyle statusStyle;
+    public final StatusStyle getStatusStyle() {
+        return statusStyle;
+    }
+    public final void setStatusStyle(StatusStyle style) {
+        statusStyle = style;
         switch (style) {
             case light:
                 getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);//白色
@@ -788,19 +811,20 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
         }
     }
 
+    private StatusStyle imageBrowserStatusStyle;
     private FLImageBrowser imageBrowser;
     protected interface BrowserImageListence {
         void config(int index, ImageView imageView);
     }
     protected final void browserImage(int showIndex, int size, BrowserImageListence listence) {
-        if (imageBrowser != null) {
-            superLayout.removeView(imageBrowser);
-            imageBrowser = null;
-        }
+        dismissImageBrowser(-1);
+        imageBrowserStatusStyle = getStatusStyle();
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        imageBrowser = new FLImageBrowser(this, getSupportFragmentManager(), showIndex, size, new FLImageBrowser.FLImageBrowserListence() {
+        FLImageBrowser browser = new FLImageBrowser(this);
+        imageBrowser = browser;
+        browser.setListence(this, showIndex, size, new FLImageBrowser.FLImageBrowserListence() {
             @Override
             public void config(int index, ImageView imageView) {
                 listence.config(index, imageView);
@@ -808,19 +832,53 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
 
             @Override
             public void touch(int index) {
-                superLayout.removeView(imageBrowser);
-                imageBrowser = null;
+                dismissImageBrowser(index);
             }
         });
-        imageBrowser.setBackgroundColor(Color.BLACK);
-        imageBrowser.setOnClickListener(new View.OnClickListener() {
+        browser.setBackgroundColor(Color.BLACK);
+        browser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                superLayout.removeView(imageBrowser);
-                imageBrowser = null;
+                superLayout.removeView(browser);
+                if (imageBrowser == browser) {
+                    imageBrowser = null;
+                }
             }
         });
-        imageBrowser.setLayoutParams(layoutParams);
-        superLayout.addView(imageBrowser);
+        browser.animate().setListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+                if (imageBrowser == null) {
+                    setStatusStyle(imageBrowserStatusStyle);
+                }
+            }
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                if (imageBrowser != null) {
+                    setStatusStyle(StatusStyle.light);
+                }
+                if (imageBrowser == null || imageBrowser != browser) {
+                    superLayout.removeView(browser);
+                }
+            }
+            @Override
+            public void onAnimationCancel(Animator animator) {}
+            @Override
+            public void onAnimationRepeat(Animator animator) {}
+        });
+        browser.setLayoutParams(layoutParams);
+        browser.setAlpha(0.f);
+        superLayout.addView(browser);
+        browser.setTranslationY(superLayout.getHeight());
+        browser.animate().translationY(0).alpha(1).setDuration(300);
+    }
+
+    private void dismissImageBrowser(int index) {
+        if (imageBrowser != null) {
+            FLImageBrowser browser = imageBrowser;
+            imageBrowser = null;
+            ImageView sourceView = null;
+            browser.animate().translationY(superLayout.getHeight()).alpha(0.f).setDuration(300);
+        }
     }
 }

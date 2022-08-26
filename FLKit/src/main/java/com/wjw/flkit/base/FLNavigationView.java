@@ -30,6 +30,17 @@ public class FLNavigationView extends LinearLayout {
     public static void setDefaultTitleSize(int defaultTitleSize) {
         FLNavigationView.defaultTitleSize = defaultTitleSize;
     }
+
+    private int foregroundColor;
+
+    public void setForegroundColor(int foregroundColor) {
+        this.foregroundColor = foregroundColor;
+    }
+
+    public int getForegroundColor() {
+        return foregroundColor == 0 ? defaultForegroundColor : foregroundColor;
+    }
+
     public FLNavigationView(Context context) {
         this(context, null);
     }
@@ -41,17 +52,16 @@ public class FLNavigationView extends LinearLayout {
     }
     public FLNavigationView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        creatLayout(context);
     }
     private FLNavigationLinearLayout leftLayout;
     private TextView textView;
     private FLNavigationLinearLayout rightLayout;
-    private void creatLayout(Context context) {
+    protected final void creatLayout() {
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         setOrientation(HORIZONTAL);
         setBackgroundColor(defaultBackgroundColor);
 
-        leftLayout = new FLNavigationLinearLayout(context, new LinearChange() {
+        leftLayout = new FLNavigationLinearLayout(getContext(), new LinearChange() {
             @Override
             public void onSizeChanged(int w, int h) {
                 reloadTextMargins();
@@ -63,17 +73,17 @@ public class FLNavigationView extends LinearLayout {
         leftLayout.setGravity(Gravity.CENTER);
         addView(leftLayout);
 
-        textView = new TextView(context);
+        textView = new TextView(getContext());
         textView.setLayoutParams(new LinearLayout.LayoutParams(0, dipToPx(44), 1));
         textView.setPadding(dipToPx(15), 0, dipToPx(15), 0);
         textView.setGravity(Gravity.CENTER);
         textView.setMaxLines(1);
         textView.setEllipsize(TextUtils.TruncateAt.END);
-        textView.setTextColor(defaultForegroundColor);
+        textView.setTextColor(getForegroundColor());
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, defaultTitleSize);
         addView(textView);
 
-        rightLayout = new FLNavigationLinearLayout(context, new LinearChange() {
+        rightLayout = new FLNavigationLinearLayout(getContext(), new LinearChange() {
             @Override
             public void onSizeChanged(int w, int h) {
                 reloadTextMargins();
@@ -144,7 +154,7 @@ public class FLNavigationView extends LinearLayout {
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            paint.setColor(defaultForegroundColor);
+            paint.setColor(getForegroundColor());
             paint.setStrokeWidth(3);
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeCap(Paint.Cap.ROUND);

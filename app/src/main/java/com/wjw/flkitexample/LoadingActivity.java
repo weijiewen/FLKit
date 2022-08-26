@@ -16,10 +16,6 @@ import java.util.ArrayList;
 
 public class LoadingActivity extends FLBaseActivity<ActivityLoadingBinding> {
     private ArrayList<String> strings = new ArrayList();
-    @Override
-    protected ActivityLoadingBinding creatBinding() {
-        return ActivityLoadingBinding.inflate(LayoutInflater.from(this));
-    }
 
     @Override
     protected void didLoad() {

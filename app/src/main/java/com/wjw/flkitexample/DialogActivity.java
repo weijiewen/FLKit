@@ -15,10 +15,6 @@ import java.util.ArrayList;
 
 public class DialogActivity extends FLBaseActivity<ActivityDialogBinding> {
     private ArrayList<String> strings = new ArrayList();
-    @Override
-    protected ActivityDialogBinding creatBinding() {
-        return ActivityDialogBinding.inflate(LayoutInflater.from(this));
-    }
 
     @Override
     protected void didLoad() {

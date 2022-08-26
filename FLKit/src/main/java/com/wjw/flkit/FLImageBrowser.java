@@ -3,6 +3,7 @@ package com.wjw.flkit;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +15,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
+
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Matrix;
@@ -30,6 +35,9 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.OverScroller;
 
+import com.wjw.flkit.base.FLBaseActivity;
+
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,47 +46,47 @@ public class FLImageBrowser extends LinearLayout {
         void config(int index, ImageView imageView);
         void touch(int index);
     }
-    public FLImageBrowser(Context context, FragmentManager manager, int showIndex, int size, FLImageBrowserListence listence) {
+    public FLImageBrowser(Context context) {
         super(context);
+    }
+
+    public void setListence(FragmentActivity activity, int showIndex, int size, FLImageBrowserListence listence) {
         this.index = showIndex;
         this.size = size;
         this.listence = listence;
         for (int i = 0; i < size; i++) {
             fragments.add(new ImageBrowserFragment(i, listence));
         }
-        viewPager = new ViewPager(context);
+        viewPager = new ViewPager2(getContext());
         viewPager.setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         addView(viewPager);
-        viewPager.setAdapter(new ImageBrowserPagerAdapter(manager));
-//        viewPager.setCurrentItem(showIndex);
+        viewPager.setOffscreenPageLimit(2);
+        viewPager.setAdapter(new ImageBrowserPagerAdapter(activity));
+        viewPager.setCurrentItem(index, false);
     }
+
     private int index = 0;
     private int size = 0;
     private FLImageBrowserListence listence;
     private List<ImageBrowserFragment> fragments = new ArrayList<>();
-    private ViewPager viewPager;
+    private ViewPager2 viewPager;
 
-    private class ImageBrowserPagerAdapter extends FragmentPagerAdapter {
+    private class ImageBrowserPagerAdapter extends FragmentStateAdapter {
 
-        public ImageBrowserPagerAdapter(@NonNull FragmentManager fm) {
-            super(fm);
+
+        public ImageBrowserPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+            super(fragmentActivity);
         }
 
         @NonNull
         @Override
-        public Fragment getItem(int position) {
+        public Fragment createFragment(int position) {
             return fragments.get(position);
         }
 
         @Override
-        public int getCount() {
+        public int getItemCount() {
             return fragments.size();
-        }
-
-        @Nullable
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return "";
         }
     }
     public static class ImageBrowserFragment extends Fragment {
@@ -92,24 +100,28 @@ public class FLImageBrowser extends LinearLayout {
             this.listence = listence;
         }
 
+        @Override
+        public void onPause() {
+            super.onPause();
+            zoomImageView.reloadScale();
+        }
+
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            View view = inflater.inflate(0, container, false);
             LinearLayout layout = new LinearLayout(getContext());
             layout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//            zoomImageView = new ZoomImageView(getContext());
-//            zoomImageView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//            zoomImageView.setOnClickListener(new OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    listence.touch(index);
-//                }
-//            });
-//            layout.addView(zoomImageView);
-//            listence.config(index, zoomImageView);
-            container.addView(layout);
-            return view;
+            zoomImageView = new ZoomImageView(getContext());
+            zoomImageView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            zoomImageView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listence.touch(index);
+                }
+            });
+            layout.addView(zoomImageView);
+            listence.config(index, zoomImageView);
+            return layout;
         }
     }
 
@@ -164,6 +176,7 @@ public class FLImageBrowser extends LinearLayout {
             mScaleGestureDetector = new ScaleGestureDetector(context, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
                 @Override
                 public boolean onScale(ScaleGestureDetector detector) {
+
                     scale(detector);
                     return true;
                 }
@@ -178,10 +191,61 @@ public class FLImageBrowser extends LinearLayout {
             gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
 
                 @Override
+                public boolean onDown(MotionEvent e) {
+                    RectF rectF = getMatrixRectF();
+                    if (rectF == null) {
+                        return false;
+                    }
+                    int left = (int) rectF.left;
+                    int right = (int) (getWidth() - rectF.right);
+                    if (left > -1 || right > -1) {
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                        return false;
+                    }
+                    else {
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                        return true;
+                    }
+                }
+
+                @Override
                 public boolean onScroll(MotionEvent e1, MotionEvent e2, final float distanceX, final float distanceY) {
-                    //滑动监听
-                    onTranslationImage(-distanceX, -distanceY);
-                    return true;
+                    RectF rectF = getMatrixRectF();
+                    if (rectF == null) {
+                        return false;
+                    }
+                    int left = (int) rectF.left;
+                    int right = (int) (getWidth() - rectF.right);
+                    if ((distanceX < 0 && left > -1) || (distanceX > 0 && right > -1)) {
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                        return false;
+                    }
+                    else {
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                        //滑动监听
+                        onTranslationImage(-distanceX, -distanceY);
+                        return true;
+                    }
+                }
+
+                @Override
+                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                    RectF rectF = getMatrixRectF();
+                    if (rectF == null) {
+                        return false;
+                    }
+                    int left = (int) rectF.left;
+                    int right = (int) (getWidth() - rectF.right);
+                    if ((velocityX < 0 && left > -1) || (velocityX > 0 && right > -1)) {
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                        return false;
+                    }
+                    else {
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                        //滑动监听
+//                        onTranslationImage(-distanceX, -distanceY);
+                        return true;
+                    }
                 }
 
                 @Override
@@ -189,61 +253,6 @@ public class FLImageBrowser extends LinearLayout {
                     //双击监听
                     onDoubleDrowScale(e.getX(), e.getY());
                     return true;
-                }
-
-                @Override
-                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-
-                    //滑动惯性处理
-                    mCurrentX = (int) e2.getX();
-                    mCurrentY = (int) e2.getY();
-
-                    RectF rectF = getMatrixRectF();
-                    if (rectF == null) {
-                        return false;
-                    }
-                    //startX为当前图片左边界的x坐标
-                    int startX = mCurrentX;
-                    int startY = mCurrentY;
-                    int minX = 0, maxX = 0, minY = 0, maxY = 0;
-                    int vX = Math.round(velocityX);
-                    int vY = Math.round(velocityY);
-
-                    maxX = Math.round(rectF.width());
-                    maxY = Math.round(rectF.height());
-
-                    if (startX != maxX || startY != maxY) {
-                        //调用fling方法，然后我们可以通过调用getCurX和getCurY来获得当前的x和y坐标
-                        //这个坐标的计算是模拟一个惯性滑动来计算出来的，我们根据这个x和y的变化可以模拟
-                        //出图片的惯性滑动
-                        scroller.fling(startX, startY, vX, vY, 0, maxX, 0, maxY, maxX, maxY);
-                    }
-
-                    if (translationAnimation != null && translationAnimation.isStarted())
-                        translationAnimation.end();
-
-                    translationAnimation = ObjectAnimator.ofFloat(0, 1);
-                    translationAnimation.setDuration(500);
-                    translationAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            if (scroller.computeScrollOffset()) {
-                                //获得当前的x坐标
-                                int newX = scroller.getCurrX();
-                                int dx = newX - mCurrentX;
-                                mCurrentX = newX;
-                                //获得当前的y坐标
-                                int newY = scroller.getCurrY();
-                                int dy = newY - mCurrentY;
-                                mCurrentY = newY;
-                                //进行平移操作
-                                if (dx != 0 && dy != 0)
-                                    onTranslationImage(dx, dy);
-                            }
-                        }
-                    });
-                    translationAnimation.start();
-                    return super.onFling(e1, e2, velocityX, velocityY);
                 }
 
                 @Override
@@ -328,6 +337,10 @@ public class FLImageBrowser extends LinearLayout {
                     gestureDetector.onTouchEvent(event);
         }
 
+        public void reloadScale() {
+            scaleAnimation(mInitScale, getWidth() / 2, getHeight() / 2);
+        }
+
         //手势操作（缩放）
         public void scale(ScaleGestureDetector detector) {
 
@@ -359,8 +372,9 @@ public class FLImageBrowser extends LinearLayout {
         //手势操作（移动）
         private void onTranslationImage(float dx, float dy) {
 
-            if (getDrawable() == null)
+            if (getDrawable() == null) {
                 return;
+            }
 
             RectF rect = getMatrixRectF();
 
@@ -372,13 +386,12 @@ public class FLImageBrowser extends LinearLayout {
                 dy = 0.0f;
 
             //移动距离等于0，那就不需要移动了
-            if (dx == 0.0f && dy == 0.0f)
-                return;
-
-            mScaleMatrix.postTranslate(dx, dy);
-            setImageMatrix(mScaleMatrix);
-            //去除移动边界
-            removeBorderAndTranslationCenter();
+            if (dx != 0.0f || dy != 0.0f) {
+                mScaleMatrix.postTranslate(dx, dy);
+                setImageMatrix(mScaleMatrix);
+                //去除移动边界
+                removeBorderAndTranslationCenter();
+            }
         }
 
         //消除控件边界和把图片移动到中间

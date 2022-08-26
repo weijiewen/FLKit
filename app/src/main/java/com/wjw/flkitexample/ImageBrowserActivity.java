@@ -1,8 +1,10 @@
 package com.wjw.flkitexample;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,10 +24,6 @@ import java.util.List;
 public class ImageBrowserActivity extends FLBaseActivity<ActivityImageBrowserBinding> {
     private List<String> urls = new ArrayList<>();
     private List<ImageView> imageViews = new ArrayList<>();
-    @Override
-    protected ActivityImageBrowserBinding creatBinding() {
-        return ActivityImageBrowserBinding.inflate(LayoutInflater.from(this));
-    }
 
     @Override
     protected void didLoad() {
