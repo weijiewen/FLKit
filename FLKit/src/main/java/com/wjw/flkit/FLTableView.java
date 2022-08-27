@@ -59,11 +59,14 @@ public class FLTableView extends RecyclerView {
             reloadAdapter();
         }
     }
+    public final void reloadData() {
+        reloadData(null, true, true);
+    }
     public final void reloadData(String error) {
-        reloadData(error, true);
+        reloadData(error, true, null);
     }
     public final void reloadData(boolean hasMore) {
-        reloadData(null, hasMore);
+        reloadData(null, hasMore, null);
     }
     public final FLTableView removeItem(int index) {
         if (index >= 0 && index < itemCount) {
@@ -97,7 +100,7 @@ public class FLTableView extends RecyclerView {
         }
         return false;
     }
-    private void reloadData(String error, boolean hasMore) {
+    private void reloadData(String error, boolean hasMore, Boolean isReload) {
         if (header != null) {
             header.endRefresh();
         }
@@ -105,8 +108,8 @@ public class FLTableView extends RecyclerView {
             footer.endRefresh(hasMore);
         }
         int count = dataSource.itemCount();
-        boolean reload = itemCount > count;
-        if (loadingView != null || errorView != null || emptyView != null) {
+        boolean reload = isReload == null ? itemCount > count : isReload.booleanValue();
+        if (!reload && (loadingView != null || errorView != null || emptyView != null)) {
             reload = true;
         }
         loadingView = null;
