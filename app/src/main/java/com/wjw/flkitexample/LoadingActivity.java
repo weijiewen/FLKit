@@ -117,7 +117,7 @@ public class LoadingActivity extends FLBaseActivity<ActivityLoadingBinding> {
                             break;
                         case 4:
                             showProgress();
-                            startTimer(new FLTimerListencener() {
+                            startTimer(500, 500, new FLTimerListencener() {
                                 @Override
                                 public void run() {
                                     progress += 0.1;
@@ -128,7 +128,7 @@ public class LoadingActivity extends FLBaseActivity<ActivityLoadingBinding> {
                                         dismissLoading();
                                     }
                                 }
-                            }, 500, 500);
+                            });
                             break;
                     }
                 }
