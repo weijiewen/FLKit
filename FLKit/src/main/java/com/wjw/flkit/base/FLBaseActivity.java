@@ -780,12 +780,12 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
     public interface FLTimerListencener {
         void run();
     }
-    protected void startTimer(FLTimerListencener listencener, long delay, long period) {
+    protected final void startTimer(long delay, long period, FLTimerListencener listencener) {
         stopTimer();
         timer = new Timer();
         timer.schedule(new FLTimerTask(listencener), delay, period);
     }
-    protected void stopTimer() {
+    protected final void stopTimer() {
         if (timer != null) {
             timer.cancel();
             timer = null;
