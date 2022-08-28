@@ -27,8 +27,8 @@ public class ImageBrowserActivity extends FLBaseActivity<ActivityImageBrowserBin
     private List<ImageView> imageViews = new ArrayList<>();
 
     @Override
-    protected void configNavigation(FLNavigationView navigationView) {
-        
+    protected ActivityImageBrowserBinding getBinding() {
+        return ActivityImageBrowserBinding.inflate(LayoutInflater.from(this));
     }
 
     @Override

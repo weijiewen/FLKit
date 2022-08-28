@@ -18,8 +18,8 @@ public class DialogActivity extends FLBaseActivity<ActivityDialogBinding> {
     private ArrayList<String> strings = new ArrayList();
 
     @Override
-    protected void configNavigation(FLNavigationView navigationView) {
-
+    protected ActivityDialogBinding getBinding() {
+        return ActivityDialogBinding.inflate(LayoutInflater.from(this));
     }
 
     @Override

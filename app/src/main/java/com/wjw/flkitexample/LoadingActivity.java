@@ -19,8 +19,8 @@ public class LoadingActivity extends FLBaseActivity<ActivityLoadingBinding> {
     private ArrayList<String> strings = new ArrayList();
 
     @Override
-    protected void configNavigation(FLNavigationView navigationView) {
-
+    protected ActivityLoadingBinding getBinding() {
+        return ActivityLoadingBinding.inflate(LayoutInflater.from(this));
     }
 
     @Override

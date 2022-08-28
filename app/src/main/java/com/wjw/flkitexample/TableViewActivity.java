@@ -25,8 +25,8 @@ public class TableViewActivity extends FLBaseActivity<ActivityTableViewBinding> 
     private int page = 0;
 
     @Override
-    protected void configNavigation(FLNavigationView navigationView) {
-        
+    protected ActivityTableViewBinding getBinding() {
+        return ActivityTableViewBinding.inflate(LayoutInflater.from(this));
     }
 
     @Override

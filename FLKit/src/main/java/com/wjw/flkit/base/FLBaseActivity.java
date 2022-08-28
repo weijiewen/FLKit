@@ -118,14 +118,7 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
             @Override
             public void onAnimationRepeat(Animator animator) {}
         });
-        ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
-        Class cls = (Class) type.getActualTypeArguments()[0];
-        try {
-            Method inflate = cls.getDeclaredMethod("inflate", LayoutInflater.class);
-            binding = (T) inflate.invoke(null, getLayoutInflater());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        binding = getBinding();
         RelativeLayout.LayoutParams rootParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         if (!isFillParent()) {
             rootParams.topMargin = getStatusHeight() + dipToPx(44);
@@ -190,9 +183,12 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
         endEdit();
         didClick(view);
     }
-    protected abstract void configNavigation(FLNavigationView navigationView);
+    protected abstract T getBinding();
     protected abstract void didLoad();
     protected abstract void didClick(View view);
+    protected void configNavigation(FLNavigationView navigationView) {
+
+    }
     //是否填充整个activity，返回false向下偏移一个导航栏的高度
     protected boolean isFillParent() {
         return false;
