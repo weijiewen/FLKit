@@ -16,6 +16,6 @@ dependencyResolutionManagement {
 ## 添加项目依赖
 ```
 dependencies {
-	implementation 'com.github.weijiewen:FLKit:1.1'
+	implementation 'com.github.weijiewen:FLKit:1.9'
 }
 ```
