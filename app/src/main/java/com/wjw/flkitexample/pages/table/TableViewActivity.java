@@ -1,26 +1,21 @@
-package com.wjw.flkitexample;
+package com.wjw.flkitexample.pages.table;
 
-import android.graphics.Color;
-import android.os.Handler;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.wjw.flkit.FLAsyncTask;
 import com.wjw.flkit.FLTableView;
-import com.wjw.flkit.base.FLBaseActivity;
+import com.wjw.flkit.base.FLBaseBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.databinding.ActivityTableViewBinding;
+import com.wjw.flkitexample.databinding.CellTableViewBinding;
 
 import java.util.Random;
 
-public class TableViewActivity extends FLBaseActivity<ActivityTableViewBinding> {
+public class TableViewActivity extends FLBaseBindingActivity<ActivityTableViewBinding> {
     private int size = 0;
     private int page = 0;
 
@@ -30,53 +25,37 @@ public class TableViewActivity extends FLBaseActivity<ActivityTableViewBinding> 
     }
 
     @Override
-    protected void didLoad() {
+    protected void configNavigation(FLNavigationView navigationView) {
+        super.configNavigation(navigationView);
         navigationView.setTitle("分页tableView");
-        FLTableView.DataSource<TableViewCell> dataSource = new FLTableView.DataSource<TableViewCell>() {
-            @Override
-            public int itemCount() {
-                return size;
-            }
+    }
 
-            @Override
-            public int itemType(int index) {
-                return 0;
-            }
-
-            @Override
-            public int getItemLayout(int itemType) {
-                return R.layout.cell_table_view;
-            }
-
-            @Override
-            public TableViewCell createItem(View itemView, int viewType) {
-                return new TableViewCell(itemView);
-            }
-
-            @Override
-            public void bindItem(TableViewCell view, int index) {
-                view.bindData(index, Integer.valueOf(index));
-            }
-        };
-        binding.tableView.addHeader(new FLTableView.RefreshInterface() {
+    @Override
+    protected void didLoad() {
+        binding.tableView.addHeaderRefresh(new FLTableView.RefreshInterface() {
             @Override
             public void enterRefreshing() {
                 requestData(true);
             }
         });
-        binding.tableView.addFooter(new FLTableView.RefreshInterface() {
+        binding.tableView.addFooterRefresh(new FLTableView.RefreshInterface() {
             @Override
             public void enterRefreshing() {
                 requestData(false);
             }
         });
-        binding.tableView.setDataSource("暂无数据", dataSource);
-        binding.tableView.setRetryRequest(new FLTableView.RetryRequest() {
+        FLTableView.CreatCell<TableViewCell> creatCell = new FLTableView.CreatCell<TableViewCell>() {
             @Override
-            public void retryRequest() {
-                requestData(true);
+            public int itemCount(int section) {
+                return size;
             }
-        });
+
+            @Override
+            public TableViewCell getCell(@NonNull ViewGroup parent) {
+                return new TableViewCell(CellTableViewBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+            }
+        };
+        binding.tableView.setCreatCell("暂无数据", creatCell);
         requestData(true);
     }
 
@@ -123,32 +102,32 @@ public class TableViewActivity extends FLBaseActivity<ActivityTableViewBinding> 
                     if (size > 0) {
                         showTip("错误示例");
                     }
-                    binding.tableView.reloadData("错误示例");
+                    binding.tableView.reloadData("错误示例", new FLTableView.Retry() {
+                        @Override
+                        public void retryRequest() {
+                            requestData(true);
+                        }
+                    });
                 }
             }
         });
     }
 
-    private class TableViewCell extends FLTableView.FLTableViewCell<Integer> {
+    private class TableViewCell extends FLTableView.FLTableViewCell<CellTableViewBinding> {
 
-        public TableViewCell(@NonNull View itemView) {
-            super(itemView);
-        }
-
-        @Override
-        protected void configItem() {
-            //配置点击事件之类
-            itemView.setOnClickListener(new View.OnClickListener() {
+        public TableViewCell(@NonNull CellTableViewBinding binding) {
+            super(binding);
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showTip("" + itemData);
+                    showTip(String.valueOf(index));
                 }
             });
         }
 
         @Override
-        protected void dataUpdated(Integer oldData) {
-            setText(R.id.text, "" + itemData);
+        protected void bindData(CellTableViewBinding binding, int section, int index) {
+            binding.text.setText(String.valueOf(index));
         }
     }
 }

@@ -3,55 +3,61 @@ package com.wjw.flkit;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewbinding.ViewBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FLTableView extends RecyclerView {
-    public interface DataSource <T extends FLTableViewCell> {
-        int itemCount();
-        int itemType(int index);
-        @LayoutRes
-        int getItemLayout(int itemType);
-        T createItem(View itemView, int viewType);
-        void bindItem(T view, int index);
+    public interface CreatSection<Head extends FLTableViewSection, Foot extends FLTableViewSection> {
+        int sectionCount();
+        @Nullable
+        Head getHeader(@NonNull ViewGroup parent);
+        @Nullable
+        Foot getFooter(@NonNull ViewGroup parent);
     }
-    public void setDataSource(DataSource dataSource) {
-        setDataSource("暂无数据", dataSource);
+    private CreatSection creatSection;
+
+    public void setCreatSection(CreatSection creatSection) {
+        this.creatSection = creatSection;
     }
-    public void setDataSource(String empty, DataSource dataSource) {
+    public interface CreatCell<T extends FLTableViewCell> {
+        int itemCount(int section);
+        T getCell(@NonNull ViewGroup parent);
+    }
+    private CreatCell creatCell;
+    public void setCreatCell(CreatCell creatCell) {
+        setCreatCell("暂无数据", creatCell);
+    }
+    public void setCreatCell(String empty, CreatCell creatCell) {
         this.empty = empty;
-        this.dataSource = dataSource;
+        this.creatCell = creatCell;
     }
-    public interface RetryRequest {
-        void retryRequest();
+    private int tintColor = Color.parseColor("#247BEF");
+    public void setTintColor(int color) {
+        this.tintColor = color;
     }
-    public void setRetryRequest(RetryRequest retryRequest) {
-        this.retryRequest = retryRequest;
+    private int textColor = Color.BLACK;
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
     }
     public final void startLoading() {
         if (!isRefreshing()) {
@@ -62,16 +68,21 @@ public class FLTableView extends RecyclerView {
     public final void reloadData() {
         reloadData(null, true, true);
     }
-    public final void reloadData(String error) {
+    public interface Retry {
+        void retryRequest();
+    }
+    private Retry retry;
+    public final void reloadData(String error, Retry retry) {
+        this.retry = retry;
         reloadData(error, true, null);
     }
     public final void reloadData(boolean hasMore) {
         reloadData(null, hasMore, null);
     }
     public final FLTableView removeItem(int index) {
-        if (index >= 0 && index < itemCount) {
+        if (index >= 0 && index < mainCount) {
             adapter.notifyItemRemoved(startIndex + index);
-            itemCount -= 1;
+            mainCount -= 1;
             endIndex -= 1;
         }
         return this;
@@ -79,43 +90,72 @@ public class FLTableView extends RecyclerView {
     public interface RefreshInterface {
         void enterRefreshing();
     }
-    public void addHeader(RefreshInterface action) {
-        header = new Header(getContext());
+    public void addHeaderRefresh(RefreshInterface action) {
+        headerRefresh = new HeaderRefresh(getContext());
         headerAction = action;
     }
-    public void addFooter(RefreshInterface action) {
-        footer = new Footer(getContext());
+    public void addFooterRefresh(RefreshInterface action) {
+        footerRefresh = new FooterRefresh(getContext());
         footerAction = action;
     }
-    private Header header;
+    private HeaderRefresh headerRefresh;
     private RefreshInterface headerAction;
-    private Footer footer;
+    private FooterRefresh footerRefresh;
     private RefreshInterface footerAction;
     private boolean isRefreshing() {
-        if (header != null && header.refreshing) {
+        if (headerRefresh != null && headerRefresh.refreshing) {
             return true;
         }
-        if (footer != null && footer.refreshing) {
+        if (footerRefresh != null && footerRefresh.refreshing) {
             return true;
         }
         return false;
     }
+
+    private Adapter adapter;
+    private int mainCount = 0;
+    private int startIndex = 0;
+    private int endIndex = 0;
+    private int sectionCount;
+    private List<Integer> itemCounts;
+    private String empty;
+    private LoadingView loadingView;
+    private ErrorView errorView;
+    private EmptyView emptyView;
     private void reloadData(String error, boolean hasMore, Boolean isReload) {
-        if (header != null) {
-            header.endRefresh();
+        if (headerRefresh != null) {
+            headerRefresh.endRefresh();
         }
-        if (footer != null) {
-            footer.endRefresh(hasMore);
+        if (footerRefresh != null) {
+            footerRefresh.endRefresh(hasMore);
         }
-        int count = dataSource.itemCount();
-        boolean reload = isReload == null ? itemCount > count : isReload.booleanValue();
+        sectionCount = 1;
+        int count = 0;
+        if (creatSection != null) {
+            sectionCount = creatSection.sectionCount();
+        }
+        itemCounts = new ArrayList<>();
+        if (creatCell != null) {
+            for (int i = 0; i < sectionCount; i++) {
+                int itemCount = creatCell.itemCount(i);
+                if (itemCount > 0) {
+                    count += itemCount;
+                }
+                if (creatSection != null) {
+                    count += 2;
+                }
+                itemCounts.add(itemCount);
+            }
+        }
+
+        boolean reload = isReload == null ? mainCount > count : isReload.booleanValue();
         if (!reload && (loadingView != null || errorView != null || emptyView != null)) {
             reload = true;
         }
         loadingView = null;
         errorView = null;
         emptyView = null;
-        itemCount = count;
+        mainCount = count;
         if (count == 0) {
             if (error != null && !error.isEmpty()) {
                 errorView = new ErrorView(getContext(), error);
@@ -133,28 +173,18 @@ public class FLTableView extends RecyclerView {
             adapter.notifyDataSetChanged();
         }
     }
-    private Adapter adapter;
-    private DataSource dataSource;
-    private RetryRequest retryRequest;
-    private int itemCount = 0;
-    private int startIndex = 0;
-    private int endIndex = 0;
-    private String empty;
-    private LoadingView loadingView;
-    private ErrorView errorView;
-    private EmptyView emptyView;
     private void reloadAdapter() {
         adapter = new Adapter() {
             @Override
             public int getItemCount() {
-                int count = itemCount;
+                int count = mainCount;
                 startIndex = 0;
                 if (loadingView != null || errorView != null) {
                     count = 1;
                     startIndex = 1;
                 }
                 else {
-                    if (header != null) {
+                    if (headerRefresh != null) {
                         count += 1;
                         startIndex += 1;
                     }
@@ -162,11 +192,11 @@ public class FLTableView extends RecyclerView {
                         count += 1;
                         startIndex += 1;
                     }
-                    else if (footer != null) {
+                    else if (footerRefresh != null) {
                         count += 1;
                     }
                 }
-                endIndex = startIndex + itemCount;
+                endIndex = startIndex + mainCount;
                 return count;
             }
 
@@ -174,48 +204,114 @@ public class FLTableView extends RecyclerView {
             public int getItemViewType(int position) {
                 if (position < startIndex) {
                     if (loadingView != null) {
-                        return loadingViewType;
+                        return ViewType.Loading.value;
                     }
                     if (errorView != null) {
-                        return errorViewType;
+                        return ViewType.Error.value;
                     }
-                    if (position == 0) {
-                        return header != null ? headerViewType : emptyViewType;
+                    if (position == 0 && headerRefresh != null) {
+                        return ViewType.RefreshHeader.value;
                     }
-                    return emptyViewType;
+                    return ViewType.Empty.value;
                 }
                 if (endIndex == position) {
-                    return footerViewType;
+                    return ViewType.RefreshFooter.value;
                 }
-                return dataSource.itemType(position - startIndex);
+                // h c f
+                // 0 1 2
+                // index 0 h -3
+                // index 1 c -2
+                // index 2 f -1
+                int index = position - startIndex;
+                if (creatSection != null) {
+                    for (int i = 0; i < sectionCount; i++) {
+                        int itemCount = itemCounts.get(i) + 2;
+                        index -= itemCount;
+                        if (index < 0) {
+                            if (index == -itemCount) {
+                                return ViewType.Header.value;
+                            }
+                            if (index == -1) {
+                                return ViewType.Footer.value;
+                            }
+                            break;
+                        }
+                    }
+                }
+                return ViewType.Cell.value;
             }
 
             @NonNull
             @Override
             public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                if (viewType == loadingViewType) {
+                if (viewType == ViewType.Loading.value) {
                     return new PlaceHolderViewHolder(loadingView);
                 }
-                else if (viewType == errorViewType) {
+                else if (viewType == ViewType.Error.value) {
                     return new PlaceHolderViewHolder(errorView);
                 }
-                else if (viewType == emptyViewType) {
+                else if (viewType == ViewType.Empty.value) {
                     return new PlaceHolderViewHolder(emptyView);
                 }
-                else if (viewType == headerViewType) {
-                    return new PlaceHolderViewHolder(header);
+                else if (viewType == ViewType.RefreshHeader.value) {
+                    return new PlaceHolderViewHolder(headerRefresh);
                 }
-                else if (viewType == footerViewType) {
-                    return new PlaceHolderViewHolder(footer);
+                else if (viewType == ViewType.RefreshFooter.value) {
+                    return new PlaceHolderViewHolder(footerRefresh);
                 }
-                View itemView = LayoutInflater.from(parent.getContext()).inflate(dataSource.getItemLayout(viewType), parent, false);
-                return dataSource.createItem(itemView, viewType);
+                else if (viewType == ViewType.Header.value) {
+                    ViewHolder viewHolder = creatSection.getHeader(parent);
+                    if (viewHolder == null) {
+                        viewHolder = new PlaceHolderViewHolder(new PlaceholdView(getContext()));
+                    }
+                    return viewHolder;
+                }
+                else if (viewType == ViewType.Footer.value) {
+                    ViewHolder viewHolder = creatSection.getFooter(parent);
+                    if (viewHolder == null) {
+                        viewHolder = new PlaceHolderViewHolder(new PlaceholdView(getContext()));
+                    }
+                    return viewHolder;
+                }
+                return creatCell.getCell(parent);
             }
 
             @Override
             public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
                 if (startIndex <= position && position < endIndex) {
-                    dataSource.bindItem((FLTableViewCell) holder, position - startIndex);
+                    int index = position - startIndex;
+                    int section = 0;
+                    int cellIndex = index;
+                    if (creatSection != null) {
+                        for (int i = 0; i < sectionCount; i++) {
+                            section = i;
+                            int itemCount = itemCounts.get(i) + 2;
+                            index -= itemCount;
+                            if (index < 0) {
+                                if (index == -itemCount) {
+                                    FLTableViewSection header = (FLTableViewSection) holder;
+                                    header.section = section;
+                                    header.bindData(header.binding, section);
+                                    return;
+                                }
+                                if (index == -1) {
+                                    FLTableViewSection footer = (FLTableViewSection) holder;
+                                    footer.section = section;
+                                    footer.bindData(footer.binding, section);
+                                    return;
+                                }
+                                cellIndex = index + itemCount;
+                                break;
+                            }
+                        }
+                    }
+                    if (creatSection != null) {
+                        cellIndex -= 1;
+                    }
+                    FLTableViewCell cell = (FLTableViewCell) holder;
+                    cell.section = section;
+                    cell.index = cellIndex;
+                    cell.bindData(cell.binding, section, cellIndex);
                 }
             }
         };
@@ -247,31 +343,31 @@ public class FLTableView extends RecyclerView {
                 float deltaY = (e.getRawY() - lastY) / 2;//为了防止滑动幅度过大，将实际手指滑动的距离除以2
                 lastY = e.getRawY();
                 sumOffSet += deltaY;//计算总的滑动的距离
-                if (header != null && header.getParent() != null && deltaY > 0) {
-                    if ((footer == null || !footer.refreshing) && !header.refreshing) {
-                        header.onMove(deltaY, sumOffSet);
-                        if (header.getVisibleHeight() > 0) {
+                if (headerRefresh != null && headerRefresh.getParent() != null && deltaY > 0) {
+                    if ((footerRefresh == null || !footerRefresh.refreshing) && !headerRefresh.refreshing) {
+                        headerRefresh.onMove(deltaY, sumOffSet);
+                        if (headerRefresh.getVisibleHeight() > 0) {
                             return false;
                         }
                     }
                 }
-                else if (footer != null && footer.enable && footer.hasData && footer.getParent() != null && deltaY < 0) {
-                    if ((header == null || !header.refreshing) && !footer.refreshing) {
-                        footer.enterRefresh();
+                else if (footerRefresh != null && footerRefresh.enable && footerRefresh.hasData && footerRefresh.getParent() != null && deltaY < 0) {
+                    if ((headerRefresh == null || !headerRefresh.refreshing) && !footerRefresh.refreshing) {
+                        footerRefresh.enterRefresh();
                         footerAction.enterRefreshing();
                     }
                 }
                 break;
             default:
                 lastY = -1; // reset
-                if (header != null && header.getParent() != null) {
-                    if (!header.refreshing) {
-                        if (header.readyRefresh) {
-                            header.enterRefresh();
+                if (headerRefresh != null && headerRefresh.getParent() != null) {
+                    if (!headerRefresh.refreshing) {
+                        if (headerRefresh.readyRefresh) {
+                            headerRefresh.enterRefresh();
                             headerAction.enterRefreshing();
                         }
                         else  {
-                            header.changeRefreshing(false);
+                            headerRefresh.changeRefreshing(false);
                         }
                     }
                 }
@@ -288,55 +384,97 @@ public class FLTableView extends RecyclerView {
             super(itemView);
         }
     }
-    //loading
-    private static int loadingViewType = 10086;
+
+    private enum ViewType {
+        Loading(99999),
+        Error(99998),
+        Empty(99997),
+        RefreshHeader(99996),
+        RefreshFooter(99995),
+        Header(99994),
+        Footer(99993),
+        Cell(99992);
+
+        private int value = 0;
+        private ViewType(int value) {
+            this.value = value;
+        }
+        private static ViewType valueOf(int value) {
+            switch (value) {
+                case 99999:
+                    return Loading;
+                case 99998:
+                    return Error;
+                case 99997:
+                    return Empty;
+                case 99996:
+                    return RefreshHeader;
+                case 99995:
+                    return RefreshFooter;
+                case 99994:
+                    return Header;
+                case 99993:
+                    return Footer;
+                case 99992:
+                    return Cell;
+                default:
+                    return null;
+            }
+        }
+    }
+    private class PlaceholdView extends LinearLayout {
+        public PlaceholdView(Context context) {
+            super(context);
+            setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
+        }
+    }
     private class LoadingView extends LinearLayout {
         public LoadingView(Context context) {
             super(context);
             setGravity(Gravity.CENTER);
-            setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             ProgressBar progressBar = new ProgressBar(context);
-            progressBar.setLayoutParams(new LinearLayoutCompat.LayoutParams(dipToPx(40), dipToPx(40)));
+            progressBar.setLayoutParams(new LinearLayout.LayoutParams(dipToPx(40), dipToPx(40)));
+            progressBar.setIndeterminateTintList(ColorStateList.valueOf(tintColor));
             addView(progressBar);
         }
     }
-    private static int errorViewType = 10087;
     private class ErrorView extends LinearLayout {
         public ErrorView(Context context, String error) {
             super(context);
             setOrientation(VERTICAL);
             setGravity(Gravity.CENTER);
-            setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             TextView textView = new TextView(getContext());
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-            textView.setTextColor(Color.BLACK);
+            textView.setTextColor(textColor);
             textView.setText(error);
             textView.setMaxLines(99);
             textView.setPadding(dipToPx(70), 0, dipToPx(70), 0);
             textView.setGravity(Gravity.CENTER);
-            textView.setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             addView(textView);
 
             textView = new TextView(getContext());
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-            textView.setTextColor(Color.BLUE);
+            textView.setTextColor(Color.parseColor("#247BEF"));
             textView.setText("重试");
             textView.setMaxLines(1);
             textView.setPadding(dipToPx(10), dipToPx(15), dipToPx(10), dipToPx(15));
             textView.setGravity(Gravity.CENTER);
-            textView.setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             addView(textView);
             textView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (retryRequest != null) {
-                        retryRequest.retryRequest();
+                    if (retry != null) {
+                        retry.retryRequest();
+                        retry = null;
                     }
                 }
             });
         }
     }
-    private static int emptyViewType = 10088;
     private class EmptyView extends LinearLayout {
         public EmptyView(Context context) {
             this(context, null);
@@ -347,19 +485,18 @@ public class FLTableView extends RecyclerView {
                 emptyString = "暂无数据";
             }
             setGravity(Gravity.CENTER);
-            setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             TextView textView = new TextView(getContext());
             textView.setTextSize(15);
-            textView.setTextColor(Color.BLACK);
+            textView.setTextColor(textColor);
             textView.setText(emptyString);
             textView.setGravity(Gravity.CENTER);
-            textView.setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             addView(textView);
         }
     }
     //header
-    private static int headerViewType = 99998;
-    private class Header extends LinearLayout {
+    private class HeaderRefresh extends LinearLayout {
         private ConstraintLayout contentLayout;
         private ProgressBar progressBar;
         private TextView textView;
@@ -367,15 +504,15 @@ public class FLTableView extends RecyclerView {
         private int headerHeight;
         private boolean refreshing;
         private boolean readyRefresh;
-        public Header(Context context) {
+        public HeaderRefresh(Context context) {
             this(context, null);
         }
 
-        public Header(Context context, @Nullable AttributeSet attrs) {
+        public HeaderRefresh(Context context, @Nullable AttributeSet attrs) {
             this(context, attrs, 0);
         }
 
-        public Header(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        public HeaderRefresh(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
             super(context, attrs, defStyleAttr);
             init();//初始化视图
         }
@@ -400,7 +537,7 @@ public class FLTableView extends RecyclerView {
             set.constrainDefaultHeight(10, headerHeight);
 
             textView = new TextView(getContext());
-            textView.setTextColor(Color.BLACK);
+            textView.setTextColor(textColor);
             textView.setTextSize(14);
             textView.setGravity(Gravity.CENTER);
             textView.setId(100);
@@ -412,6 +549,7 @@ public class FLTableView extends RecyclerView {
 
             progressBar = new ProgressBar(getContext());
             progressBar.setId(101);
+            progressBar.setIndeterminateTintList(ColorStateList.valueOf(tintColor));
             contentLayout.addView(progressBar);
             set.connect(progressBar.getId(), ConstraintSet.LEFT, contentLayout.getId(), ConstraintSet.LEFT, 0);
             set.connect(progressBar.getId(), ConstraintSet.TOP, contentLayout.getId(), ConstraintSet.TOP, dipToPx(getContext(), 10));
@@ -492,8 +630,7 @@ public class FLTableView extends RecyclerView {
         }
     }
     //footer
-    private static int footerViewType = 99999;
-    private class Footer extends LinearLayout {
+    private class FooterRefresh extends LinearLayout {
         private ConstraintLayout contentLayout;
         private ProgressBar progressBar;
         private TextView textView;
@@ -502,15 +639,15 @@ public class FLTableView extends RecyclerView {
         private boolean refreshing;
         private boolean enable = true;
         private boolean hasData = true;
-        public Footer(Context context) {
+        public FooterRefresh(Context context) {
             this(context, null);
         }
 
-        public Footer(Context context, @Nullable AttributeSet attrs) {
+        public FooterRefresh(Context context, @Nullable AttributeSet attrs) {
             this(context, attrs, 0);
         }
 
-        public Footer(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        public FooterRefresh(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
             super(context, attrs, defStyleAttr);
             init();//初始化视图
         }
@@ -535,7 +672,7 @@ public class FLTableView extends RecyclerView {
             set.constrainDefaultHeight(10, footerHeight);
 
             textView = new TextView(getContext());
-            textView.setTextColor(Color.BLACK);
+            textView.setTextColor(textColor);
             textView.setTextSize(14);
             textView.setGravity(Gravity.CENTER);
             textView.setId(100);
@@ -548,6 +685,7 @@ public class FLTableView extends RecyclerView {
 
             progressBar = new ProgressBar(getContext());
             progressBar.setId(101);
+            progressBar.setIndeterminateTintList(ColorStateList.valueOf(tintColor));
             contentLayout.addView(progressBar);
             set.connect(progressBar.getId(), ConstraintSet.LEFT, contentLayout.getId(), ConstraintSet.LEFT, 0);
             set.connect(progressBar.getId(), ConstraintSet.TOP, contentLayout.getId(), ConstraintSet.TOP, dipToPx(getContext(), 10));
@@ -609,145 +747,30 @@ public class FLTableView extends RecyclerView {
         }
         public boolean getHasData() { return hasData; }
     }
-    //baseViewHolder
-    public abstract static class FLTableViewCell<DataType> extends ViewHolder {
-        protected View itemView;
-        protected DataType itemData;
-        protected int itemIndex;
-        public FLTableViewCell(@NonNull View itemView) {
-            super(itemView);
-            this.itemView = itemView;
-            configItem();
+    public abstract static class FLTableViewSection<SectionBinding extends ViewBinding> extends ViewHolder {
+        public final SectionBinding binding;
+        protected int section;
+        public FLTableViewSection(@NonNull SectionBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
         public final Context getContext() {
-            return itemView.getContext();
+            return binding.getRoot().getContext();
         }
-        public final void bindData(int index, DataType data) {
-            itemIndex = index;
-            DataType oldData = itemData;
-            itemData = data;
-            dataUpdated(oldData);
+        protected abstract void bindData(SectionBinding binding, int section);
+    }
+    //baseViewHolder
+    public abstract static class FLTableViewCell<CellBinding extends ViewBinding> extends ViewHolder {
+        public final CellBinding binding;
+        protected int section;
+        protected int index;
+        public FLTableViewCell(@NonNull CellBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
-        protected abstract void configItem();
-        protected abstract void dataUpdated(DataType oldData);
-
-        @Nullable
-        public final <T extends View> T findViewById(@IdRes int id) {
-            if (id == NO_ID) {
-                return null;
-            }
-            return itemView.findViewById(id);
+        public final Context getContext() {
+            return binding.getRoot().getContext();
         }
-        @Nullable
-        public final ImageView findImageViewById(@IdRes int id) {
-            if (id == NO_ID) {
-                return null;
-            }
-            return itemView.findViewById(id);
-        }
-        public final void setText(@IdRes int id, String text) {
-            if (id != NO_ID) {
-                TextView view = findViewById(id);
-                if (view != null) {
-                    view.setText(text);
-                }
-            }
-        }
-        public final void setText(@IdRes int id, @StringRes int stringId) {
-            if (id != NO_ID) {
-                TextView view = findViewById(id);
-                if (view != null) {
-                    view.setText(stringId);
-                }
-            }
-        }
-        public final void setTextColor(@IdRes int id, @ColorInt int colorId) {
-            if (id != NO_ID) {
-                TextView view = findViewById(id);
-                if (view != null) {
-                    view.setTextColor(colorId);
-                }
-            }
-        }
-        public final void setTextColor(@IdRes int id, String hexString) {
-            if (id != NO_ID) {
-                TextView view = findViewById(id);
-                if (view != null) {
-                    view.setTextColor(Color.parseColor(hexString));
-                }
-            }
-        }
-        public final void setImage(@IdRes int id, @DrawableRes int imageResId) {
-            if (id != NO_ID) {
-                ImageView view = findViewById(id);
-                if (view != null) {
-                    view.setImageResource(imageResId);
-                }
-            }
-        }
-        public final void setImage(@IdRes int id, Drawable drawable) {
-            if (id != NO_ID) {
-                ImageView view = findViewById(id);
-                if (view != null) {
-                    view.setImageDrawable(drawable);
-                }
-            }
-        }
-        public final void setImage(@IdRes int id, Bitmap bitmap) {
-            if (id != NO_ID) {
-                ImageView view = findViewById(id);
-                if (view != null) {
-                    view.setImageBitmap(bitmap);
-                }
-            }
-        }
-        public final void setBackground(@IdRes int id, Drawable drawable) {
-            if (id != NO_ID) {
-                View view = findViewById(id);
-                if (view != null) {
-                    view.setBackground(drawable);
-                }
-            }
-        }
-        public final void setBackgroundColor(@IdRes int id, @ColorInt int colorId) {
-            if (id != NO_ID) {
-                View view = findViewById(id);
-                if (view != null) {
-                    view.setBackgroundColor(colorId);
-                }
-            }
-        }
-        public final void setBackgroundColor(@IdRes int id, String hexString) {
-            if (id != NO_ID) {
-                View view = findViewById(id);
-                if (view != null) {
-                    view.setBackgroundColor(Color.parseColor(hexString));
-                }
-            }
-        }
-        public final void setBackgroundResource(@IdRes int id, @DrawableRes int layoutId) {
-            if (id != NO_ID) {
-                View view = findViewById(id);
-                if (view != null) {
-                    view.setBackgroundResource(layoutId);
-                }
-            }
-        }
-        public final void setVisible(@IdRes int id, boolean visible) {
-            if (id != NO_ID) {
-                View view = findViewById(id);
-                if (view != null) {
-                    view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-                }
-            }
-        }
-        public final void setEnable(@IdRes int id, boolean enable) {
-            if (id != NO_ID) {
-                View view = findViewById(id);
-                if (view != null) {
-                    view.setEnabled(enable);
-                }
-            }
-        }
+        protected abstract void bindData(CellBinding binding, int section, int index);
     }
 }

@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActivity implements View.OnClickListener {
+public abstract class FLBaseActivity extends FragmentActivity implements View.OnClickListener {
     private static int defaultBackgroundColor = Color.parseColor("#F4F4F3");
     private static int defalutBackImgaeID = 0;
 
@@ -57,35 +57,37 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
         FLBaseActivity.defalutBackImgaeID = defalutBackImgaeID;
     }
     private int backgroundColor;
-
-    public void setBackgroundColor(int backgroundColor) {
-        this.backgroundColor = backgroundColor;
-        superLayout.setBackgroundColor(backgroundColor);
+    public void setBackgroundColor(int color) {
+        superLayout.setBackgroundColor(color);
     }
 
     protected RelativeLayout superLayout;
     protected RelativeLayout annexLayout;
-    protected T binding;
+    protected View view;
     protected FLNavigationView navigationView;
     @Override
     protected final void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);//设置绘画模式
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setStatusStyle(StatusStyle.drak);
+        super.onCreate(savedInstanceState);
 
         superLayout = new RelativeLayout(this);
         superLayout.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         superLayout.setBackgroundColor(defaultBackgroundColor);
 
-        RelativeLayout.LayoutParams navigationParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        navigationParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        navigationParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        navigationView = new FLNavigationView(this);
-        navigationView.setLayoutParams(navigationParams);
-        navigationView.setPadding(0, getStatusHeight(), 0, 0);
-        configNavigation(navigationView);
-        navigationView.creatLayout();
+        if (addNavigation()) {
+            RelativeLayout.LayoutParams navigationParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            navigationParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            navigationParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            navigationView = new FLNavigationView(this);
+            navigationView.setLayoutParams(navigationParams);
+            navigationView.setPadding(0, getStatusHeight(), 0, 0);
+            configNavigation(navigationView);
+        }
 
         RelativeLayout.LayoutParams loadingParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         loadingParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -118,20 +120,22 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
             @Override
             public void onAnimationRepeat(Animator animator) {}
         });
-        binding = getBinding();
+        view = getView();
         RelativeLayout.LayoutParams rootParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        if (!isFillParent()) {
+        if (navigationView != null && offsetNavigation()) {
             rootParams.topMargin = getStatusHeight() + dipToPx(44);
         }
-        binding.getRoot().setLayoutParams(rootParams);
+        view.setLayoutParams(rootParams);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        superLayout.addView(binding.getRoot());
+        superLayout.addView(view);
         superLayout.addView(annexLayout);
-        superLayout.addView(navigationView);
+        if (navigationView != null) {
+            superLayout.addView(navigationView);
+        }
         setContentView(superLayout);
 
-        if (!isTaskRoot()) {
+        if (!isTaskRoot() && navigationView != null) {
             if (defalutBackImgaeID == 0) {
                 navigationView.addBack(new View.OnClickListener() {
                     @Override
@@ -178,20 +182,22 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
         return true;
     }
 
+    protected boolean addNavigation() {
+        return true;
+    }
+
     @Override
     public final void onClick(View view) {
         endEdit();
         didClick(view);
     }
-    protected abstract T getBinding();
+    protected abstract View getView();
     protected abstract void didLoad();
     protected abstract void didClick(View view);
-    protected void configNavigation(FLNavigationView navigationView) {
-
-    }
-    //是否填充整个activity，返回false向下偏移一个导航栏的高度
-    protected boolean isFillParent() {
-        return false;
+    protected void configNavigation(FLNavigationView navigationView) {}
+    //返回true 向下偏移一个导航栏的高度
+    protected boolean offsetNavigation() {
+        return true;
     }
 
     protected final FLBaseActivity getActivity() {
@@ -218,12 +224,12 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
         }
     }
 
-    protected final int dipToPx(float pxValue) {
+    public final int dipToPx(float pxValue) {
         final float scale = getResources().getDisplayMetrics().density;
         return (int) (pxValue * scale + 0.5f);
     }
 
-    protected final int getStatusHeight() {
+    public final int getStatusHeight() {
         int result = 0;
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
@@ -232,7 +238,7 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
         return result;
     }
 
-    protected final void endEdit() {
+    public final void endEdit() {
         View focusView = getWindow().getDecorView().findFocus();
         if (focusView != null) {
             focusView.clearFocus();//取消焦点
@@ -271,10 +277,10 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
             annexLayout.animate().alpha(0.f).setDuration(animationDuration);
         }
     }
-    protected final void dismissLoading() {
+    public final void dismissLoading() {
         dismissLoading(true);
     }
-    protected final void showLoading() {
+    public final void showLoading() {
         dismissLoading(false);
         RelativeLayout.LayoutParams linearParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         linearParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -308,13 +314,13 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
         annexLayout.animate().alpha(1.f).setDuration(animationDuration);
         loadingContent.animate().alpha(1.f).scaleX(1).scaleY(1).setDuration(animationDuration);
     }
-    protected final void showTip(String tip) {
+    public final void showTip(String tip) {
         showTip(tip, 15, Color.BLACK);
     }
-    protected final void showTip(String tip, int dipTextSize, @ColorInt int colorId) {
+    public final void showTip(String tip, int dipTextSize, @ColorInt int colorId) {
         showTip(Color.WHITE, tip, dipTextSize, colorId);
     }
-    protected final void showTip(@ColorInt int backgroundColor, String tip, int dipTextSize, @ColorInt int colorId) {
+    public final void showTip(@ColorInt int backgroundColor, String tip, int dipTextSize, @ColorInt int colorId) {
         dismissLoading(false);
         RelativeLayout.LayoutParams linearParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         linearParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -376,7 +382,7 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
     }
     private ProgressBar progressBar;
     private TextView progressTextView;
-    protected final void showProgress() {
+    public final void showProgress() {
 
         dismissLoading(false);
         RelativeLayout.LayoutParams linearParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -445,7 +451,7 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
         annexLayout.animate().alpha(1.f).setDuration(animationDuration);
         loadingContent.animate().alpha(1.f).scaleX(1).scaleY(1).setDuration(animationDuration);
     }
-    protected final void changeProgress(float progress) {
+    public final void changeProgress(float progress) {
         if (progressBar == null) {
             showProgress();
         }
@@ -466,17 +472,17 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
     }
 
     private FLAlertDialog dialogContent;
-    protected enum FLDialogStyle {
+    public enum FLDialogStyle {
         Alert,
         ActionSheet,
     }
-    protected interface FLAlertDialogConfig {
+    public interface FLAlertDialogConfig {
         void addItems(FLAlertDialog dialog);
     }
-    protected interface FLAlertDialogTouch {
+    public interface FLAlertDialogTouch {
         void touch();
     }
-    protected final void showDialogAlert(String title, String content, FLDialogStyle style, FLAlertDialogConfig config) {
+    public final void showDialogAlert(String title, String content, FLDialogStyle style, FLAlertDialogConfig config) {
         RelativeLayout.LayoutParams linearParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         linearParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
         linearParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -536,11 +542,11 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
         dialog.show();
         dialogContent = dialog;
     }
-    protected interface FLAlertDialogLayout {
+    public interface FLAlertDialogLayout {
         void show();
         void dismiss();
     }
-    protected static class FLAlertDialog extends LinearLayout {
+    public static class FLAlertDialog extends LinearLayout {
         private TextView cancel;
         private ArrayList<TextView> textViews = new ArrayList<>();
         private LinearLayout linearContent;
@@ -776,12 +782,12 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
     public interface FLTimerListencener {
         void run();
     }
-    protected final void startTimer(long delay, long period, FLTimerListencener listencener) {
+    public final void startTimer(long delay, long period, FLTimerListencener listencener) {
         stopTimer();
         timer = new Timer();
         timer.schedule(new FLTimerTask(listencener), delay, period);
     }
-    protected final void stopTimer() {
+    public final void stopTimer() {
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -809,10 +815,10 @@ public abstract class FLBaseActivity<T extends ViewBinding> extends FragmentActi
 
     private StatusStyle imageBrowserStatusStyle;
     private FLImageBrowser imageBrowser;
-    protected interface BrowserImageListence {
+    public interface BrowserImageListence {
         void config(int index, ImageView imageView);
     }
-    protected final void browserImage(int showIndex, int size, BrowserImageListence listence) {
+    public final void browserImage(int showIndex, int size, BrowserImageListence listence) {
         dismissImageBrowser(-1);
         imageBrowserStatusStyle = getStatusStyle();
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

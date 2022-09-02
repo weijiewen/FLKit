@@ -1,89 +1,33 @@
 package com.wjw.flkitexample;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import android.graphics.Color;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
+import com.wjw.flkit.base.FLTabBarActivity;
+import com.wjw.flkitexample.pages.browser.BrowserPage;
+import com.wjw.flkitexample.pages.dialog.DialogPage;
+import com.wjw.flkitexample.pages.section.SectionPage;
+import com.wjw.flkitexample.pages.loading.LoadingPage;
+import com.wjw.flkitexample.pages.table.TablePage;
 
-import com.wjw.flkit.FLTableView;
+import java.util.Arrays;
+import java.util.List;
 
-import java.util.ArrayList;
-
-import com.wjw.flkit.base.FLBaseActivity;
-import com.wjw.flkitexample.databinding.ActivityMainBinding;
-
-public class MainActivity extends AppCompatActivity {
-    ActivityMainBinding binding;
-    ArrayList<String> strings = new ArrayList<>();
+public class MainActivity extends FLTabBarActivity {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        FLBaseActivity.setDefalutBackImgaeID(R.mipmap.ptbzjttb);
-        strings.add("分页tableView");
-        strings.add("加载dialog");
-        strings.add("加载loading");
-        strings.add("图片浏览器");
+    protected void didLoad() {
 
-        binding = ActivityMainBinding.inflate(LayoutInflater.from(this));
-        setContentView(binding.getRoot());
-        FLTableView.DataSource<MainCell> dataSource = new FLTableView.DataSource<MainCell>() {
-            @Override
-            public int itemCount() {
-                return strings.size();
-            }
-            @Override
-            public int itemType(int index) {
-                return 0;
-            }
-            @Override
-            public int getItemLayout(int itemType) {
-                return R.layout.cell_main;
-            }
-            @Override
-            public MainCell createItem(View itemView, int viewType) {
-                return new MainCell(itemView);
-            }
-            @Override
-            public void bindItem(MainCell view, int index) {
-                view.bindData(index, strings.get(index));
-            }
-        };
-        binding.tableView.setDataSource("暂无数据", dataSource);
-        binding.tableView.reloadData(true);
     }
 
-    private class MainCell extends FLTableView.FLTableViewCell<String> {
-        public MainCell(@NonNull View itemView) {
-            super(itemView);
-        }
-        @Override
-        protected void configItem() {
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switch (itemIndex) {
-                        case 0:
-                            startActivity(new Intent(MainActivity.this, TableViewActivity.class));
-                            break;
-                        case 1:
-                            startActivity(new Intent(MainActivity.this, DialogActivity.class));
-                            break;
-                        case 2:
-                            startActivity(new Intent(MainActivity.this, LoadingActivity.class));
-                            break;
-                        case 3:
-                            startActivity(new Intent(MainActivity.this, ImageBrowserActivity.class));
-                            break;
-                    }
-                }
-            });
-        }
-        @Override
-        protected void dataUpdated(String oldData) {
-            setText(R.id.text, itemData);
-        }
+    @Override
+    protected void configPage() {
+        setTabBarSelectedColor(Color.parseColor("#026BEE"));
+        List<FLTabBarItem> itemList = Arrays.asList(
+                new FLTabBarItem("模态窗", R.mipmap.flysywdjtb, R.mipmap.sysytbdjzt, new DialogPage(this)),
+                new FLTabBarItem("加载窗", R.mipmap.syfltbwdjzt, R.mipmap.flyfldjtb, new LoadingPage(this)),
+                new FLTabBarItem(R.mipmap.syyxtb, 0, 64, 64, 10, new BrowserPage(this)),
+                new FLTabBarItem("列表", R.mipmap.gameicon, R.mipmap.gameicon_hov, new TablePage(this)),
+                new FLTabBarItem("分段列表", R.mipmap.sywdtbwdj, R.mipmap.wdsywdbqltb, new SectionPage(this))
+        );
+        setItemList(itemList);
     }
 }
