@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -281,6 +282,9 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         dismissLoading(true);
     }
     public final void showLoading() {
+        showLoading(Color.parseColor("#247BEF"));
+    }
+    public final void showLoading(int color) {
         dismissLoading(false);
         RelativeLayout.LayoutParams linearParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         linearParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -308,7 +312,8 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         cardView.addView(layout);
 
         ProgressBar progressBar = new ProgressBar(this);
-        progressBar.setLayoutParams(new LinearLayoutCompat.LayoutParams(dipToPx(50), dipToPx(50)));
+        progressBar.setLayoutParams(new LinearLayoutCompat.LayoutParams(dipToPx(45), dipToPx(45)));
+        progressBar.setIndeterminateTintList(ColorStateList.valueOf(color));
         layout.addView(progressBar);
 
         annexLayout.animate().alpha(1.f).setDuration(animationDuration);

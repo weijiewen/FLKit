@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -434,7 +435,7 @@ public class FLTableView extends RecyclerView {
             setGravity(Gravity.CENTER);
             setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             ProgressBar progressBar = new ProgressBar(context);
-            progressBar.setLayoutParams(new LinearLayout.LayoutParams(dipToPx(40), dipToPx(40)));
+            progressBar.setLayoutParams(new LinearLayout.LayoutParams(dipToPx(35), dipToPx(35)));
             progressBar.setIndeterminateTintList(ColorStateList.valueOf(tintColor));
             addView(progressBar);
         }
@@ -555,8 +556,8 @@ public class FLTableView extends RecyclerView {
             set.connect(progressBar.getId(), ConstraintSet.TOP, contentLayout.getId(), ConstraintSet.TOP, dipToPx(getContext(), 10));
             set.connect(progressBar.getId(), ConstraintSet.RIGHT, contentLayout.getId(), ConstraintSet.RIGHT, 0);
             set.connect(progressBar.getId(), ConstraintSet.BOTTOM, contentLayout.getId(), ConstraintSet.BOTTOM, dipToPx(getContext(), 10));
-            set.constrainWidth(progressBar.getId(), dipToPx(getContext(), 30));
-            set.constrainHeight(progressBar.getId(), dipToPx(getContext(), 30));
+            set.constrainWidth(progressBar.getId(), dipToPx(getContext(), 25));
+            set.constrainHeight(progressBar.getId(), dipToPx(getContext(), 25));
 
             set.applyTo(contentLayout);
             progressBar.setVisibility(View.INVISIBLE);
@@ -691,8 +692,8 @@ public class FLTableView extends RecyclerView {
             set.connect(progressBar.getId(), ConstraintSet.TOP, contentLayout.getId(), ConstraintSet.TOP, dipToPx(getContext(), 10));
             set.connect(progressBar.getId(), ConstraintSet.RIGHT, contentLayout.getId(), ConstraintSet.RIGHT, 0);
             set.connect(progressBar.getId(), ConstraintSet.BOTTOM, contentLayout.getId(), ConstraintSet.BOTTOM, dipToPx(getContext(), 10));
-            set.constrainWidth(progressBar.getId(), dipToPx(getContext(), 30));
-            set.constrainHeight(progressBar.getId(), dipToPx(getContext(), 30));
+            set.constrainWidth(progressBar.getId(), dipToPx(getContext(), 25));
+            set.constrainHeight(progressBar.getId(), dipToPx(getContext(), 25));
 
             set.applyTo(contentLayout);
             progressBar.setVisibility(View.INVISIBLE);
