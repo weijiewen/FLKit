@@ -1,6 +1,7 @@
-package com.wjw.flkitexample.pages.section;
+package com.wjw.flkitexample.pages.table;
 
-import android.content.Context;
+
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,26 +11,23 @@ import androidx.annotation.Nullable;
 
 import com.wjw.flkit.FLAsyncTask;
 import com.wjw.flkit.FLTableView;
+import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
-import com.wjw.flkit.base.FLTabBarActivity;
+import com.wjw.flkitexample.databinding.ActivitySectionBinding;
 import com.wjw.flkitexample.databinding.CellTableViewBinding;
-import com.wjw.flkitexample.databinding.PageSectionBinding;
 import com.wjw.flkitexample.databinding.SectionFooterBinding;
 import com.wjw.flkitexample.databinding.SectionHeaderBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SectionPage extends FLTabBarActivity.FLTabBarPage<PageSectionBinding> {
+public class SectionActivity extends FLBindingActivity<ActivitySectionBinding> {
     int value = 1;
     private List<List<Integer>> datas = new ArrayList<>();
-    public SectionPage(Context context) {
-        super(context);
-    }
 
     @Override
-    protected PageSectionBinding getBinding() {
-        return PageSectionBinding.inflate(LayoutInflater.from(getContext()), this, false);
+    protected ActivitySectionBinding getBinding() {
+        return ActivitySectionBinding.inflate(LayoutInflater.from(this));
     }
 
     @Override
@@ -84,6 +82,11 @@ public class SectionPage extends FLTabBarActivity.FLTabBarPage<PageSectionBindin
         });
         request(true);
     }
+
+    @Override
+    protected void didClick(View view) {
+
+    }
     private void request(boolean reload) {
         if (reload) {
             binding.tableView.startLoading();
@@ -127,7 +130,7 @@ public class SectionPage extends FLTabBarActivity.FLTabBarPage<PageSectionBindin
     private class Header extends FLTableView.FLTableViewSection<SectionHeaderBinding> {
         public Header(@NonNull SectionHeaderBinding binding) {
             super(binding);
-            binding.getRoot().setOnClickListener(new OnClickListener() {
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     getActivity().showTip("点击分段header：" + section);
@@ -143,7 +146,7 @@ public class SectionPage extends FLTabBarActivity.FLTabBarPage<PageSectionBindin
     private class Footer extends FLTableView.FLTableViewSection<SectionFooterBinding> {
         public Footer(@NonNull SectionFooterBinding binding) {
             super(binding);
-            binding.getRoot().setOnClickListener(new OnClickListener() {
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     getActivity().showTip("点击分段footer：" + section);
@@ -158,12 +161,36 @@ public class SectionPage extends FLTabBarActivity.FLTabBarPage<PageSectionBindin
     }
     private class Cell extends FLTableView.FLTableViewCell<CellTableViewBinding> {
 
-        public Cell(@NonNull CellTableViewBinding binding) {
-            super(binding);
-            binding.getRoot().setOnClickListener(new OnClickListener() {
+        public Cell(@NonNull CellTableViewBinding cellBinding) {
+            super(cellBinding);
+            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    getActivity().showTip(binding.text.getText().toString());
+                    getActivity().showTip(cellBinding.text.getText().toString());
+                }
+            });
+            cellBinding.getRoot().setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    getActivity().showDialogAlert(FLDialogStyle.ActionSheet, null, null, new FLAlertDialogConfig() {
+                        @Override
+                        public void addItems(FLAlertDialog dialog) {
+                            dialog.addItem("删除", 15, Color.RED, new FLAlertDialogTouch() {
+                                @Override
+                                public void touch() {
+                                    datas.get(section).remove(index);
+                                    binding.tableView.reloadData();
+                                }
+                            });
+                            dialog.addCancel(new FLAlertDialogTouch() {
+                                @Override
+                                public void touch() {
+
+                                }
+                            });
+                        }
+                    });
+                    return true;
                 }
             });
         }

@@ -73,15 +73,15 @@ public class DialogPage extends FLTabBarActivity.FLTabBarPage<PageDialogBinding>
     private class DialogCell extends FLTableView.FLTableViewCell<CellMainBinding> {
 
 
-        public DialogCell(@NonNull CellMainBinding binding) {
-            super(binding);
+        public DialogCell(@NonNull CellMainBinding cellBinding) {
+            super(cellBinding);
             String tip = "塞德里克飞机上课了巨额罚款了解放了快速减肥了苦涩就发了苦涩解放啦卡死机而非卢卡斯荆防颗粒撒巨额罚款拉瑟九分裤阿里kg九色鹿开发塞德里克飞机上课了巨额罚款了解放了快速减肥了苦涩就发了苦涩解放啦卡死机而非卢卡斯荆防颗粒撒巨额罚款拉瑟九分裤阿里kg九色鹿开发";
-            binding.getRoot().setOnClickListener(new View.OnClickListener() {
+            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     switch (index) {
                         case 0:
-                            getActivity().showDialogAlert("测试", tip, FLBaseActivity.FLDialogStyle.Alert, new FLBaseActivity.FLAlertDialogConfig() {
+                            getActivity().showDialogAlert(FLBaseActivity.FLDialogStyle.Alert, "测试", tip, new FLBaseActivity.FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLBaseActivity.FLAlertDialog dialog) {
                                     dialog.addCancel(new FLBaseActivity.FLAlertDialogTouch() {
@@ -100,7 +100,7 @@ public class DialogPage extends FLTabBarActivity.FLTabBarPage<PageDialogBinding>
                             });
                             break;
                         case 1:
-                            getActivity().showDialogAlert("测试", tip, FLBaseActivity.FLDialogStyle.Alert, new FLBaseActivity.FLAlertDialogConfig() {
+                            getActivity().showDialogAlert(FLBaseActivity.FLDialogStyle.Alert, "测试", tip, new FLBaseActivity.FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLBaseActivity.FLAlertDialog dialog) {
                                     dialog.addCancel(new FLBaseActivity.FLAlertDialogTouch() {
@@ -125,7 +125,7 @@ public class DialogPage extends FLTabBarActivity.FLTabBarPage<PageDialogBinding>
                             });
                             break;
                         case 2:
-                            getActivity().showDialogAlert("测试", tip, FLBaseActivity.FLDialogStyle.ActionSheet, new FLBaseActivity.FLAlertDialogConfig() {
+                            getActivity().showDialogAlert(FLBaseActivity.FLDialogStyle.ActionSheet, "测试", tip, new FLBaseActivity.FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLBaseActivity.FLAlertDialog dialog) {
                                     dialog.addCancel(new FLBaseActivity.FLAlertDialogTouch() {
@@ -150,7 +150,7 @@ public class DialogPage extends FLTabBarActivity.FLTabBarPage<PageDialogBinding>
                             });
                             break;
                         case 3:
-                            getActivity().showDialogAlert("测试", "", FLBaseActivity.FLDialogStyle.ActionSheet, new FLBaseActivity.FLAlertDialogConfig() {
+                            getActivity().showDialogAlert(FLBaseActivity.FLDialogStyle.ActionSheet, "测试", null, new FLBaseActivity.FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLBaseActivity.FLAlertDialog dialog) {
                                     dialog.addCancel(new FLBaseActivity.FLAlertDialogTouch() {
@@ -175,7 +175,7 @@ public class DialogPage extends FLTabBarActivity.FLTabBarPage<PageDialogBinding>
                             });
                             break;
                         case 4:
-                            getActivity().showDialogAlert("", tip, FLBaseActivity.FLDialogStyle.ActionSheet, new FLBaseActivity.FLAlertDialogConfig() {
+                            getActivity().showDialogAlert(FLBaseActivity.FLDialogStyle.ActionSheet, null, tip, new FLBaseActivity.FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLBaseActivity.FLAlertDialog dialog) {
                                     dialog.addCancel(new FLBaseActivity.FLAlertDialogTouch() {
@@ -200,7 +200,7 @@ public class DialogPage extends FLTabBarActivity.FLTabBarPage<PageDialogBinding>
                             });
                             break;
                         case 5:
-                            getActivity().showDialogAlert("", "", FLBaseActivity.FLDialogStyle.ActionSheet, new FLBaseActivity.FLAlertDialogConfig() {
+                            getActivity().showDialogAlert(FLBaseActivity.FLDialogStyle.ActionSheet, null, null, new FLBaseActivity.FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLBaseActivity.FLAlertDialog dialog) {
                                     dialog.addCancel(new FLBaseActivity.FLAlertDialogTouch() {
@@ -225,7 +225,7 @@ public class DialogPage extends FLTabBarActivity.FLTabBarPage<PageDialogBinding>
                             });
                             break;
                         case 6:
-                            getActivity().showDialogAlert("", "", FLBaseActivity.FLDialogStyle.ActionSheet, new FLBaseActivity.FLAlertDialogConfig() {
+                            getActivity().showDialogAlert(FLBaseActivity.FLDialogStyle.ActionSheet, null, null, new FLBaseActivity.FLAlertDialogConfig() {
                                 @Override
                                 public void addItems(FLBaseActivity.FLAlertDialog dialog) {
                                     dialog.addItem("确认", new FLBaseActivity.FLAlertDialogTouch() {
@@ -249,8 +249,8 @@ public class DialogPage extends FLTabBarActivity.FLTabBarPage<PageDialogBinding>
         }
 
         @Override
-        protected void bindData(CellMainBinding binding, int section, int index) {
-            binding.text.setText(datas.get(index));
+        protected void bindData(CellMainBinding cellBinding, int section, int index) {
+            cellBinding.text.setText(datas.get(index));
         }
     }
 }

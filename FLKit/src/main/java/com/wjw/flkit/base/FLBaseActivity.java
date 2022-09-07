@@ -64,6 +64,8 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
 
     protected RelativeLayout superLayout;
     protected RelativeLayout annexLayout;
+    private View loadingContent;
+    private FLAlertDialog dialogContent;
     protected View view;
     protected FLNavigationView navigationView;
     @Override
@@ -249,7 +251,6 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
     }
 
     private int animationDuration = 200;
-    private View loadingContent;
     private void removeViewWhenDismiss(View view) {
         view.animate().setListener(new Animator.AnimatorListener() {
             @Override
@@ -269,12 +270,12 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
     private void dismissLoading(boolean hideDialog) {
         progressBar = null;
         progressTextView = null;
-        View loadingContent = this.loadingContent;
-        this.loadingContent = null;
-        if (loadingContent != null) {
-            loadingContent.animate().alpha(0.f).scaleX(0.5F).scaleY(0.5F).setDuration(animationDuration);
+        View view = this.loadingContent;
+        loadingContent = null;
+        if (view != null) {
+            view.animate().alpha(0.f).scaleX(0.5F).scaleY(0.5F).setDuration(animationDuration);
         }
-        if (hideDialog) {
+        if (hideDialog && loadingContent == null && dialogContent == null) {
             annexLayout.animate().alpha(0.f).setDuration(animationDuration);
         }
     }
@@ -476,7 +477,6 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         progressTextView.setText(currentProgress / 10 + "%");
     }
 
-    private FLAlertDialog dialogContent;
     public enum FLDialogStyle {
         Alert,
         ActionSheet,
@@ -487,7 +487,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
     public interface FLAlertDialogTouch {
         void touch();
     }
-    public final void showDialogAlert(String title, String content, FLDialogStyle style, FLAlertDialogConfig config) {
+    public final void showDialogAlert(FLDialogStyle style, String title, String content, FLAlertDialogConfig config) {
         RelativeLayout.LayoutParams linearParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         linearParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
         linearParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -507,16 +507,15 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             }
             @Override
             public void dismiss() {
-                FLAlertDialog content = dialogContent;
-                dialogContent = null;
-                if (content != null) {
-                    content.animate().setListener(new Animator.AnimatorListener() {
+
+                if (dialog != null) {
+                    dialog.animate().setListener(new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animator) {}
                         @Override
                         public void onAnimationEnd(Animator animator) {
-                            if (content.getAlpha() < 0.5) {
-                                annexLayout.removeView(content);
+                            if (dialog.getAlpha() < 0.5) {
+                                annexLayout.removeView(dialog);
                             }
                         }
                         @Override
@@ -524,15 +523,18 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                         @Override
                         public void onAnimationRepeat(Animator animator) {}
                     });
-                    if (content.style == FLDialogStyle.Alert) {
-                        content.animate().alpha(0.f).scaleX(0.5F).scaleY(0.5F).setDuration(animationDuration);
+                    if (dialog.style == FLDialogStyle.Alert) {
+                        dialog.animate().alpha(0.f).scaleX(0.5F).scaleY(0.5F).setDuration(animationDuration);
                     }
                     else {
-                        content.linearContent.animate().translationY(content.getHeight()).setDuration(animationDuration);
-                        content.animate().alpha(0.f).setDuration(animationDuration);
+                        dialog.linearContent.animate().translationY(dialog.getHeight()).setDuration(animationDuration);
+                        dialog.animate().alpha(0.f).setDuration(animationDuration);
                     }
                 }
-                annexLayout.animate().alpha(0.f).setDuration(animationDuration);
+                dialogContent = null;
+                if (dialogContent == null && loadingContent == null) {
+                    annexLayout.animate().alpha(0.f).setDuration(animationDuration);
+                }
             }
         });
         dialog.setLayoutParams(linearParams);
@@ -541,7 +543,6 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             dialog.setScaleX(0.5F);
             dialog.setScaleY(0.5F);
         }
-        removeViewWhenDismiss(dialog);
         annexLayout.addView(dialog);
         config.addItems(dialog);
         dialog.show();

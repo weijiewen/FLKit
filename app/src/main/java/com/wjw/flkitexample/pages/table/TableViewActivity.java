@@ -8,14 +8,14 @@ import androidx.annotation.NonNull;
 
 import com.wjw.flkit.FLAsyncTask;
 import com.wjw.flkit.FLTableView;
-import com.wjw.flkit.base.FLBaseBindingActivity;
+import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.databinding.ActivityTableViewBinding;
 import com.wjw.flkitexample.databinding.CellTableViewBinding;
 
 import java.util.Random;
 
-public class TableViewActivity extends FLBaseBindingActivity<ActivityTableViewBinding> {
+public class TableViewActivity extends FLBindingActivity<ActivityTableViewBinding> {
     private int size = 0;
     private int page = 0;
 
@@ -115,9 +115,9 @@ public class TableViewActivity extends FLBaseBindingActivity<ActivityTableViewBi
 
     private class TableViewCell extends FLTableView.FLTableViewCell<CellTableViewBinding> {
 
-        public TableViewCell(@NonNull CellTableViewBinding binding) {
-            super(binding);
-            binding.getRoot().setOnClickListener(new View.OnClickListener() {
+        public TableViewCell(@NonNull CellTableViewBinding cellBinding) {
+            super(cellBinding);
+            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     showTip(String.valueOf(index));
@@ -126,8 +126,8 @@ public class TableViewActivity extends FLBaseBindingActivity<ActivityTableViewBi
         }
 
         @Override
-        protected void bindData(CellTableViewBinding binding, int section, int index) {
-            binding.text.setText(String.valueOf(index));
+        protected void bindData(CellTableViewBinding cellBinding, int section, int index) {
+            cellBinding.text.setText(String.valueOf(index));
         }
     }
 }

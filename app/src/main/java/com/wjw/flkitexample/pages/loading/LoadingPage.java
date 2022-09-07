@@ -59,10 +59,10 @@ public class LoadingPage extends FLTabBarActivity.FLTabBarPage<PageLoadingBindin
     private class LoadingCell extends FLTableView.FLTableViewCell<CellMainBinding> {
         float progress = 0.f;
 
-        public LoadingCell(@NonNull CellMainBinding binding) {
-            super(binding);
+        public LoadingCell(@NonNull CellMainBinding cellBinding) {
+            super(cellBinding);
             String tip = "塞德里克飞机上课了巨额罚款了解放了快速减肥了苦涩就发了苦涩解放啦卡死机而非卢卡斯荆防颗粒撒巨额罚款拉瑟九分裤阿里kg九色鹿开发塞德里克飞机上课了巨额罚款了解放了快速减肥了苦涩就发了苦涩解放啦卡死机而非卢卡斯荆防颗粒撒巨额罚款拉瑟九分裤阿里kg九色鹿开发";
-            binding.getRoot().setOnClickListener(new View.OnClickListener() {
+            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     switch (index) {
@@ -123,8 +123,8 @@ public class LoadingPage extends FLTabBarActivity.FLTabBarPage<PageLoadingBindin
         }
 
         @Override
-        protected void bindData(CellMainBinding binding, int section, int index) {
-            binding.text.setText(datas.get(index));
+        protected void bindData(CellMainBinding cellBinding, int section, int index) {
+            cellBinding.text.setText(datas.get(index));
         }
     }
 }

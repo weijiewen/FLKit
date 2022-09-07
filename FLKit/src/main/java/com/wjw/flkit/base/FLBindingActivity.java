@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewbinding.ViewBinding;
 
 
-public abstract class FLBaseBindingActivity<T extends ViewBinding> extends FLBaseActivity {
+public abstract class FLBindingActivity<T extends ViewBinding> extends FLBaseActivity {
     protected T binding;
     @Override
     protected View getView() {

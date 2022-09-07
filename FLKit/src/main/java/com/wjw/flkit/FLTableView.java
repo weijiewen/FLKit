@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,7 +25,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,14 +80,6 @@ public class FLTableView extends RecyclerView {
     }
     public final void reloadData(boolean hasMore) {
         reloadData(null, hasMore, null);
-    }
-    public final FLTableView removeItem(int index) {
-        if (index >= 0 && index < mainCount) {
-            adapter.notifyItemRemoved(startIndex + index);
-            mainCount -= 1;
-            endIndex -= 1;
-        }
-        return this;
     }
     public interface RefreshInterface {
         void enterRefreshing();
@@ -218,11 +211,6 @@ public class FLTableView extends RecyclerView {
                 if (endIndex == position) {
                     return ViewType.RefreshFooter.value;
                 }
-                // h c f
-                // 0 1 2
-                // index 0 h -3
-                // index 1 c -2
-                // index 2 f -1
                 int index = position - startIndex;
                 if (creatSection != null) {
                     for (int i = 0; i < sectionCount; i++) {
@@ -263,14 +251,14 @@ public class FLTableView extends RecyclerView {
                 else if (viewType == ViewType.Header.value) {
                     ViewHolder viewHolder = creatSection.getHeader(parent);
                     if (viewHolder == null) {
-                        viewHolder = new PlaceHolderViewHolder(new PlaceholdView(getContext()));
+                        viewHolder = new FLTableViewBaseSection(new PlaceholdView(getContext()));
                     }
                     return viewHolder;
                 }
                 else if (viewType == ViewType.Footer.value) {
                     ViewHolder viewHolder = creatSection.getFooter(parent);
                     if (viewHolder == null) {
-                        viewHolder = new PlaceHolderViewHolder(new PlaceholdView(getContext()));
+                        viewHolder = new FLTableViewBaseSection(new PlaceholdView(getContext()));
                     }
                     return viewHolder;
                 }
@@ -290,15 +278,29 @@ public class FLTableView extends RecyclerView {
                             index -= itemCount;
                             if (index < 0) {
                                 if (index == -itemCount) {
-                                    FLTableViewSection header = (FLTableViewSection) holder;
-                                    header.section = section;
-                                    header.bindData(header.binding, section);
+                                    FLTableViewBaseSection baseHeader = (FLTableViewBaseSection) holder;
+                                    baseHeader.section = section;
+                                    try {
+                                        FLTableViewSection header = (FLTableViewSection) holder;
+                                        if (header != null) {
+                                            header.bindData(header.binding, section);
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                     return;
                                 }
                                 if (index == -1) {
-                                    FLTableViewSection footer = (FLTableViewSection) holder;
-                                    footer.section = section;
-                                    footer.bindData(footer.binding, section);
+                                    FLTableViewBaseSection baseFooter = (FLTableViewBaseSection) holder;
+                                    baseFooter.section = section;
+                                    try {
+                                        FLTableViewSection footer = (FLTableViewSection) holder;
+                                        if (footer != null) {
+                                            footer.bindData(footer.binding, section);
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                     return;
                                 }
                                 cellIndex = index + itemCount;
@@ -312,7 +314,7 @@ public class FLTableView extends RecyclerView {
                     FLTableViewCell cell = (FLTableViewCell) holder;
                     cell.section = section;
                     cell.index = cellIndex;
-                    cell.bindData(cell.binding, section, cellIndex);
+                    cell.bindData(cell.cellBinding, section, cellIndex);
                 }
             }
         };
@@ -748,9 +750,14 @@ public class FLTableView extends RecyclerView {
         }
         public boolean getHasData() { return hasData; }
     }
-    public abstract static class FLTableViewSection<SectionBinding extends ViewBinding> extends ViewHolder {
-        public final SectionBinding binding;
+    public static class FLTableViewBaseSection extends ViewHolder {
         protected int section;
+        public FLTableViewBaseSection(@NonNull View itemView) {
+            super(itemView);
+        }
+    }
+    public abstract static class FLTableViewSection<SectionBinding extends ViewBinding> extends FLTableViewBaseSection {
+        public final SectionBinding binding;
         public FLTableViewSection(@NonNull SectionBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
@@ -762,16 +769,17 @@ public class FLTableView extends RecyclerView {
     }
     //baseViewHolder
     public abstract static class FLTableViewCell<CellBinding extends ViewBinding> extends ViewHolder {
-        public final CellBinding binding;
+        public final CellBinding cellBinding;
         protected int section;
         protected int index;
-        public FLTableViewCell(@NonNull CellBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
+        private LinearLayout layout;
+        public FLTableViewCell(@NonNull CellBinding cellBinding) {
+            super(cellBinding.getRoot());
+            this.cellBinding = cellBinding;
         }
         public final Context getContext() {
-            return binding.getRoot().getContext();
+            return cellBinding.getRoot().getContext();
         }
-        protected abstract void bindData(CellBinding binding, int section, int index);
+        protected abstract void bindData(CellBinding cellBinding, int section, int index);
     }
 }
