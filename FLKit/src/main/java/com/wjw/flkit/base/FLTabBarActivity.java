@@ -105,7 +105,10 @@ public abstract class FLTabBarActivity extends FLBaseActivity {
             selectedItem.tabBarPage.pageWilHide();
         }
     }
+    @Override
+    protected void configNavigation(FLNavigationView navigationView) {
 
+    }
     @Override
     protected View getView() {
         RelativeLayout relativeLayout = new RelativeLayout(this);

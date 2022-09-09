@@ -17,10 +17,28 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".pages.table.SectionActivity"
+            android:name=".ColorsActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.table.TableViewActivity"
+            android:name=".pages.tool.StampActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.tool.AnimationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.base.LoadingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.base.DialogActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.controls.SmscodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.controls.SectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.controls.TableViewActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

@@ -1,4 +1,4 @@
-package com.wjw.flkit;
+package com.wjw.flkit.ui;
 
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;

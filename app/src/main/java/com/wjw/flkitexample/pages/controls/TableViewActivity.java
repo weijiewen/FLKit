@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.table;
+package com.wjw.flkitexample.pages.controls;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.wjw.flkit.FLAsyncTask;
-import com.wjw.flkit.FLTableView;
+import com.wjw.flkit.unit.FLAsyncTask;
+import com.wjw.flkit.ui.FLTableView;
 import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.databinding.ActivityTableViewBinding;
@@ -26,7 +26,6 @@ public class TableViewActivity extends FLBindingActivity<ActivityTableViewBindin
 
     @Override
     protected void configNavigation(FLNavigationView navigationView) {
-        super.configNavigation(navigationView);
         navigationView.setTitle("分页tableView");
     }
 

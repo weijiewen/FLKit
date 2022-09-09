@@ -1,13 +1,9 @@
 package com.wjw.flkit.base;
 
 import android.animation.Animator;
-import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -17,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -35,16 +30,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.viewbinding.ViewBinding;
 
-import com.wjw.flkit.FLImageBrowser;
+import com.wjw.flkit.ui.FLImageBrowser;
+import com.wjw.flkit.unit.FLTimer;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public abstract class FLBaseActivity extends FragmentActivity implements View.OnClickListener {
     private static int defaultBackgroundColor = Color.parseColor("#F4F4F3");
@@ -194,10 +184,10 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         endEdit();
         didClick(view);
     }
+    protected abstract void configNavigation(FLNavigationView navigationView);
     protected abstract View getView();
     protected abstract void didLoad();
     protected abstract void didClick(View view);
-    protected void configNavigation(FLNavigationView navigationView) {}
     //返回true 向下偏移一个导航栏的高度
     protected boolean offsetNavigation() {
         return true;
@@ -649,7 +639,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             textLinearLayout.setGravity(Gravity.CENTER);
             switch (style) {
                 case Alert:
-                    cardParams.setMargins(dipToPx(70), 0, dipToPx(70), 0);
+                    cardParams.setMargins(dipToPx(60), 0, dipToPx(60), 0);
                     if (textViews.size() < 2) {
                         textLinearLayout.setOrientation(HORIZONTAL);
                         boolean didAddCancel = false;
@@ -784,40 +774,20 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             }
         }
     }
-    private Timer timer;
-    public interface FLTimerListencener {
-        void run();
-    }
-    public final void startTimer(long delay, long period, FLTimerListencener listencener) {
+    private FLTimer timer;
+    public final void startTimer(long delay, long period, FLTimer.FLTimerListencener listencener) {
         stopTimer();
-        timer = new Timer();
-        timer.schedule(new FLTimerTask(listencener), delay, period);
+        if (timer == null) {
+            timer = new FLTimer();
+        }
+        timer.startTimer(delay, period, listencener);
     }
     public final void stopTimer() {
         if (timer != null) {
-            timer.cancel();
-            timer = null;
+            timer.stopTimer();
         }
     }
-    private class FLTimerTask extends TimerTask {
-        private Handler handler = new Handler();
-        private FLTimerListencener listencener;
-        public FLTimerTask(FLTimerListencener listencener) {
-            super();
-            this.listencener = listencener;
-        }
-        @Override
-        public void run() {
-            if (listencener != null) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        listencener.run();
-                    }
-                });
-            }
-        }
-    }
+
 
     private StatusStyle imageBrowserStatusStyle;
     private FLImageBrowser imageBrowser;

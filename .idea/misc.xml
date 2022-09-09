@@ -3,11 +3,17 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../Library/Android/sdk/platforms/android-32/data/res/layout-watch/progress_dialog_material.xml" value="0.10572916666666667" />
+        <entry key="../../Library/Android/sdk/platforms/android-32/data/res/layout/resolver_empty_states.xml" value="0.10572916666666667" />
+        <entry key="app/src/main/res/layout/activity_animation.xml" value="0.2682291666666667" />
+        <entry key="app/src/main/res/layout/activity_colors.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_dialog.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_fragments.xml" value="0.22916666666666666" />
         <entry key="app/src/main/res/layout/activity_image_browser.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_loading.xml" value="0.2526041666666667" />
         <entry key="app/src/main/res/layout/activity_section.xml" value="0.28229166666666666" />
+        <entry key="app/src/main/res/layout/activity_smscode.xml" value="0.28229166666666666" />
+        <entry key="app/src/main/res/layout/activity_stamp.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_tabbar.xml" value="0.26666666666666666" />
         <entry key="app/src/main/res/layout/activity_table_view.xml" value="0.14945652173913043" />
         <entry key="app/src/main/res/layout/cell_image_browser.xml" value="0.28125" />
@@ -25,6 +31,7 @@
         <entry key="app/src/main/res/layout/page_section.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/page_table.xml" value="0.22916666666666666" />
         <entry key="app/src/main/res/layout/page_tableview.xml" value="0.28229166666666666" />
+        <entry key="app/src/main/res/layout/page_tool.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/section_footer.xml" value="0.28125" />
         <entry key="app/src/main/res/layout/section_header.xml" value="0.28125" />
         <entry key="app/src/main/res/layout/section_header_table.xml" value="0.28125" />

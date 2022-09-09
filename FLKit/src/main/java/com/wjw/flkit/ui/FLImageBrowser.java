@@ -1,4 +1,4 @@
-package com.wjw.flkit;
+package com.wjw.flkit.ui;
 
 import android.content.Context;
 import android.graphics.Color;

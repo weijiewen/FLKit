@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".pages.table.TableViewActivity">
-    <com.wjw.flkit.FLTableView
+    tools:context=".pages.controls.TableViewActivity">
+    <com.wjw.flkit.ui.FLTableView
         android:id="@+id/table_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
