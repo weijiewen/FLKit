@@ -38,7 +38,8 @@ public class ControlsPage extends FLTabBarActivity.FLTabBarPage<PageControlsBind
         strings = Arrays.asList(
                 "列表",
                 "分段列表",
-                "验证码倒计时"
+                "验证码倒计时",
+                "渐变控件"
         );
         FLTableView.CreatCell<Cell> creatCell = new FLTableView.CreatCell<Cell>() {
             @Override
@@ -73,6 +74,10 @@ public class ControlsPage extends FLTabBarActivity.FLTabBarPage<PageControlsBind
                         case 2:
                             //"验证码倒计时"
                             getActivity().startActivity(new Intent(getActivity(), SmscodeActivity.class));
+                            break;
+                        case 3:
+                            //"渐变控件"
+                            getActivity().startActivity(new Intent(getActivity(), ColorsActivity.class));
                             break;
                     }
                 }

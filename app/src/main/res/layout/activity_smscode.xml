@@ -50,8 +50,7 @@
                     android:textSize="10dp"
                     android:text="发送验证码"
                     app:cardBackgroundColor="@color/purple_500"
-                    app:cardCornerRadius="4dp"
-                    />
+                    app:cardCornerRadius="4dp" />
             </LinearLayout>
             <View
                 android:layout_width="match_parent"

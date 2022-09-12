@@ -142,6 +142,7 @@ public class FLTimeButton extends CardView {
         readCache();
         ConstraintLayout constraintLayout = new ConstraintLayout(context);
         constraintLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        constraintLayout.setBackgroundColor(Color.parseColor("#00000000"));
         addView(constraintLayout);
 
         ConstraintLayout.LayoutParams textParams = new ConstraintLayout.LayoutParams(0, 0);
