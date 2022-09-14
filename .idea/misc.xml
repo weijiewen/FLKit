@@ -17,6 +17,8 @@
         <entry key="app/src/main/res/layout/activity_stamp.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_tabbar.xml" value="0.26666666666666666" />
         <entry key="app/src/main/res/layout/activity_table_view.xml" value="0.14945652173913043" />
+        <entry key="app/src/main/res/layout/base_demo_full.xml" value="0.28229166666666666" />
+        <entry key="app/src/main/res/layout/cell_image.xml" value="0.28125" />
         <entry key="app/src/main/res/layout/cell_image_browser.xml" value="0.28125" />
         <entry key="app/src/main/res/layout/cell_main.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/cell_table_view.xml" value="0.28229166666666666" />

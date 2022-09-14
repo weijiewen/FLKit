@@ -38,7 +38,8 @@ public class AnimationActivity extends FLBindingActivity<ActivityAnimationBindin
                 "旋转震动-设置振幅",
                 "缩放震动",
                 "缩放震动-设置振幅",
-                "盖章动画"
+                "盖章动画",
+                "盖章动画-设置振幅"
         );
         FLTableView.CreatCell<Cell> creatCell = new FLTableView.CreatCell<Cell>() {
             @Override
@@ -94,6 +95,12 @@ public class AnimationActivity extends FLBindingActivity<ActivityAnimationBindin
                         case 6:
                             //"盖章动画"
                             startActivity(new Intent(getActivity(), StampActivity.class));
+                            break;
+                        case 7:
+                            //"盖章动画-设置振幅"
+                            Intent intent = new Intent(getActivity(), StampActivity.class);
+                            intent.putExtra("value", 4.F);
+                            startActivity(intent);
                             break;
                     }
                 }

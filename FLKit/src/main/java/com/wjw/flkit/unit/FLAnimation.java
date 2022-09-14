@@ -114,6 +114,10 @@ public class FLAnimation {
     }
 
     static public void startStampVibrate(View vibrateView, View stampView) {
+        startStampVibrate(vibrateView, stampView, 0.7F);
+    }
+
+    static public void startStampVibrate(View vibrateView, View stampView, float amplitude) {
         stopAnimation(vibrateView);
         stopAnimation(stampView);
 
@@ -137,10 +141,10 @@ public class FLAnimation {
             Integer index = i % 4;
             float move = 0;
             if (index == 0) {
-                move = -1;
+                move = -amplitude;
             }
             else if (index == 2) {
-                move = 1;
+                move = amplitude;
             }
             ObjectAnimator animator = ObjectAnimator.ofFloat(vibrateView, "rotation", animation, start + move);
             animator.setDuration(30);

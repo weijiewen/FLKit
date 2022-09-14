@@ -22,7 +22,13 @@ public class StampActivity extends FLBindingActivity<ActivityStampBinding> {
 
     @Override
     protected void didLoad() {
-        FLAnimation.startStampVibrate(binding.cardView, binding.stamp);
+        float value = getIntent().getFloatExtra("value", 0);
+        if (value == 0) {
+            FLAnimation.startStampVibrate(binding.cardView, binding.stamp);
+        }
+        else {
+            FLAnimation.startStampVibrate(binding.cardView, binding.stamp, value);
+        }
     }
 
     @Override

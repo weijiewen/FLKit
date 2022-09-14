@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.browser;
+package com.wjw.flkitexample.pages.middle;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -10,28 +10,28 @@ import com.bumptech.glide.Glide;
 import com.wjw.flkit.base.FLBaseActivity;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkit.base.FLTabBarActivity;
-import com.wjw.flkitexample.databinding.PageBrowserBinding;
+import com.wjw.flkitexample.databinding.PageMiddleBinding;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BrowserPage extends FLTabBarActivity.FLTabBarPage<PageBrowserBinding> {
+public class MiddlePage extends FLTabBarActivity.FLTabBarPage<PageMiddleBinding> {
     private List<String> urls = new ArrayList<>();
     private List<ImageView> imageViews = new ArrayList<>();
-    public BrowserPage(Context context) {
+    public MiddlePage(Context context) {
         super(context);
     }
 
     @Override
-    protected PageBrowserBinding getBinding() {
-        return PageBrowserBinding.inflate(LayoutInflater.from(getContext()), this, false);
+    protected PageMiddleBinding getBinding() {
+        return PageMiddleBinding.inflate(LayoutInflater.from(getContext()), this, false);
     }
 
     @Override
     protected void configNavigation(FLNavigationView navigationView) {
         navigationView.setForegroundColor(Color.WHITE);
-        navigationView.setTitle("图片浏览器");
+        navigationView.setTitle("凸起tabBar");
     }
 
     @Override

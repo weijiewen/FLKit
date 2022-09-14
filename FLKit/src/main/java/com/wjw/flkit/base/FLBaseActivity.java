@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentActivity;
+import androidx.viewbinding.ViewBinding;
 
 import com.wjw.flkit.ui.FLImageBrowser;
 import com.wjw.flkit.unit.FLTimer;
@@ -767,7 +768,9 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                     @Override
                     public void onClick(View view) {
                         layout.dismiss();
-                        touch.touch();
+                        if (touch != null) {
+                            touch.touch();
+                        }
                     }
                 });
                 cancel = textView;
@@ -858,5 +861,18 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             ImageView sourceView = null;
             browser.animate().translationY(superLayout.getHeight()).alpha(0.f).setDuration(300);
         }
+    }
+
+    public final void addFullView(View view) {
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        view.setLayoutParams(layoutParams);
+        view.setVisibility(View.VISIBLE);
+//        view.setAlpha(0);
+        superLayout.addView(view);
+    }
+    public final void removeFullView(View view) {
+        superLayout.removeView(view);
     }
 }

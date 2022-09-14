@@ -81,6 +81,9 @@ public class FLTableView extends RecyclerView {
     public final void reloadData(boolean hasMore) {
         reloadData(null, hasMore, null);
     }
+    public final void getCell(int section, int index) {
+
+    }
     public interface RefreshInterface {
         void enterRefreshing();
     }

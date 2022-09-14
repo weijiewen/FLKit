@@ -42,7 +42,9 @@ public class BasePage extends FLTabBarActivity.FLTabBarPage<PageBaseBinding> {
     protected void didLoad() {
         datas = Arrays.asList(
                 "dialog弹窗",
-                "loading-tip弹窗"
+                "loading-tip弹窗",
+                "图片浏览器",
+                "添加全屏view"
         );
         FLTableView.CreatCell<BaseCell> creatCell = new FLTableView.CreatCell<BaseCell>() {
             @Override
@@ -78,6 +80,24 @@ public class BasePage extends FLTabBarActivity.FLTabBarPage<PageBaseBinding> {
                         case 1:
                             getActivity().startActivity(new Intent(getActivity(), LoadingActivity.class));
                             break;
+                        case 2:
+                            getActivity().startActivity(new Intent(getActivity(), ImageBrowserActivity.class));
+                            break;
+                        case 3:
+                            BaseDemoFullView fullView = new BaseDemoFullView(getActivity(), new BaseDemoFullView.BaseDemoFull() {
+                                @Override
+                                public void remove(BaseDemoFullView view) {
+                                    getActivity().removeFullView(view);
+                                }
+
+                                @Override
+                                public void confirm() {
+
+                                }
+                            });
+                            getActivity().addFullView(fullView);
+                            fullView.show();
+                            break;
                     }
                 }
             });
@@ -88,4 +108,6 @@ public class BasePage extends FLTabBarActivity.FLTabBarPage<PageBaseBinding> {
             cellBinding.text.setText(datas.get(index));
         }
     }
+
+
 }
