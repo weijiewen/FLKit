@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.controls;
+package com.wjw.flkitexample.pages.controls.activities;
 
 import android.view.LayoutInflater;
 import android.view.View;

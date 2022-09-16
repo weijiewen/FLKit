@@ -216,17 +216,19 @@ public abstract class FLTabBarActivity extends FLBaseActivity {
 
         }
         private void willShow() {
-            setStatusStyle(StatusStyle.drak);
+            setStatusStyle(style);
             if (!didLoad) {
                 didLoad = true;
                 didLoad();
             }
             pageWillShow();
         }
+        private StatusStyle style = getActivity().getStatusStyle();
         public final StatusStyle getStatusStyle() {
-            return getActivity().getStatusStyle();
+            return style;
         }
         public final void setStatusStyle(StatusStyle style) {
+            this.style = style;
             getActivity().setStatusStyle(style);
         }
 

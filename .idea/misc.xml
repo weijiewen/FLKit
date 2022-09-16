@@ -5,18 +5,26 @@
       <map>
         <entry key="../../Library/Android/sdk/platforms/android-32/data/res/layout-watch/progress_dialog_material.xml" value="0.10572916666666667" />
         <entry key="../../Library/Android/sdk/platforms/android-32/data/res/layout/resolver_empty_states.xml" value="0.10572916666666667" />
+        <entry key="FLKit/src/main/res/drawable/drawable.xml" value="0.187" />
+        <entry key="FLKit/src/main/res/drawable/flidcard_key.xml" value="0.187" />
+        <entry key="FLKit/src/main/res/drawable/flidcard_key_normal.xml" value="0.187" />
+        <entry key="FLKit/src/main/res/drawable/flidcard_key_selected.xml" value="0.187" />
         <entry key="app/src/main/res/layout/activity_animation.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_colors.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_dialog.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_fragments.xml" value="0.22916666666666666" />
         <entry key="app/src/main/res/layout/activity_idcard_keyboard.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_image_browser.xml" value="0.2682291666666667" />
+        <entry key="app/src/main/res/layout/activity_image_picker.xml" value="0.28229166666666666" />
+        <entry key="app/src/main/res/layout/activity_keyboard.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_loading.xml" value="0.2526041666666667" />
+        <entry key="app/src/main/res/layout/activity_qrcode.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_section.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_smscode.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_stamp.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_tabbar.xml" value="0.26666666666666666" />
         <entry key="app/src/main/res/layout/activity_table_view.xml" value="0.14945652173913043" />
+        <entry key="app/src/main/res/layout/activity_user_default.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/base_demo_full.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/cell_image.xml" value="0.28125" />
         <entry key="app/src/main/res/layout/cell_image_browser.xml" value="0.28125" />
@@ -31,6 +39,7 @@
         <entry key="app/src/main/res/layout/page_fragments.xml" value="0.28125" />
         <entry key="app/src/main/res/layout/page_home.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/page_loading.xml" value="0.28125" />
+        <entry key="app/src/main/res/layout/page_middle.xml" value="0.23489583333333333" />
         <entry key="app/src/main/res/layout/page_section.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/page_table.xml" value="0.22916666666666666" />
         <entry key="app/src/main/res/layout/page_tableview.xml" value="0.28229166666666666" />
@@ -39,6 +48,7 @@
         <entry key="app/src/main/res/layout/section_header.xml" value="0.28125" />
         <entry key="app/src/main/res/layout/section_header_table.xml" value="0.28125" />
         <entry key="app/src/main/res/layout/tabbar_home.xml" value="0.28125" />
+        <entry key="app/src/main/res/xml/file_paths.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.1" />
       </map>
     </option>

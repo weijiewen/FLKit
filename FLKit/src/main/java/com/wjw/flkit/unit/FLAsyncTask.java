@@ -18,7 +18,6 @@ public class FLAsyncTask extends AsyncTask<Integer, Integer, Integer> {
         callback.doInBack();
         return 1;
     }
-
     @Override
     protected final void onPostExecute(Integer integer) {
         super.onPostExecute(integer);

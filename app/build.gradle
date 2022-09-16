@@ -59,4 +59,13 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.12'
     //gson
     implementation 'com.alibaba:fastjson:1.2.55'
+
+    //自定义键盘
+    implementation 'com.github.jenly1314:kingkeyboard:1.0.4'
+
+    //相册选择器
+    implementation 'com.github.donkingliang:ImageSelector:2.2.1'
+
+    //二维码
+    implementation 'com.github.zxing.zxing:core:zxing-3.5.0'
 }

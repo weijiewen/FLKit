@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.tool;
+package com.wjw.flkitexample.pages.tool.activities;
 
 import androidx.annotation.NonNull;
 

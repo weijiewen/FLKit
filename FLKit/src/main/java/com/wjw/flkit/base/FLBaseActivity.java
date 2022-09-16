@@ -61,6 +61,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
     protected FLNavigationView navigationView;
     @Override
     protected final void onCreate(@Nullable Bundle savedInstanceState) {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);//设置绘画模式
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -72,6 +73,12 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         superLayout = new RelativeLayout(this);
         superLayout.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         superLayout.setBackgroundColor(defaultBackgroundColor);
+        superLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                endEdit();
+            }
+        });
 
         if (addNavigation()) {
             RelativeLayout.LayoutParams navigationParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -81,6 +88,12 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             navigationView.setLayoutParams(navigationParams);
             navigationView.setPadding(0, getStatusHeight(), 0, 0);
             configNavigation(navigationView);
+            navigationView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    endEdit();
+                }
+            });
         }
 
         RelativeLayout.LayoutParams loadingParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -94,7 +107,9 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         annexLayout.setVisibility(View.INVISIBLE);
         annexLayout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {}
+            public void onClick(View view) {
+                endEdit();
+            }
         });
         annexLayout.animate().setListener(new Animator.AnimatorListener() {
             @Override
@@ -115,6 +130,12 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             public void onAnimationRepeat(Animator animator) {}
         });
         view = getView();
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                endEdit();
+            }
+        });
         RelativeLayout.LayoutParams rootParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         if (navigationView != null && offsetNavigation()) {
             rootParams.topMargin = getStatusHeight() + dipToPx(44);
@@ -134,6 +155,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                 navigationView.addBack(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        endEdit();
                         if (dialogContent == null && progressBar == null) {
                             stopTimer();
                             finish();
@@ -150,6 +172,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                 backImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        endEdit();
                         if (dialogContent == null && progressBar == null) {
                             stopTimer();
                             finish();

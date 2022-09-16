@@ -15,6 +15,9 @@ import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkit.base.FLTabBarActivity;
 import com.wjw.flkitexample.databinding.CellMainBinding;
 import com.wjw.flkitexample.databinding.PageBaseBinding;
+import com.wjw.flkitexample.pages.base.activities.DialogActivity;
+import com.wjw.flkitexample.pages.base.activities.ImageBrowserActivity;
+import com.wjw.flkitexample.pages.base.activities.LoadingActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +43,7 @@ public class BasePage extends FLTabBarActivity.FLTabBarPage<PageBaseBinding> {
 
     @Override
     protected void didLoad() {
+        setStatusStyle(FLBaseActivity.StatusStyle.light);
         datas = Arrays.asList(
                 "dialog弹窗",
                 "loading-tip弹窗",
@@ -59,12 +63,6 @@ public class BasePage extends FLTabBarActivity.FLTabBarPage<PageBaseBinding> {
         };
         binding.tableView.setCreatCell(creatCell);
         binding.tableView.reloadData(true);
-    }
-
-    @Override
-    protected void pageWillShow() {
-        super.pageWillShow();
-        setStatusStyle(FLBaseActivity.StatusStyle.light);
     }
 
     private class BaseCell extends FLTableView.FLTableViewCell<CellMainBinding> {

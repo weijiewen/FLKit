@@ -3,7 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.wjw.flkitexample">
     <!-- 网络权限 -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 储存卡的读写权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 扫描二维码 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
         android:allowBackup="true"
@@ -11,38 +18,65 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FLKit"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".pages.base.ImageBrowserActivity"
+            android:name=".pages.tool.activities.UserDefaultActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.controls.ColorsActivity"
+            android:name=".pages.units.FLZXingActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.tool.StampActivity"
+            android:name=".pages.middle.activities.QRCodeActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.tool.AnimationActivity"
+            android:name=".pages.middle.activities.ImagePickerActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.base.LoadingActivity"
+            android:name=".pages.middle.activities.KeyboardActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.base.DialogActivity"
+            android:name=".pages.base.activities.ImageBrowserActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.controls.SmscodeActivity"
+            android:name=".pages.controls.activities.ColorsActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.controls.SectionActivity"
+            android:name=".pages.tool.activities.StampActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.controls.TableViewActivity"
+            android:name=".pages.tool.activities.AnimationActivity"
             android:exported="false" />
+        <activity
+            android:name=".pages.base.activities.LoadingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.base.activities.DialogActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.controls.activities.SmscodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.controls.activities.SectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.controls.activities.TableViewActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.donkingliang.imageselector.ImageSelectorActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" /> <!-- 图片选择Activity -->
+        <activity
+            android:name="com.donkingliang.imageselector.PreviewActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" /> <!-- 图片预览Activity -->
+        <activity
+            android:name="com.donkingliang.imageselector.ClipImageActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" /> <!-- 图片剪切Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true">

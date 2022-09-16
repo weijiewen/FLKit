@@ -12,16 +12,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.wjw.flkit.ui.FLTableView;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkit.base.FLTabBarActivity;
-import com.wjw.flkit.unit.FLLog;
 import com.wjw.flkitexample.databinding.CellMainBinding;
 import com.wjw.flkitexample.databinding.PageToolBinding;
-import com.wjw.flkitexample.pages.network.api.TestApi;
 import com.wjw.flkitexample.pages.network.loader.TestLoader;
 import com.wjw.flkitexample.pages.network.respon.BaseObjectRespon;
+import com.wjw.flkitexample.pages.tool.activities.AnimationActivity;
+import com.wjw.flkitexample.pages.tool.activities.UserDefaultActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.internal.observers.BlockingBaseObserver;
@@ -46,7 +45,8 @@ public class ToolPage extends FLTabBarActivity.FLTabBarPage<PageToolBinding> {
     protected void didLoad() {
         datas = Arrays.asList(
                 "动画",
-                "请求结果输出"
+                "请求结果输出",
+                "UserDefault"
         );
         FLTableView.CreatCell<TableViewCell> creatCell = new FLTableView.CreatCell<TableViewCell>() {
             @Override
@@ -69,31 +69,31 @@ public class ToolPage extends FLTabBarActivity.FLTabBarPage<PageToolBinding> {
                 @Override
                 public void onClick(View view) {
                     if (section == 0) {
-                        if (index == 0) {
-                            getActivity().startActivity(new Intent(getActivity(), AnimationActivity.class));
-                        }
-                        else if (index == 1) {
-                            getActivity().showLoading();
-                            TestLoader.getTest().subscribe(new BlockingBaseObserver<BaseObjectRespon<JSONObject>>() {
-                                @Override
-                                public void onNext(BaseObjectRespon<JSONObject> jsonObjectBaseObjectRespon) {
-                                    getActivity().showTip("请求成功");
-                                }
+                        switch (index) {
+                            case 0:
+                                //"动画"
+                                getActivity().startActivity(new Intent(getActivity(), AnimationActivity.class));
+                                break;
+                            case 1:
+                                //"请求结果输出"
+                                getActivity().showLoading();
+                                TestLoader.getTest().subscribe(new BlockingBaseObserver<BaseObjectRespon<JSONObject>>() {
+                                    @Override
+                                    public void onNext(BaseObjectRespon<JSONObject> jsonObjectBaseObjectRespon) {
+                                        getActivity().showTip("请求成功");
+                                    }
 
-                                @Override
-                                public void onError(Throwable e) {
-                                    e.printStackTrace();
-                                    getActivity().showTip("请求失败" + e.getMessage());
-                                }
-                            });
-//                            HashMap header = new HashMap();
-//                            header.put("token", "qenfaklfjakfejlajefkaljef");
-//                            HashMap parameters = new HashMap();
-//                            parameters.put("name", "哈哈哈");
-//                            parameters.put("age", "23");
-//                            parameters.put("sex", "女");
-//                            String json = "";
-//                            FLLog.log("https://www.baidu.com", header, parameters, json);
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        e.printStackTrace();
+                                        getActivity().showTip("请求失败" + e.getMessage());
+                                    }
+                                });
+                                break;
+                            case 2:
+                                //"UserDefault"
+                                getActivity().startActivity(new Intent(getActivity(), UserDefaultActivity.class));
+                                break;
                         }
                     }
                 }

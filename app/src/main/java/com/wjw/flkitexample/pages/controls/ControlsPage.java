@@ -13,6 +13,11 @@ import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkit.base.FLTabBarActivity;
 import com.wjw.flkitexample.databinding.CellMainBinding;
 import com.wjw.flkitexample.databinding.PageControlsBinding;
+import com.wjw.flkitexample.pages.controls.activities.ColorsActivity;
+import com.wjw.flkitexample.pages.controls.activities.SectionActivity;
+import com.wjw.flkitexample.pages.controls.activities.SmscodeActivity;
+import com.wjw.flkitexample.pages.controls.activities.TableViewActivity;
+import com.wjw.flkitexample.pages.tool.activities.UserDefaultActivity;
 
 import java.util.Arrays;
 import java.util.List;
