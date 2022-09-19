@@ -41,8 +41,8 @@ public class MiddlePage extends FLTabBarActivity.FLTabBarPage<PageMiddleBinding>
     }
 
     @Override
-    protected boolean offsetNavigation() {
-        return false;
+    protected FLBaseActivity.FLOffsetStyle offsetStyle() {
+        return FLBaseActivity.FLOffsetStyle.None;
     }
 
     @Override

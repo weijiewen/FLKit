@@ -188,13 +188,22 @@ public abstract class FLTabBarActivity extends FLBaseActivity {
                 configNavigation(navigationView);
             }
             binding = getBinding();
-            RelativeLayout.LayoutParams navigationParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            navigationParams.addRule(ALIGN_PARENT_LEFT);
-            navigationParams.addRule(ALIGN_PARENT_TOP);
-            if (offsetNavigation()) {
-                navigationParams.setMargins(0, getActivity().getStatusHeight() + getActivity().dipToPx(44), 0, 0);
+            RelativeLayout.LayoutParams rootParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            rootParams.addRule(ALIGN_PARENT_LEFT);
+            rootParams.addRule(ALIGN_PARENT_TOP);
+            FLBaseActivity.FLOffsetStyle offsetStyle = offsetStyle();
+            switch (offsetStyle) {
+                case None:
+                    rootParams.topMargin = 0;
+                    break;
+                case StatusBar:
+                    rootParams.topMargin = getActivity().getStatusHeight();
+                    break;
+                case NavigationBar:
+                    rootParams.topMargin = getActivity().getStatusHeight() + getActivity().dipToPx(44);
+                    break;
             }
-            binding.getRoot().setLayoutParams(navigationParams);
+            binding.getRoot().setLayoutParams(rootParams);
             this.addView(binding.getRoot());
             if (navigationView != null) {
                 this.addView(navigationView);
@@ -207,9 +216,8 @@ public abstract class FLTabBarActivity extends FLBaseActivity {
         protected boolean addNavigation() {
             return true;
         }
-        //返回true 向下偏移一个导航栏的高度
-        protected boolean offsetNavigation() {
-            return true;
+        protected FLBaseActivity.FLOffsetStyle offsetStyle() {
+            return FLBaseActivity.FLOffsetStyle.NavigationBar;
         }
 
         protected abstract void configNavigation(FLNavigationView navigationView);
