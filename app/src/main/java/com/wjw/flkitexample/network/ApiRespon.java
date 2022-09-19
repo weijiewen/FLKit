@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.network;
+package com.wjw.flkitexample.network;
 
 public class ApiRespon {
     int code;

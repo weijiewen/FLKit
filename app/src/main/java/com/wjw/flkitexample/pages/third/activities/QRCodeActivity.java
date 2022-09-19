@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.middle.activities;
+package com.wjw.flkitexample.pages.third.activities;
 
 import static com.wjw.flkitexample.pages.units.FLZXingActivity.FL_SCAN_QRCODE_RESULT;
 

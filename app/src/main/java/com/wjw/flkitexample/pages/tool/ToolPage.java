@@ -14,8 +14,8 @@ import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkit.base.FLTabBarActivity;
 import com.wjw.flkitexample.databinding.CellMainBinding;
 import com.wjw.flkitexample.databinding.PageToolBinding;
-import com.wjw.flkitexample.pages.network.loader.TestLoader;
-import com.wjw.flkitexample.pages.network.respon.BaseObjectRespon;
+import com.wjw.flkitexample.network.loader.TestLoader;
+import com.wjw.flkitexample.network.respon.BaseObjectRespon;
 import com.wjw.flkitexample.pages.tool.activities.AnimationActivity;
 import com.wjw.flkitexample.pages.tool.activities.UserDefaultActivity;
 

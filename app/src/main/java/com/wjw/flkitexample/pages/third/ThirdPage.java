@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.middle;
+package com.wjw.flkitexample.pages.third;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,24 +14,25 @@ import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkit.base.FLTabBarActivity;
 import com.wjw.flkit.ui.FLTableView;
 import com.wjw.flkitexample.databinding.CellMainBinding;
-import com.wjw.flkitexample.databinding.PageMiddleBinding;
-import com.wjw.flkitexample.pages.middle.activities.ImagePickerActivity;
-import com.wjw.flkitexample.pages.middle.activities.KeyboardActivity;
-import com.wjw.flkitexample.pages.middle.activities.QRCodeActivity;
+import com.wjw.flkitexample.databinding.PageThirdBinding;
+import com.wjw.flkitexample.pages.third.activities.BannerActivity;
+import com.wjw.flkitexample.pages.third.activities.ImagePickerActivity;
+import com.wjw.flkitexample.pages.third.activities.KeyboardActivity;
+import com.wjw.flkitexample.pages.third.activities.QRCodeActivity;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class MiddlePage extends FLTabBarActivity.FLTabBarPage<PageMiddleBinding> {
+public class ThirdPage extends FLTabBarActivity.FLTabBarPage<PageThirdBinding> {
     private List<String> strings;
 
-    public MiddlePage(Context context) {
+    public ThirdPage(Context context) {
         super(context);
     }
 
     @Override
-    protected PageMiddleBinding getBinding() {
-        return PageMiddleBinding.inflate(LayoutInflater.from(getContext()), this, false);
+    protected PageThirdBinding getBinding() {
+        return PageThirdBinding.inflate(LayoutInflater.from(getContext()), this, false);
     }
 
     @Override
@@ -51,7 +52,8 @@ public class MiddlePage extends FLTabBarActivity.FLTabBarPage<PageMiddleBinding>
         strings = Arrays.asList(
                 "KingKeyboard键盘",
                 "ImageSelector图片选择器",
-                "ZXing二维码"
+                "ZXing二维码",
+                "youth轮播图"
         );
         FLTableView.CreatCell<Cell> creatCell = new FLTableView.CreatCell<Cell>() {
             @Override
@@ -84,6 +86,9 @@ public class MiddlePage extends FLTabBarActivity.FLTabBarPage<PageMiddleBinding>
                             break;
                         case 2:
                             getActivity().startActivity(new Intent(getActivity(), QRCodeActivity.class));
+                            break;
+                        case 3:
+                            getActivity().startActivity(new Intent(getActivity(), BannerActivity.class));
                             break;
                     }
                 }

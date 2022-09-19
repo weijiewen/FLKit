@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.network;
+package com.wjw.flkitexample.network;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;

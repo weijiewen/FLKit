@@ -1,8 +1,5 @@
-package com.wjw.flkitexample.pages.middle.activities;
+package com.wjw.flkitexample.pages.third.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 

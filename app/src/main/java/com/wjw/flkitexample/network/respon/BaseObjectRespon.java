@@ -1,6 +1,6 @@
-package com.wjw.flkitexample.pages.network.respon;
+package com.wjw.flkitexample.network.respon;
 
-import com.wjw.flkitexample.pages.network.ApiRespon;
+import com.wjw.flkitexample.network.ApiRespon;
 
 public class BaseObjectRespon<Obj> extends ApiRespon {
     Obj data;

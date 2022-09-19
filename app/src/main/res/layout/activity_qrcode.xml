@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".pages.middle.activities.QRCodeActivity">
+    tools:context=".pages.third.activities.QRCodeActivity">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">

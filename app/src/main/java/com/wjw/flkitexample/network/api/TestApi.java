@@ -1,7 +1,7 @@
-package com.wjw.flkitexample.pages.network.api;
+package com.wjw.flkitexample.network.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.wjw.flkitexample.pages.network.respon.BaseObjectRespon;
+import com.wjw.flkitexample.network.respon.BaseObjectRespon;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
