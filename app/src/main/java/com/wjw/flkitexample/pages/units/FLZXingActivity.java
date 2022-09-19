@@ -256,8 +256,8 @@ public class FLZXingActivity extends FLBaseActivity implements SurfaceHolder.Cal
 
 
     @Override
-    protected boolean offsetNavigation() {
-        return false;
+    protected FLOffsetStyle offsetStyle() {
+        return FLOffsetStyle.None;
     }
 
     @Override

@@ -137,8 +137,17 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             }
         });
         RelativeLayout.LayoutParams rootParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        if (navigationView != null && offsetNavigation()) {
-            rootParams.topMargin = getStatusHeight() + dipToPx(44);
+        FLOffsetStyle offsetStyle = offsetStyle();
+        switch (offsetStyle) {
+            case None:
+                rootParams.topMargin = 0;
+                break;
+            case StatusBar:
+                rootParams.topMargin = getStatusHeight();
+                break;
+            case NavigationBar:
+                rootParams.topMargin = getStatusHeight() + dipToPx(44);
+                break;
         }
         view.setLayoutParams(rootParams);
 
@@ -212,9 +221,13 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
     protected abstract View getView();
     protected abstract void didLoad();
     protected abstract void didClick(View view);
-    //返回true 向下偏移一个导航栏的高度
-    protected boolean offsetNavigation() {
-        return true;
+    public enum FLOffsetStyle {
+        None,           //不偏移
+        StatusBar,      //偏移状态栏高度
+        NavigationBar,  //偏移导航栏高度
+    }
+    protected FLOffsetStyle offsetStyle() {
+        return FLOffsetStyle.NavigationBar;
     }
 
     protected final FLBaseActivity getActivity() {

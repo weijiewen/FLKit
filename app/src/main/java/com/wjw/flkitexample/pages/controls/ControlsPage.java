@@ -17,7 +17,6 @@ import com.wjw.flkitexample.pages.controls.activities.ColorsActivity;
 import com.wjw.flkitexample.pages.controls.activities.SectionActivity;
 import com.wjw.flkitexample.pages.controls.activities.SmscodeActivity;
 import com.wjw.flkitexample.pages.controls.activities.TableViewActivity;
-import com.wjw.flkitexample.pages.tool.activities.UserDefaultActivity;
 
 import java.util.Arrays;
 import java.util.List;

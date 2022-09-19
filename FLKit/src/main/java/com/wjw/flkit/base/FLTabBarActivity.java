@@ -142,6 +142,11 @@ public abstract class FLTabBarActivity extends FLBaseActivity {
     }
 
     @Override
+    protected FLOffsetStyle offsetStyle() {
+        return FLOffsetStyle.None;
+    }
+
+    @Override
     protected boolean addNavigation() {
         return false;
     }
