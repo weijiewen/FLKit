@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.third.activities;
+package com.wjw.flkitexample.pages.example.activities;
 
 import static com.wjw.flkitexample.pages.units.FLZXingActivity.FL_SCAN_QRCODE_RESULT;
 
@@ -17,6 +17,15 @@ import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.R;
 import com.wjw.flkitexample.databinding.ActivityQrcodeBinding;
 import com.wjw.flkitexample.pages.units.FLZXingActivity;
+
+/**
+ implementation 'com.github.zxing.zxing:core:zxing-3.5.0'
+
+ <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 储存卡的读写权限 -->
+ <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+ <uses-permission android:name="android.permission.CAMERA" /> <!-- 扫描二维码 -->
+
+ */
 
 public class QRCodeActivity extends FLBindingActivity<ActivityQrcodeBinding> {
 

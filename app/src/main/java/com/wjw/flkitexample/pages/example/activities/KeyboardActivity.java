@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.third.activities;
+package com.wjw.flkitexample.pages.example.activities;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,7 @@ import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.databinding.ActivityKeyboardBinding;
 
+//implementation 'com.github.jenly1314:kingkeyboard:1.0.4'
 public class KeyboardActivity extends FLBindingActivity<ActivityKeyboardBinding> {
 
     KingKeyboard keyboard;

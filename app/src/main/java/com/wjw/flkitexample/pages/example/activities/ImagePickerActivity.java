@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.third.activities;
+package com.wjw.flkitexample.pages.example.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +18,48 @@ import com.wjw.flkitexample.databinding.CellMainBinding;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+/**
+
+build.gradle添加
+implementation 'com.github.donkingliang:ImageSelector:2.2.1'
+
+
+配置AndroidManifest.xml
+//储存卡的读写权限
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+//调用相机权限
+<uses-permission android:name="android.permission.CAMERA" />
+
+//图片选择Activity
+<activity android:name="com.donkingliang.imageselector.ImageSelectorActivity"
+        //去掉Activity的ActionBar。
+        //使用者可以根据自己的项目去配置，不一定要这样写，只要让Activity的ActionBar去掉就可以了。
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        //横竖屏切换处理。
+        //如果要支持横竖屏切换，一定要加上这句，否则在切换横竖屏的时候会发生异常。
+        android:configChanges="orientation|keyboardHidden|screenSize"/>
+
+//图片预览Activity
+<activity android:name="com.donkingliang.imageselector.PreviewActivity"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:configChanges="orientation|keyboardHidden|screenSize"/>
+
+//图片剪切Activity
+<activity
+    android:name="com.donkingliang.imageselector.ClipImageActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+在res/xml文件夹下创建file_paths.xml文件
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path
+    name="images"
+    path="Pictures" />
+</paths>
+
+ */
 
 public class ImagePickerActivity extends FLBindingActivity<ActivityImagePickerBinding> {
     private List<String> strings;

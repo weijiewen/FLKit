@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FLTableView extends RecyclerView {
-    public interface CreatSection<Head extends FLTableViewSection, Foot extends FLTableViewSection> {
+    public interface CreatSection<Head extends FLTableViewBaseSection, Foot extends FLTableViewBaseSection> {
         int sectionCount();
         @Nullable
         Head getHeader(@NonNull ViewGroup parent);
@@ -286,7 +286,7 @@ public class FLTableView extends RecyclerView {
                                     try {
                                         FLTableViewSection header = (FLTableViewSection) holder;
                                         if (header != null) {
-                                            header.bindData(header.binding, section);
+                                            header.bindData(header.sectionBinding, section);
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -299,7 +299,7 @@ public class FLTableView extends RecyclerView {
                                     try {
                                         FLTableViewSection footer = (FLTableViewSection) holder;
                                         if (footer != null) {
-                                            footer.bindData(footer.binding, section);
+                                            footer.bindData(footer.sectionBinding, section);
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -755,34 +755,39 @@ public class FLTableView extends RecyclerView {
     }
     public static class FLTableViewBaseSection extends ViewHolder {
         protected int section;
+        public static View PlaceholderView(ViewGroup parent, int height) {
+            View view = new LinearLayout(parent.getContext());
+            view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+            return view;
+        }
         public FLTableViewBaseSection(@NonNull View itemView) {
             super(itemView);
         }
     }
-    public abstract static class FLTableViewSection<SectionBinding extends ViewBinding> extends FLTableViewBaseSection {
-        public final SectionBinding binding;
-        public FLTableViewSection(@NonNull SectionBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
+    public abstract static class FLTableViewSection<Binding extends ViewBinding> extends FLTableViewBaseSection {
+        public final Binding sectionBinding;
+        public FLTableViewSection(@NonNull Binding sectionBinding) {
+            super(sectionBinding.getRoot());
+            this.sectionBinding = sectionBinding;
         }
         public final Context getContext() {
-            return binding.getRoot().getContext();
+            return sectionBinding.getRoot().getContext();
         }
-        protected abstract void bindData(SectionBinding binding, int section);
+        protected abstract void bindData(Binding sectionBinding, int section);
     }
     //baseViewHolder
-    public abstract static class FLTableViewCell<CellBinding extends ViewBinding> extends ViewHolder {
-        public final CellBinding cellBinding;
+    public abstract static class FLTableViewCell<Binding extends ViewBinding> extends ViewHolder {
+        public final Binding cellBinding;
         protected int section;
         protected int index;
         private LinearLayout layout;
-        public FLTableViewCell(@NonNull CellBinding cellBinding) {
+        public FLTableViewCell(@NonNull Binding cellBinding) {
             super(cellBinding.getRoot());
             this.cellBinding = cellBinding;
         }
         public final Context getContext() {
             return cellBinding.getRoot().getContext();
         }
-        protected abstract void bindData(CellBinding cellBinding, int section, int index);
+        protected abstract void bindData(Binding cellBinding, int section, int index);
     }
 }

@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".pages.third.activities.BannerActivity">
+    tools:context=".pages.example.activities.BannerActivity">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">

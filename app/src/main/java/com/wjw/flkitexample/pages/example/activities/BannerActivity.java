@@ -1,11 +1,9 @@
-package com.wjw.flkitexample.pages.third.activities;
+package com.wjw.flkitexample.pages.example.activities;
 
 import android.view.LayoutInflater;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.RequestOptions;
 import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.databinding.ActivityBannerBinding;
@@ -16,6 +14,10 @@ import com.youth.banner.listener.OnBannerListener;
 
 import java.util.Arrays;
 import java.util.List;
+
+/**
+ implementation 'io.github.youth5201314:banner:2.2.2'
+ */
 
 public class BannerActivity extends FLBindingActivity<ActivityBannerBinding> {
     private List<String> banners;
