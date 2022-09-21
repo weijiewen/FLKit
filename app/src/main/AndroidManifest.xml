@@ -25,6 +25,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".pages.tool.activities.RedisProgressActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.tool.activities.RedisStateActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.tool.activities.RedisActivity"
+            android:exported="false" />
+        <activity
             android:name=".pages.example.activities.ViewPagerActivity"
             android:exported="false" />
         <activity
@@ -49,7 +58,7 @@
             android:name=".pages.base.activities.ImageBrowserActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.controls.activities.ColorsActivity"
+            android:name=".pages.controls.activities.CardViewsActivity"
             android:exported="false" />
         <activity
             android:name=".pages.tool.activities.StampActivity"

@@ -31,11 +31,10 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 
-public class FLTimeButton extends CardView {
+public class FLTimeButton extends FLCardView {
     private TextView textView;
-    private ConstraintLayout progressView;
-    private ProgressBar progressBar;
-
+    private int backgroundColor;
+    private ColorStateList foregroundColor;
     private String normalText;
     private int interval = 60000;
     private HashMap<String, FLSmscodeCache> cacheHashMap;
@@ -46,12 +45,6 @@ public class FLTimeButton extends CardView {
         this.interval = interval;
     }
 
-    public final void showLoading() {
-        progressView.setVisibility(VISIBLE);
-    }
-    public final void dismissLoading() {
-        progressView.setVisibility(INVISIBLE);
-    }
     public final String checkTimer(String phone) {
         return checkTimer(phone, 0);
     }
@@ -116,12 +109,12 @@ public class FLTimeButton extends CardView {
         textView.setHintTextColor(color);
     }
     public void setIndeterminateTintList(ColorStateList color) {
-        progressBar.setIndeterminateTintList(color == null ? ColorStateList.valueOf(Color.WHITE) : color);
+        foregroundColor = color == null ? ColorStateList.valueOf(Color.WHITE) : color;
     }
     @Override
     public void setCardBackgroundColor(int color) {
-        textView.setBackgroundColor(color);
-        progressView.setBackgroundColor(color);
+        super.setCardBackgroundColor(color);
+        backgroundColor = color;
     }
 
     @Override
@@ -157,33 +150,6 @@ public class FLTimeButton extends CardView {
         }
         constraintLayout.addView(textView);
 
-        ConstraintLayout.LayoutParams progressParams = new ConstraintLayout.LayoutParams(0, 0);
-        progressParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID;
-        progressParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
-        progressParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-        progressParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
-        progressView = new ConstraintLayout(context);
-        progressView.setLayoutParams(progressParams);
-        progressView.setVisibility(INVISIBLE);
-        constraintLayout.addView(progressView);
-
-        ConstraintLayout.LayoutParams progressBarParams = new ConstraintLayout.LayoutParams(0, 0);
-        progressBarParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID;
-        progressBarParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
-        progressBarParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-        progressBarParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
-        progressBarParams.matchConstraintPercentWidth = 0.7F;
-        progressBarParams.matchConstraintPercentHeight = 0.7F;
-        progressBarParams.matchConstraintMaxWidth = dipToPx(30);
-        progressBarParams.matchConstraintMaxHeight = dipToPx(30);
-        progressBar = new ProgressBar(context);
-        progressBar.setLayoutParams(progressBarParams);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            progressBar.setMaxWidth(dipToPx(40));
-            progressBar.setMaxHeight(dipToPx(40));
-        }
-        progressView.addView(progressBar);
-
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.FLTimeButton, defStyleAttr, 0);
         setCardBackgroundColor(array.getColor(R.styleable.FLTimeButton_cardBackgroundColor, Color.WHITE));
         setCardElevation(array.getDimensionPixelSize(R.styleable.FLTimeButton_cardElevation, 0));
@@ -195,11 +161,6 @@ public class FLTimeButton extends CardView {
         setHintTextColor(array.getColor(R.styleable.FLTimeButton_android_textColorHint, Color.GRAY));
         setIndeterminateTintList(array.getColorStateList(R.styleable.FLTimeButton_android_indeterminateTint));
         array.recycle();
-    }
-
-    private int dipToPx(float pxValue) {
-        final float scale = getContext().getResources().getDisplayMetrics().density;
-        return (int) (pxValue * scale + 0.5f);
     }
 
     @Override
@@ -214,8 +175,13 @@ public class FLTimeButton extends CardView {
         stopTimer();
     }
 
+    @Override
+    public void startLoading() {
+        startLoading(backgroundColor, foregroundColor.getDefaultColor());
+    }
+
     private void startTimer() {
-        progressView.setVisibility(INVISIBLE);
+        stopLoading();
         long timestamp = System.currentTimeMillis();
         stopTimer();
         if (smscodeCache != null && timestamp < smscodeCache.timestamp + interval) {

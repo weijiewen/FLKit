@@ -17,6 +17,7 @@ import com.wjw.flkitexample.databinding.PageToolBinding;
 import com.wjw.flkitexample.network.loader.TestLoader;
 import com.wjw.flkitexample.network.respon.BaseObjectRespon;
 import com.wjw.flkitexample.pages.tool.activities.AnimationActivity;
+import com.wjw.flkitexample.pages.tool.activities.RedisActivity;
 import com.wjw.flkitexample.pages.tool.activities.UserDefaultActivity;
 
 import java.util.ArrayList;
@@ -46,7 +47,8 @@ public class ToolPage extends FLTabBarActivity.FLTabBarPage<PageToolBinding> {
         datas = Arrays.asList(
                 "动画",
                 "请求结果输出",
-                "UserDefault"
+                "UserDefault",
+                "Redis全局缓存"
         );
         FLTableView.CreatCell<TableViewCell> creatCell = new FLTableView.CreatCell<TableViewCell>() {
             @Override
@@ -93,6 +95,10 @@ public class ToolPage extends FLTabBarActivity.FLTabBarPage<PageToolBinding> {
                             case 2:
                                 //"UserDefault"
                                 getActivity().startActivity(new Intent(getActivity(), UserDefaultActivity.class));
+                                break;
+                            case 3:
+                                //"Redis全局缓存"
+                                getActivity().startActivity(new Intent(getActivity(), RedisActivity.class));
                                 break;
                         }
                     }

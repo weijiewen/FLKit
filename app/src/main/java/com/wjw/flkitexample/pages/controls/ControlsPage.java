@@ -13,7 +13,7 @@ import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkit.base.FLTabBarActivity;
 import com.wjw.flkitexample.databinding.CellMainBinding;
 import com.wjw.flkitexample.databinding.PageControlsBinding;
-import com.wjw.flkitexample.pages.controls.activities.ColorsActivity;
+import com.wjw.flkitexample.pages.controls.activities.CardViewsActivity;
 import com.wjw.flkitexample.pages.controls.activities.SectionActivity;
 import com.wjw.flkitexample.pages.controls.activities.SmscodeActivity;
 import com.wjw.flkitexample.pages.controls.activities.TableViewActivity;
@@ -43,7 +43,7 @@ public class ControlsPage extends FLTabBarActivity.FLTabBarPage<PageControlsBind
                 "列表",
                 "分段列表",
                 "验证码倒计时",
-                "渐变控件"
+                "FLCardView"
         );
         FLTableView.CreatCell<Cell> creatCell = new FLTableView.CreatCell<Cell>() {
             @Override
@@ -80,8 +80,8 @@ public class ControlsPage extends FLTabBarActivity.FLTabBarPage<PageControlsBind
                             getActivity().startActivity(new Intent(getActivity(), SmscodeActivity.class));
                             break;
                         case 3:
-                            //"渐变控件"
-                            getActivity().startActivity(new Intent(getActivity(), ColorsActivity.class));
+                            //"FLCardView"
+                            getActivity().startActivity(new Intent(getActivity(), CardViewsActivity.class));
                             break;
                     }
                 }

@@ -59,7 +59,7 @@ public class SmscodeActivity extends FLBindingActivity<ActivitySmscodeBinding> {
             case R.id.send_smscode:
                 String phone = binding.phone.getText().toString();
                 if (phone.length() == 11) {
-                    binding.sendSmscode.showLoading();
+                    binding.sendSmscode.startLoading();
                     FLAsyncTask.start(new FLAsyncTask.FLAsyncCallback() {
                         @Override
                         public void doInBack() {
@@ -72,7 +72,7 @@ public class SmscodeActivity extends FLBindingActivity<ActivitySmscodeBinding> {
 
                         @Override
                         public void doInMain() {
-                            binding.sendSmscode.dismissLoading();
+                            binding.sendSmscode.stopLoading();
                             binding.sendSmscode.startTimer(phone, "123");
                         }
                     });

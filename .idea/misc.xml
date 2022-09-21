@@ -11,6 +11,7 @@
         <entry key="FLKit/src/main/res/drawable/flidcard_key_selected.xml" value="0.187" />
         <entry key="app/src/main/res/layout/activity_animation.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_banner.xml" value="0.2682291666666667" />
+        <entry key="app/src/main/res/layout/activity_card_views.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_colors.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_columns.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_dialog.xml" value="0.28229166666666666" />
@@ -21,6 +22,9 @@
         <entry key="app/src/main/res/layout/activity_keyboard.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_loading.xml" value="0.2526041666666667" />
         <entry key="app/src/main/res/layout/activity_qrcode.xml" value="0.2682291666666667" />
+        <entry key="app/src/main/res/layout/activity_redis.xml" value="0.14375" />
+        <entry key="app/src/main/res/layout/activity_redis_progress.xml" value="0.28229166666666666" />
+        <entry key="app/src/main/res/layout/activity_redis_state.xml" value="0.14375" />
         <entry key="app/src/main/res/layout/activity_section.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_smscode.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_stamp.xml" value="0.1" />
@@ -32,6 +36,8 @@
         <entry key="app/src/main/res/layout/cell_image.xml" value="0.28125" />
         <entry key="app/src/main/res/layout/cell_image_browser.xml" value="0.28125" />
         <entry key="app/src/main/res/layout/cell_main.xml" value="0.28229166666666666" />
+        <entry key="app/src/main/res/layout/cell_redis_progress.xml" value="0.28125" />
+        <entry key="app/src/main/res/layout/cell_redis_state.xml" value="0.14270833333333333" />
         <entry key="app/src/main/res/layout/cell_table_view.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.26666666666666666" />
         <entry key="app/src/main/res/layout/fragment_main.xml" value="0.26666666666666666" />
