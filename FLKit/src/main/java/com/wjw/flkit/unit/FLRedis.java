@@ -7,10 +7,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.WeakHashMap;
 
 public class FLRedis {
     public static FLRedis redis = new FLRedis();
     private HashMap<String, HashMap<Object, FLRedisValue>> map = new HashMap<>();
+    private WeakHashMap<FLRedisListener, String> nameMap = new WeakHashMap<>();
+    private WeakHashMap<FLRedisListener, Object> keyMap = new WeakHashMap<>();
     private FLRedis() {}
     public static <V extends Object> void addValue(Class cls, Object key, V value) {
         addValue(cls.getName(), key, value);
@@ -71,9 +74,34 @@ public class FLRedis {
             map.put(key, value);
         }
         value.list.add(new WeakReference<>(listener));
+        removeListenerKeyValue(listener);
+        redis.nameMap.put(listener, name);
+        redis.keyMap.put(listener, key);
     }
     public interface FLRedisListener<K extends Object, V extends Object> {
         void redisValueChange(String name, K key, V value);
+    }
+    private static void removeListenerKeyValue(FLRedisListener listener) {
+        String name = redis.nameMap.get(listener);
+        Object key = redis.keyMap.get(listener);
+        if (name != null && key != null) {
+            HashMap<Object, FLRedisValue> map = redis.map.get(name);
+            if (map != null) {
+                FLRedisValue value = map.get(key);
+                if (value != null) {
+                    WeakReference<FLRedisListener> removeReference = null;
+                    for (WeakReference<FLRedisListener> reference: value.list) {
+                        if (reference.get() != null && reference.get() == listener) {
+                            removeReference = reference;
+                            break;
+                        }
+                    }
+                    if (removeReference != null) {
+                        value.list.remove(removeReference);
+                    }
+                }
+            }
+        }
     }
     private static class FLRedisValue {
         private String name;

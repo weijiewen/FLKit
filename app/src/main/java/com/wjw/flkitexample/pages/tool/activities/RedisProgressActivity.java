@@ -54,6 +54,11 @@ public class RedisProgressActivity extends FLBindingActivity<ActivityRedisProgre
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private class Cell extends FLTableView.FLTableViewCell<CellRedisProgressBinding> implements FLRedis.FLRedisListener<Integer, Double> {
 
         public Cell(@NonNull CellRedisProgressBinding cellBinding) {
