@@ -1,6 +1,6 @@
 package com.wjw.flkitexample.pages.example.activities;
 
-import static com.wjw.flkitexample.pages.units.FLZXingActivity.FL_SCAN_QRCODE_RESULT;
+import static com.wjw.flkitexample.pages.zxing.FLZXingActivity.FL_SCAN_QRCODE_RESULT;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -16,7 +16,7 @@ import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.R;
 import com.wjw.flkitexample.databinding.ActivityQrcodeBinding;
-import com.wjw.flkitexample.pages.units.FLZXingActivity;
+import com.wjw.flkitexample.pages.zxing.FLZXingActivity;
 
 /**
  implementation 'com.github.zxing.zxing:core:zxing-3.5.0'

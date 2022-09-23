@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@mipmap/error"/>
+    <TextView
+        android:id="@+id/error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:maxLines="99"
+        android:layout_marginHorizontal="30dp"
+        android:textColor="@color/black"
+        android:textSize="13dp"
+        android:gravity="center_horizontal"/>
+    <TextView
+        android:id="@+id/reload"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:textSize="14dp"
+        android:textColor="@color/black"
+        android:text="点击我重试"/>
+</LinearLayout>

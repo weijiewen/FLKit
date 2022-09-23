@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.tool.activities;
+package com.wjw.flkitexample.pages.tool.activities.redis;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;

@@ -73,4 +73,7 @@ dependencies {
 
     //TabLayout
     implementation 'com.google.android.material:material:1.4.0'
+
+    //gif加载
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.1'
 }

@@ -25,10 +25,22 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".pages.tool.activities.RedisProgressActivity"
+            android:name=".pages.controls.activities.table.TableErrorActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.tool.activities.RedisStateActivity"
+            android:name=".pages.controls.activities.table.TableEmptyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.controls.activities.table.TableLoadingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.controls.activities.table.TableNormalActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.tool.activities.redis.RedisProgressActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.tool.activities.redis.RedisStateActivity"
             android:exported="false" />
         <activity
             android:name=".pages.tool.activities.RedisActivity"
@@ -43,7 +55,7 @@
             android:name=".pages.tool.activities.UserDefaultActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.units.FLZXingActivity"
+            android:name=".pages.zxing.FLZXingActivity"
             android:exported="false" />
         <activity
             android:name=".pages.example.activities.QRCodeActivity"
@@ -76,7 +88,7 @@
             android:name=".pages.controls.activities.SmscodeActivity"
             android:exported="false" />
         <activity
-            android:name=".pages.controls.activities.SectionActivity"
+            android:name=".pages.controls.activities.table.TableSectionActivity"
             android:exported="false" />
         <activity
             android:name=".pages.controls.activities.TableViewActivity"

@@ -63,7 +63,7 @@ public class ExamplePage extends FLTabBarActivity.FLTabBarPage<PageExampleBindin
                         "ImageSelector图片选择器",
                         "ZXing二维码",
                         "youth轮播图",
-                        "viewPage2 + TabLayout"
+                        "ViewPage2 + TabLayout"
                 )
         );
         datas.add(thirdMap);
@@ -90,7 +90,6 @@ public class ExamplePage extends FLTabBarActivity.FLTabBarPage<PageExampleBindin
             @Nullable
             @Override
             public FLTableViewBaseSection getFooter(@NonNull ViewGroup parent) {
-
                 return new FLTableViewBaseSection(FLTableViewBaseSection.PlaceholderView(parent, getActivity().dipToPx(10)));
             }
         };

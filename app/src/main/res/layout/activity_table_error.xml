@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".pages.tool.activities.redis.RedisStateActivity">
+    android:orientation="vertical"
+    tools:context=".pages.controls.activities.table.TableErrorActivity">
     <com.wjw.flkit.ui.FLTableView
         android:id="@+id/table_view"
         android:layout_width="match_parent"

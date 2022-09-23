@@ -17,8 +17,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,6 +31,51 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FLTableView extends RecyclerView {
+    public interface ConfigLoading {
+        View getLoadingView(Context context);
+    }
+    private ConfigLoading configLoading;
+
+    public void setConfigLoading(ConfigLoading configLoading) {
+        this.configLoading = configLoading;
+    }
+    public interface ConfigEmpty {
+        View getEmptyView(Context context);
+    }
+    private ConfigEmpty configEmpty;
+
+    public void setConfigEmpty(ConfigEmpty configEmpty) {
+        this.configEmpty = configEmpty;
+    }
+    public interface ConfigError {
+        FLTableErrorView getErrorView(Context context, String error);
+    }
+    private ConfigError configError;
+
+    public void setConfigErrorView(ConfigError configErrorView) {
+        this.configError = configErrorView;
+    }
+    public static abstract class FLTableErrorView<Binding extends ViewBinding> extends LinearLayout {
+        protected Binding errorBinding;
+        public FLTableErrorView(Context context, String error) {
+            super(context);
+            setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            errorBinding = getBinding();
+            getReloadView().setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (retry != null) {
+                        retry.retryRequest();
+                        retry = null;
+                    }
+                }
+            });
+        }
+        protected abstract Binding getBinding();
+        protected abstract View getReloadView();
+        private Retry retry;
+    }
+
     public interface CreatSection<Head extends FLTableViewBaseSection, Foot extends FLTableViewBaseSection> {
         int sectionCount();
         @Nullable
@@ -45,6 +92,28 @@ public class FLTableView extends RecyclerView {
         int itemCount(int section);
         T getCell(@NonNull ViewGroup parent);
     }
+    public static class FLTableViewBaseSection extends ViewHolder {
+        protected int section;
+        public static View PlaceholderView(ViewGroup parent, int height) {
+            View view = new LinearLayout(parent.getContext());
+            view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+            return view;
+        }
+        public FLTableViewBaseSection(@NonNull View itemView) {
+            super(itemView);
+        }
+    }
+    public abstract static class FLTableViewSection<Binding extends ViewBinding> extends FLTableViewBaseSection {
+        public final Binding sectionBinding;
+        public FLTableViewSection(@NonNull Binding sectionBinding) {
+            super(sectionBinding.getRoot());
+            this.sectionBinding = sectionBinding;
+        }
+        public final Context getContext() {
+            return sectionBinding.getRoot().getContext();
+        }
+        protected abstract void bindData(Binding sectionBinding, int section);
+    }
     private CreatCell creatCell;
     public void setCreatCell(CreatCell creatCell) {
         setCreatCell("暂无数据", creatCell);
@@ -52,6 +121,21 @@ public class FLTableView extends RecyclerView {
     public void setCreatCell(String empty, CreatCell creatCell) {
         this.empty = empty;
         this.creatCell = creatCell;
+    }
+    //baseViewHolder
+    public abstract static class FLTableViewCell<Binding extends ViewBinding> extends ViewHolder {
+        public final Binding cellBinding;
+        protected int section;
+        protected int index;
+        private LinearLayout layout;
+        public FLTableViewCell(@NonNull Binding cellBinding) {
+            super(cellBinding.getRoot());
+            this.cellBinding = cellBinding;
+        }
+        public final Context getContext() {
+            return cellBinding.getRoot().getContext();
+        }
+        protected abstract void bindData(Binding cellBinding, int section, int index);
     }
     private int tintColor = Color.parseColor("#247BEF");
     public void setTintColor(int color) {
@@ -63,7 +147,12 @@ public class FLTableView extends RecyclerView {
     }
     public final void startLoading() {
         if (!isRefreshing()) {
-            loadingView = new LoadingView(getContext());
+            if (configLoading != null) {
+                loadingView = configLoading.getLoadingView(getContext());
+            }
+            if (loadingView == null) {
+                loadingView = new LoadingView(getContext());
+            }
             reloadAdapter();
         }
     }
@@ -80,9 +169,6 @@ public class FLTableView extends RecyclerView {
     }
     public final void reloadData(boolean hasMore) {
         reloadData(null, hasMore, null);
-    }
-    public final void getCell(int section, int index) {
-
     }
     public interface RefreshInterface {
         void enterRefreshing();
@@ -116,9 +202,9 @@ public class FLTableView extends RecyclerView {
     private int sectionCount;
     private List<Integer> itemCounts;
     private String empty;
-    private LoadingView loadingView;
-    private ErrorView errorView;
-    private EmptyView emptyView;
+    private View loadingView;
+    private View errorView;
+    private View emptyView;
     private void reloadData(String error, boolean hasMore, Boolean isReload) {
         if (headerRefresh != null) {
             headerRefresh.endRefresh();
@@ -155,10 +241,22 @@ public class FLTableView extends RecyclerView {
         mainCount = count;
         if (count == 0) {
             if (error != null && !error.isEmpty()) {
-                errorView = new ErrorView(getContext(), error);
+                if (configError != null) {
+                    FLTableErrorView tableErrorView = configError.getErrorView(getContext(), error);
+                    tableErrorView.retry = retry;
+                    errorView = tableErrorView;
+                }
+                if (errorView == null) {
+                    errorView = new ErrorView(getContext(), error);
+                }
             }
             else {
-                emptyView = new EmptyView(getContext(), empty);
+                if (configEmpty != null) {
+                    emptyView = configEmpty.getEmptyView(getContext());
+                }
+                if (emptyView == null) {
+                    emptyView = new EmptyView(getContext(), empty);
+                }
             }
             reloadAdapter();
             return;
@@ -752,42 +850,5 @@ public class FLTableView extends RecyclerView {
             textView.setText(hasData ? "上拉加载更多" : "我已经到底啦~");
         }
         public boolean getHasData() { return hasData; }
-    }
-    public static class FLTableViewBaseSection extends ViewHolder {
-        protected int section;
-        public static View PlaceholderView(ViewGroup parent, int height) {
-            View view = new LinearLayout(parent.getContext());
-            view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
-            return view;
-        }
-        public FLTableViewBaseSection(@NonNull View itemView) {
-            super(itemView);
-        }
-    }
-    public abstract static class FLTableViewSection<Binding extends ViewBinding> extends FLTableViewBaseSection {
-        public final Binding sectionBinding;
-        public FLTableViewSection(@NonNull Binding sectionBinding) {
-            super(sectionBinding.getRoot());
-            this.sectionBinding = sectionBinding;
-        }
-        public final Context getContext() {
-            return sectionBinding.getRoot().getContext();
-        }
-        protected abstract void bindData(Binding sectionBinding, int section);
-    }
-    //baseViewHolder
-    public abstract static class FLTableViewCell<Binding extends ViewBinding> extends ViewHolder {
-        public final Binding cellBinding;
-        protected int section;
-        protected int index;
-        private LinearLayout layout;
-        public FLTableViewCell(@NonNull Binding cellBinding) {
-            super(cellBinding.getRoot());
-            this.cellBinding = cellBinding;
-        }
-        public final Context getContext() {
-            return cellBinding.getRoot().getContext();
-        }
-        protected abstract void bindData(Binding cellBinding, int section, int index);
     }
 }

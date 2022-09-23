@@ -1,23 +1,28 @@
 package com.wjw.flkitexample.pages.controls.activities;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.wjw.flkit.unit.FLAsyncTask;
 import com.wjw.flkit.ui.FLTableView;
 import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.databinding.ActivityTableViewBinding;
-import com.wjw.flkitexample.databinding.CellTableViewBinding;
+import com.wjw.flkitexample.databinding.CellMainBinding;
+import com.wjw.flkitexample.pages.controls.activities.table.TableEmptyActivity;
+import com.wjw.flkitexample.pages.controls.activities.table.TableErrorActivity;
+import com.wjw.flkitexample.pages.controls.activities.table.TableLoadingActivity;
+import com.wjw.flkitexample.pages.controls.activities.table.TableNormalActivity;
+import com.wjw.flkitexample.pages.controls.activities.table.TableSectionActivity;
 
-import java.util.Random;
+import java.util.Arrays;
+import java.util.List;
 
 public class TableViewActivity extends FLBindingActivity<ActivityTableViewBinding> {
-    private int size = 0;
-    private int page = 0;
+    private List<String> strings;
 
     @Override
     protected ActivityTableViewBinding getBinding() {
@@ -26,36 +31,31 @@ public class TableViewActivity extends FLBindingActivity<ActivityTableViewBindin
 
     @Override
     protected void configNavigation(FLNavigationView navigationView) {
-        navigationView.setTitle("分页tableView");
+        navigationView.setTitle("列表");
     }
 
     @Override
     protected void didLoad() {
-        binding.tableView.addHeaderRefresh(new FLTableView.RefreshInterface() {
-            @Override
-            public void enterRefreshing() {
-                requestData(true);
-            }
-        });
-        binding.tableView.addFooterRefresh(new FLTableView.RefreshInterface() {
-            @Override
-            public void enterRefreshing() {
-                requestData(false);
-            }
-        });
-        FLTableView.CreatCell<TableViewCell> creatCell = new FLTableView.CreatCell<TableViewCell>() {
+        strings = Arrays.asList(
+                "列表",
+                "分段列表",
+                "自定义loading",
+                "自定义empty",
+                "自定义error"
+        );
+        FLTableView.CreatCell<Cell> creatCell = new FLTableView.CreatCell<Cell>() {
             @Override
             public int itemCount(int section) {
-                return size;
+                return strings.size();
             }
 
             @Override
-            public TableViewCell getCell(@NonNull ViewGroup parent) {
-                return new TableViewCell(CellTableViewBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+            public Cell getCell(@NonNull ViewGroup parent) {
+                return new Cell(CellMainBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
             }
         };
-        binding.tableView.setCreatCell("暂无数据", creatCell);
-        requestData(true);
+        binding.tableView.setCreatCell(creatCell);
+        binding.tableView.reloadData();
     }
 
     @Override
@@ -63,70 +63,37 @@ public class TableViewActivity extends FLBindingActivity<ActivityTableViewBindin
 
     }
 
-    private void requestData(boolean reload) {
-        int currenPage = page;
-        if (reload) {
-            currenPage = 0;
-        }
-        binding.tableView.startLoading();
-        int finalCurrenPage = currenPage;
-        FLAsyncTask.start(new FLAsyncTask.FLAsyncCallback() {
-            @Override
-            public void doInBack() {
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+    private class Cell extends FLTableView.FLTableViewCell<CellMainBinding> {
 
-            @Override
-            public void doInMain() {
-                if (new Random().nextInt(2) == 0) {
-                    if (finalCurrenPage == 0) {
-                        if (new Random().nextInt(2) == 0) {
-                            size = 10;
-                        }
-                        else  {
-                            size = 0;
-                        }
-                    }
-                    else {
-                        size += 10;
-                    }
-                    page = finalCurrenPage + 1;
-                    binding.tableView.reloadData(size < 50);
-                }
-                else {
-                    if (size > 0) {
-                        showTip("错误示例");
-                    }
-                    binding.tableView.reloadData("错误示例", new FLTableView.Retry() {
-                        @Override
-                        public void retryRequest() {
-                            requestData(true);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    private class TableViewCell extends FLTableView.FLTableViewCell<CellTableViewBinding> {
-
-        public TableViewCell(@NonNull CellTableViewBinding cellBinding) {
+        public Cell(@NonNull CellMainBinding cellBinding) {
             super(cellBinding);
             cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showTip(String.valueOf(index));
+                    switch (index) {
+                        case 0:
+                            startActivity(new Intent(getActivity(), TableNormalActivity.class));
+                            break;
+                        case 1:
+                            startActivity(new Intent(getActivity(), TableSectionActivity.class));
+                            break;
+                        case 2:
+                            startActivity(new Intent(getActivity(), TableLoadingActivity.class));
+                            break;
+                        case 3:
+                            startActivity(new Intent(getActivity(), TableEmptyActivity.class));
+                            break;
+                        case 4:
+                            startActivity(new Intent(getActivity(), TableErrorActivity.class));
+                            break;
+                    }
                 }
             });
         }
 
         @Override
-        protected void bindData(CellTableViewBinding cellBinding, int section, int index) {
-            cellBinding.text.setText(String.valueOf(index));
+        protected void bindData(CellMainBinding cellBinding, int section, int index) {
+            cellBinding.text.setText(strings.get(index));
         }
     }
 }

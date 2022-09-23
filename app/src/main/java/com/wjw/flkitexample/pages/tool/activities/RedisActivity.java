@@ -1,10 +1,8 @@
 package com.wjw.flkitexample.pages.tool.activities;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +12,8 @@ import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkit.ui.FLTableView;
 import com.wjw.flkitexample.databinding.ActivityRedisBinding;
 import com.wjw.flkitexample.databinding.CellMainBinding;
+import com.wjw.flkitexample.pages.tool.activities.redis.RedisProgressActivity;
+import com.wjw.flkitexample.pages.tool.activities.redis.RedisStateActivity;
 
 import java.util.Arrays;
 import java.util.List;

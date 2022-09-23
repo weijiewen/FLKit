@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.controls.activities;
+package com.wjw.flkitexample.pages.controls.activities.table;
 
 
 import android.graphics.Color;
@@ -13,7 +13,7 @@ import com.wjw.flkit.unit.FLAsyncTask;
 import com.wjw.flkit.ui.FLTableView;
 import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
-import com.wjw.flkitexample.databinding.ActivitySectionBinding;
+import com.wjw.flkitexample.databinding.ActivityTableSectionBinding;
 import com.wjw.flkitexample.databinding.CellTableViewBinding;
 import com.wjw.flkitexample.databinding.SectionFooterBinding;
 import com.wjw.flkitexample.databinding.SectionHeaderBinding;
@@ -21,13 +21,13 @@ import com.wjw.flkitexample.databinding.SectionHeaderBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SectionActivity extends FLBindingActivity<ActivitySectionBinding> {
+public class TableSectionActivity extends FLBindingActivity<ActivityTableSectionBinding> {
     int value = 1;
     private List<List<Integer>> datas = new ArrayList<>();
 
     @Override
-    protected ActivitySectionBinding getBinding() {
-        return ActivitySectionBinding.inflate(LayoutInflater.from(this));
+    protected ActivityTableSectionBinding getBinding() {
+        return ActivityTableSectionBinding.inflate(LayoutInflater.from(this));
     }
 
     @Override
@@ -130,6 +130,7 @@ public class SectionActivity extends FLBindingActivity<ActivitySectionBinding> {
     private class Header extends FLTableView.FLTableViewSection<SectionHeaderBinding> {
         public Header(@NonNull SectionHeaderBinding binding) {
             super(binding);
+            binding.getRoot().setBackgroundColor(Color.BLUE);
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -140,12 +141,13 @@ public class SectionActivity extends FLBindingActivity<ActivitySectionBinding> {
 
         @Override
         protected void bindData(SectionHeaderBinding binding, int section) {
-            binding.text.setText(String.valueOf(section));
+            binding.text.setText("header：" + section);
         }
     }
     private class Footer extends FLTableView.FLTableViewSection<SectionFooterBinding> {
         public Footer(@NonNull SectionFooterBinding binding) {
             super(binding);
+            binding.getRoot().setBackgroundColor(Color.GREEN);
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -156,7 +158,7 @@ public class SectionActivity extends FLBindingActivity<ActivitySectionBinding> {
 
         @Override
         protected void bindData(SectionFooterBinding binding, int section) {
-            binding.text.setText(String.valueOf(section));
+            binding.text.setText("footer：" + section);
         }
     }
     private class Cell extends FLTableView.FLTableViewCell<CellTableViewBinding> {

@@ -18,15 +18,15 @@ public class FLRedis {
     public static <V extends Object> void addValue(Class cls, Object key, V value) {
         addValue(cls.getName(), key, value);
     }
-    public static <V extends Object> void addValue(String name, Object key, V value) {
-        HashMap<Object, FLRedisValue> map = redis.map.get(name);
+    public static <V extends Object> void addValue(String category, Object key, V value) {
+        HashMap<Object, FLRedisValue> map = redis.map.get(category);
         if (map == null) {
             map = new HashMap();
-            redis.map.put(name, map);
+            redis.map.put(category, map);
         }
         FLRedisValue redisValue = map.get(key);
         if (redisValue == null) {
-            redisValue = new FLRedisValue(name, key);
+            redisValue = new FLRedisValue(category, key);
             map.put(key, redisValue);
         }
         redisValue.setValue(value);
@@ -34,12 +34,12 @@ public class FLRedis {
     public static void removeValue(Class cls, Object key) {
         removeValue(cls.getName(), key);
     }
-    public static void removeValue(String name, Object key) {
-        HashMap<Object, FLRedisValue> map = redis.map.get(name);
+    public static void removeValue(String category, Object key) {
+        HashMap<Object, FLRedisValue> map = redis.map.get(category);
         if (map != null) {
             map.remove(key);
             if (map.isEmpty()) {
-                redis.map.remove(name);
+                redis.map.remove(category);
             }
         }
     }
@@ -48,8 +48,8 @@ public class FLRedis {
         return getValue(cls.getName(), key);
     }
     @Nullable
-    public static <V extends Object> V getValue(String name, Object key) {
-        HashMap<Object, FLRedisValue> map = redis.map.get(name);
+    public static <V extends Object> V getValue(String category, Object key) {
+        HashMap<Object, FLRedisValue> map = redis.map.get(category);
         if (map == null) {
             return null;
         }
@@ -62,20 +62,20 @@ public class FLRedis {
     public static void addListener(Class cls, Object key, FLRedisListener listener) {
         addListener(cls.getName(), key, listener);
     }
-    public static void addListener(String name, Object key, FLRedisListener listener) {
-        HashMap<Object, FLRedisValue> map = redis.map.get(name);
+    public static void addListener(String category, Object key, FLRedisListener listener) {
+        HashMap<Object, FLRedisValue> map = redis.map.get(category);
         if (map == null) {
             map = new HashMap<>();
-            redis.map.put(name, map);
+            redis.map.put(category, map);
         }
         FLRedisValue value = map.get(key);
         if (value == null) {
-            value = new FLRedisValue(name, key);
+            value = new FLRedisValue(category, key);
             map.put(key, value);
         }
-        value.list.add(new WeakReference<>(listener));
+        value.listeners.add(new WeakReference<>(listener));
         removeListenerKeyValue(listener);
-        redis.nameMap.put(listener, name);
+        redis.nameMap.put(listener, category);
         redis.keyMap.put(listener, key);
     }
     public interface FLRedisListener<K extends Object, V extends Object> {
@@ -90,14 +90,14 @@ public class FLRedis {
                 FLRedisValue value = map.get(key);
                 if (value != null) {
                     WeakReference<FLRedisListener> removeReference = null;
-                    for (WeakReference<FLRedisListener> reference: value.list) {
+                    for (WeakReference<FLRedisListener> reference: value.listeners) {
                         if (reference.get() != null && reference.get() == listener) {
                             removeReference = reference;
                             break;
                         }
                     }
                     if (removeReference != null) {
-                        value.list.remove(removeReference);
+                        value.listeners.remove(removeReference);
                     }
                 }
             }
@@ -107,7 +107,7 @@ public class FLRedis {
         private String name;
         private Object key;
         private Object value;
-        private List<WeakReference<FLRedisListener>> list = new ArrayList<>();
+        private List<WeakReference<FLRedisListener>> listeners = new ArrayList<>();
         public FLRedisValue(String name, Object key) {
             this.name = name;
             this.key = key;
@@ -115,10 +115,10 @@ public class FLRedis {
         public void setValue(Object value) {
             this.value = value;
             List<WeakReference<FLRedisListener>> list = new ArrayList<>();
-            list.addAll(this.list);
+            list.addAll(listeners);
             for (WeakReference<FLRedisListener> reference: list) {
                 if (reference.get() == null) {
-                    this.list.remove(reference);
+                    listeners.remove(reference);
                 }
                 else {
                     reference.get().redisValueChange(name, key, value);

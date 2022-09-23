@@ -1,4 +1,4 @@
-package com.wjw.flkitexample.pages.units;
+package com.wjw.flkitexample.pages.zxing;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -55,7 +55,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 

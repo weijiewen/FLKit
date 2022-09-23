@@ -14,7 +14,6 @@ import com.wjw.flkit.base.FLTabBarActivity;
 import com.wjw.flkitexample.databinding.CellMainBinding;
 import com.wjw.flkitexample.databinding.PageControlsBinding;
 import com.wjw.flkitexample.pages.controls.activities.CardViewsActivity;
-import com.wjw.flkitexample.pages.controls.activities.SectionActivity;
 import com.wjw.flkitexample.pages.controls.activities.SmscodeActivity;
 import com.wjw.flkitexample.pages.controls.activities.TableViewActivity;
 
@@ -41,7 +40,6 @@ public class ControlsPage extends FLTabBarActivity.FLTabBarPage<PageControlsBind
     protected void didLoad() {
         strings = Arrays.asList(
                 "列表",
-                "分段列表",
                 "验证码倒计时",
                 "FLCardView"
         );
@@ -72,14 +70,10 @@ public class ControlsPage extends FLTabBarActivity.FLTabBarPage<PageControlsBind
                             getActivity().startActivity(new Intent(getActivity(), TableViewActivity.class));
                             break;
                         case 1:
-                            //"分段列表"
-                            getActivity().startActivity(new Intent(getActivity(), SectionActivity.class));
-                            break;
-                        case 2:
                             //"验证码倒计时"
                             getActivity().startActivity(new Intent(getActivity(), SmscodeActivity.class));
                             break;
-                        case 3:
+                        case 2:
                             //"FLCardView"
                             getActivity().startActivity(new Intent(getActivity(), CardViewsActivity.class));
                             break;
