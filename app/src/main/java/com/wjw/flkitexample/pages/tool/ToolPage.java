@@ -18,6 +18,7 @@ import com.wjw.flkitexample.network.loader.TestLoader;
 import com.wjw.flkitexample.network.respon.BaseObjectRespon;
 import com.wjw.flkitexample.pages.tool.activities.AnimationActivity;
 import com.wjw.flkitexample.pages.tool.activities.RedisActivity;
+import com.wjw.flkitexample.pages.tool.activities.RegexInputActivity;
 import com.wjw.flkitexample.pages.tool.activities.UserDefaultActivity;
 
 import java.util.ArrayList;
@@ -48,7 +49,8 @@ public class ToolPage extends FLTabBarActivity.FLTabBarPage<PageToolBinding> {
                 "动画",
                 "请求结果输出",
                 "UserDefault",
-                "Redis全局缓存"
+                "Redis全局缓存",
+                "RegexInput输入限制"
         );
         FLTableView.CreatCell<TableViewCell> creatCell = new FLTableView.CreatCell<TableViewCell>() {
             @Override
@@ -99,6 +101,10 @@ public class ToolPage extends FLTabBarActivity.FLTabBarPage<PageToolBinding> {
                             case 3:
                                 //"Redis全局缓存"
                                 getActivity().startActivity(new Intent(getActivity(), RedisActivity.class));
+                                break;
+                            case 4:
+                                //"RegexInput输入限制"
+                                getActivity().startActivity(new Intent(getActivity(), RegexInputActivity.class));
                                 break;
                         }
                     }

@@ -60,7 +60,6 @@ public class RedisStateActivity extends FLBindingActivity<ActivityRedisStateBind
 
     }
     private class Cell extends FLTableView.FLTableViewCell<CellRedisStateBinding> implements FLRedis.FLRedisListener<Integer, Boolean> {
-
         public Cell(@NonNull CellRedisStateBinding cellBinding) {
             super(cellBinding);
             cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {

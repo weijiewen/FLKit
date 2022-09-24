@@ -25,6 +25,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".pages.tool.activities.RegexInputActivity"
+            android:exported="false" />
+        <activity
             android:name=".pages.controls.activities.table.TableErrorActivity"
             android:exported="false" />
         <activity

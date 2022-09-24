@@ -23,5 +23,4 @@ public class LoadingPage extends FLTabBarActivity.FLTabBarPage<PageLoadingBindin
     protected void didLoad() {
 
     }
-
 }

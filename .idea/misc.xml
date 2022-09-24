@@ -25,6 +25,7 @@
         <entry key="app/src/main/res/layout/activity_redis.xml" value="0.14375" />
         <entry key="app/src/main/res/layout/activity_redis_progress.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_redis_state.xml" value="0.14375" />
+        <entry key="app/src/main/res/layout/activity_regex_input.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_section.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_smscode.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/activity_stamp.xml" value="0.1" />
