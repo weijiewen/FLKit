@@ -161,7 +161,7 @@ public class TableSectionActivity extends FLBindingActivity<ActivityTableSection
             binding.text.setText("footer：" + section);
         }
     }
-    private class Cell extends FLTableView.FLTableViewCell<CellTableViewBinding> {
+    private class Cell extends FLTableView.FLBindingCell<CellTableViewBinding> {
 
         public Cell(@NonNull CellTableViewBinding cellBinding) {
             super(cellBinding);
@@ -198,8 +198,8 @@ public class TableSectionActivity extends FLBindingActivity<ActivityTableSection
         }
 
         @Override
-        protected void bindData(CellTableViewBinding binding, int section, int index) {
-            binding.text.setText("section：" + section + " index：" + index + " value：" + datas.get(section).get(index));
+        protected void bindData(int section, int index) {
+            cellBinding.text.setText("section：" + section + " index：" + index + " value：" + datas.get(section).get(index));
         }
     }
 }

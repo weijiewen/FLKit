@@ -63,7 +63,7 @@ public class TableViewActivity extends FLBindingActivity<ActivityTableViewBindin
 
     }
 
-    private class Cell extends FLTableView.FLTableViewCell<CellMainBinding> {
+    private class Cell extends FLTableView.FLBindingCell<CellMainBinding> {
 
         public Cell(@NonNull CellMainBinding cellBinding) {
             super(cellBinding);
@@ -92,7 +92,7 @@ public class TableViewActivity extends FLBindingActivity<ActivityTableViewBindin
         }
 
         @Override
-        protected void bindData(CellMainBinding cellBinding, int section, int index) {
+        protected void bindData(int section, int index) {
             cellBinding.text.setText(strings.get(index));
         }
     }

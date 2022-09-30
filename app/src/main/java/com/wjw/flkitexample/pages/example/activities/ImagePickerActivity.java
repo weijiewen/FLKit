@@ -110,7 +110,7 @@ public class ImagePickerActivity extends FLBindingActivity<ActivityImagePickerBi
         }
     }
 
-    private class Cell extends FLTableView.FLTableViewCell<CellMainBinding> {
+    private class Cell extends FLTableView.FLBindingCell<CellMainBinding> {
 
         public Cell(@NonNull CellMainBinding cellMainBinding) {
             super(cellMainBinding);
@@ -158,8 +158,8 @@ public class ImagePickerActivity extends FLBindingActivity<ActivityImagePickerBi
         }
 
         @Override
-        protected void bindData(CellMainBinding cellMainBinding, int section, int index) {
-            cellMainBinding.text.setText(strings.get(index));
+        protected void bindData(int section, int index) {
+            cellBinding.text.setText(strings.get(index));
         }
     }
 }

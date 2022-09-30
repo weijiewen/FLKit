@@ -114,7 +114,7 @@ public class TableNormalActivity extends FLBindingActivity<ActivityTableNormalBi
         });
     }
 
-    private class TableViewCell extends FLTableView.FLTableViewCell<CellTableViewBinding> {
+    private class TableViewCell extends FLTableView.FLBindingCell<CellTableViewBinding> {
 
         public TableViewCell(@NonNull CellTableViewBinding cellBinding) {
             super(cellBinding);
@@ -127,7 +127,7 @@ public class TableNormalActivity extends FLBindingActivity<ActivityTableNormalBi
         }
 
         @Override
-        protected void bindData(CellTableViewBinding cellBinding, int section, int index) {
+        protected void bindData(int section, int index) {
             cellBinding.text.setText(String.valueOf(index));
         }
     }

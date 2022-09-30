@@ -122,7 +122,7 @@ public class ExamplePage extends FLTabBarActivity.FLTabBarPage<PageExampleBindin
         }
     }
 
-    private class Cell extends FLTableView.FLTableViewCell<CellMainBinding> {
+    private class Cell extends FLTableView.FLBindingCell<CellMainBinding> {
 
         public Cell(@NonNull CellMainBinding cellMainBinding) {
             super(cellMainBinding);
@@ -157,9 +157,9 @@ public class ExamplePage extends FLTabBarActivity.FLTabBarPage<PageExampleBindin
         }
 
         @Override
-        protected void bindData(CellMainBinding cellMainBinding, int section, int index) {
+        protected void bindData(int section, int index) {
             List list = (List) datas.get(section).get("list");
-            cellMainBinding.text.setText((CharSequence) list.get(index));
+            cellBinding.text.setText((CharSequence) list.get(index));
         }
     }
 }

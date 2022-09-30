@@ -65,7 +65,7 @@ public class BasePage extends FLTabBarActivity.FLTabBarPage<PageBaseBinding> {
         binding.tableView.reloadData(true);
     }
 
-    private class BaseCell extends FLTableView.FLTableViewCell<CellMainBinding> {
+    private class BaseCell extends FLTableView.FLBindingCell<CellMainBinding> {
         public BaseCell(@NonNull CellMainBinding cellBinding) {
             super(cellBinding);
             cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
@@ -102,7 +102,7 @@ public class BasePage extends FLTabBarActivity.FLTabBarPage<PageBaseBinding> {
         }
 
         @Override
-        protected void bindData(CellMainBinding cellBinding, int section, int index) {
+        protected void bindData(int section, int index) {
             cellBinding.text.setText(datas.get(index));
         }
     }

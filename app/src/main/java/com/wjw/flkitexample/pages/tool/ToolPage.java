@@ -66,7 +66,7 @@ public class ToolPage extends FLTabBarActivity.FLTabBarPage<PageToolBinding> {
         binding.tableView.setCreatCell("暂无数据", creatCell);
         binding.tableView.reloadData();
     }
-    private class TableViewCell extends FLTableView.FLTableViewCell<CellMainBinding> {
+    private class TableViewCell extends FLTableView.FLBindingCell<CellMainBinding> {
         public TableViewCell(@NonNull CellMainBinding cellBinding) {
             super(cellBinding);
             cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
@@ -113,7 +113,7 @@ public class ToolPage extends FLTabBarActivity.FLTabBarPage<PageToolBinding> {
         }
 
         @Override
-        protected void bindData(CellMainBinding cellBinding, int section, int index) {
+        protected void bindData(int section, int index) {
             cellBinding.text.setText(datas.get(index));
         }
     }

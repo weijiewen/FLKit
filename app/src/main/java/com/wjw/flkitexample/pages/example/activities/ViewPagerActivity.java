@@ -159,14 +159,14 @@ public class ViewPagerActivity extends FLBindingActivity<ActivityViewPagerBindin
             });
         }
 
-        private class Cell extends FLTableView.FLTableViewCell<CellMainBinding> {
+        private class Cell extends FLTableView.FLBindingCell<CellMainBinding> {
 
             public Cell(@NonNull CellMainBinding cellBinding) {
                 super(cellBinding);
             }
 
             @Override
-            protected void bindData(CellMainBinding cellBinding, int section, int index) {
+            protected void bindData(int section, int index) {
                 cellBinding.text.setText(category.datas.get(index).name);
             }
         }

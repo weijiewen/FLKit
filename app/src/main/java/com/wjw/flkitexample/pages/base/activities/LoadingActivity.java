@@ -59,7 +59,7 @@ public class LoadingActivity extends FLBindingActivity<ActivityLoadingBinding> {
     protected void didClick(View view) {
 
     }
-    private class LoadingCell extends FLTableView.FLTableViewCell<CellMainBinding> {
+    private class LoadingCell extends FLTableView.FLBindingCell<CellMainBinding> {
         float progress = 0.f;
 
         public LoadingCell(@NonNull CellMainBinding cellBinding) {
@@ -131,7 +131,7 @@ public class LoadingActivity extends FLBindingActivity<ActivityLoadingBinding> {
         }
 
         @Override
-        protected void bindData(CellMainBinding cellBinding, int section, int index) {
+        protected void bindData(int section, int index) {
             cellBinding.text.setText(datas.get(index));
         }
     }

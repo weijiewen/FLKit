@@ -60,7 +60,7 @@ public class AnimationActivity extends FLBindingActivity<ActivityAnimationBindin
     protected void didClick(View view) {
 
     }
-    private class Cell extends FLTableView.FLTableViewCell<CellMainBinding> {
+    private class Cell extends FLTableView.FLBindingCell<CellMainBinding> {
 
         public Cell(@NonNull CellMainBinding cellMainBinding) {
             super(cellMainBinding);
@@ -108,8 +108,8 @@ public class AnimationActivity extends FLBindingActivity<ActivityAnimationBindin
         }
 
         @Override
-        protected void bindData(CellMainBinding cellMainBinding, int section, int index) {
-            cellMainBinding.text.setText(strings.get(index));
+        protected void bindData(int section, int index) {
+            cellBinding.text.setText(strings.get(index));
         }
     }
 }

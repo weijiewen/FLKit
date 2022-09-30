@@ -10,6 +10,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,7 +89,7 @@ public class FLTableView extends RecyclerView {
     public void setCreatSection(CreatSection creatSection) {
         this.creatSection = creatSection;
     }
-    public interface CreatCell<T extends ViewHolder> {
+    public interface CreatCell<T extends FLCell> {
         int itemCount(int section);
         T getCell(@NonNull ViewGroup parent);
     }
@@ -123,19 +124,30 @@ public class FLTableView extends RecyclerView {
         this.creatCell = creatCell;
     }
     //baseViewHolder
-    public abstract static class FLTableViewCell<Binding extends ViewBinding> extends ViewHolder {
-        public final Binding cellBinding;
+    public abstract static class FLCell extends ViewHolder {
         protected int section;
         protected int index;
-        private LinearLayout layout;
-        public FLTableViewCell(@NonNull Binding cellBinding) {
+        private Context context;
+        public FLCell(@NonNull View cellView) {
+            super(cellView);
+            context = cellView.getContext();
+        }
+        public FLCell(@NonNull ViewGroup viewGroup, int layoutResId) {
+            super(LayoutInflater.from(viewGroup.getContext())
+                    .inflate(layoutResId, viewGroup, false));
+            context = viewGroup.getContext();
+        }
+        public final Context getContext() {
+            return context;
+        }
+        protected abstract void bindData(int section, int index);
+    }
+    public abstract static class FLBindingCell<Binding extends ViewBinding> extends FLCell {
+        public final Binding cellBinding;
+        public FLBindingCell(@NonNull Binding cellBinding) {
             super(cellBinding.getRoot());
             this.cellBinding = cellBinding;
         }
-        public final Context getContext() {
-            return cellBinding.getRoot().getContext();
-        }
-        protected abstract void bindData(Binding cellBinding, int section, int index);
     }
     private int tintColor = Color.parseColor("#247BEF");
     public void setTintColor(int color) {
@@ -412,10 +424,10 @@ public class FLTableView extends RecyclerView {
                     if (creatSection != null) {
                         cellIndex -= 1;
                     }
-                    FLTableViewCell cell = (FLTableViewCell) holder;
+                    FLCell cell = (FLCell) holder;
                     cell.section = section;
                     cell.index = cellIndex;
-                    cell.bindData(cell.cellBinding, section, cellIndex);
+                    cell.bindData(section, cellIndex);
                 }
             }
         };

@@ -65,7 +65,7 @@ public class ImageBrowserActivity extends FLBindingActivity<ActivityImageBrowser
 
     }
 
-    private class ImageCell extends FLTableView.FLTableViewCell<CellImageBinding> {
+    private class ImageCell extends FLTableView.FLBindingCell<CellImageBinding> {
 
         public ImageCell(@NonNull CellImageBinding cellImageBinding) {
             super(cellImageBinding);
@@ -85,10 +85,10 @@ public class ImageBrowserActivity extends FLBindingActivity<ActivityImageBrowser
         }
 
         @Override
-        protected void bindData(CellImageBinding cellImageBinding, int section, int index) {
+        protected void bindData(int section, int index) {
             Glide.with(getActivity())
                     .load(datas.get(index))
-                    .into(cellImageBinding.image);
+                    .into(cellBinding.image);
         }
     }
 }
