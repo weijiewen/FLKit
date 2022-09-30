@@ -88,7 +88,7 @@ public class FLTableView extends RecyclerView {
     public void setCreatSection(CreatSection creatSection) {
         this.creatSection = creatSection;
     }
-    public interface CreatCell<T extends FLTableViewCell> {
+    public interface CreatCell<T extends ViewHolder> {
         int itemCount(int section);
         T getCell(@NonNull ViewGroup parent);
     }
