@@ -25,4 +25,8 @@ public abstract class FLBindingFragment<Binding extends ViewBinding> extends Fra
         didLoad();
         return fragmentBinding.getRoot();
     }
+    public final int dipToPx(float pxValue) {
+        final float scale = getResources().getDisplayMetrics().density;
+        return (int) (pxValue * scale + 0.5f);
+    }
 }

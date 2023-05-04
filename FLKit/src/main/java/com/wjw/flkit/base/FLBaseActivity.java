@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentActivity;
-import androidx.viewbinding.ViewBinding;
 
 import com.wjw.flkit.ui.FLImageBrowser;
 import com.wjw.flkit.unit.FLTimer;
@@ -166,7 +165,6 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                     public void onClick(View view) {
                         endEdit();
                         if (dialogContent == null && progressBar == null) {
-                            stopTimer();
                             finish();
                         }
                     }
@@ -183,7 +181,6 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                     public void onClick(View view) {
                         endEdit();
                         if (dialogContent == null && progressBar == null) {
-                            stopTimer();
                             finish();
                         }
                     }
@@ -198,7 +195,6 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
     public final void onBackPressed() {
         if (dialogContent == null && progressBar == null) {
             if (willBackPressed()) {
-                stopTimer();
                 super.onBackPressed();
             }
         }
@@ -260,12 +256,16 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
     }
 
     public final int getStatusHeight() {
-        int result = 0;
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        int height = 0;
+        int resourceId = getApplicationContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
-            result = getResources().getDimensionPixelSize(resourceId);
+            height = getApplicationContext().getResources().getDimensionPixelSize(resourceId);
         }
-        return result;
+        return height;
+    }
+
+    public final int getNavigationHeight() {
+        return getStatusHeight() + dipToPx(FLNavigationView.navigationHeight);
     }
 
     public final void endEdit() {
@@ -615,18 +615,18 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
 
         private void show() {
             linearContent = new LinearLayout(getContext());
-            linearContent.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            linearContent.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             linearContent.setGravity(Gravity.CENTER);
             linearContent.setOrientation(VERTICAL);
 
-            LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            LayoutParams cardParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             CardView cardView = new CardView(getContext());
             cardView.setCardElevation(0);
             cardView.setRadius(dipToPx(8));
             cardView.setCardBackgroundColor(Color.WHITE);
 
             LinearLayout view = new LinearLayout(getContext());
-            view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            view.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             view.setGravity(Gravity.CENTER);
             view.setOrientation(VERTICAL);
             cardView.addView(view);
@@ -656,7 +656,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                 view.addView(textView);
             }
             if (didAddText) {
-                LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(1));
+                LayoutParams lineParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(1));
                 if (style == FLDialogStyle.Alert) {
                     lineParams.setMargins(0, dipToPx(25), 0, 0);
                 }
@@ -669,10 +669,10 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                 view.addView(lineView);
             }
 
-            LinearLayout.LayoutParams cancelCardParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            LayoutParams cancelCardParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             CardView cancelCardView = null;
             LinearLayout textLinearLayout = new LinearLayout(getContext());
-            textLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            textLinearLayout.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             textLinearLayout.setGravity(Gravity.CENTER);
             switch (style) {
                 case Alert:
@@ -682,28 +682,28 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                         boolean didAddCancel = false;
                         if (cancel != null) {
                             didAddCancel = true;
-                            cancel.setLayoutParams(new LinearLayout.LayoutParams(0, dipToPx(40), 1));
+                            cancel.setLayoutParams(new LayoutParams(0, dipToPx(40), 1));
                             textLinearLayout.addView(cancel);
                         }
                         if (didAddCancel) {
-                            LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(dipToPx(1), dipToPx(40));
+                            LayoutParams lineParams = new LayoutParams(dipToPx(1), dipToPx(40));
                             View lineView = new View(getContext());
                             lineView.setLayoutParams(lineParams);
                             lineView.setBackgroundColor(Color.parseColor("#EEEEEE"));
                             textLinearLayout.addView(lineView);
                         }
                         if (textViews.size() == 1) {
-                            textViews.get(0).setLayoutParams(new LinearLayout.LayoutParams(0, dipToPx(40), 1));
+                            textViews.get(0).setLayoutParams(new LayoutParams(0, dipToPx(40), 1));
                             textLinearLayout.addView(textViews.get(0));
                         }
                     }
                     else {
                         textLinearLayout.setOrientation(VERTICAL);
                         for (int i = 0; i < textViews.size(); i++) {
-                            textViews.get(i).setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(40)));
+                            textViews.get(i).setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(40)));
                             textLinearLayout.addView(textViews.get(i));
                             if (i < textViews.size() - 1) {
-                                LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(1));
+                                LayoutParams lineParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(1));
                                 View lineView = new View(getContext());
                                 lineView.setLayoutParams(lineParams);
                                 lineView.setBackgroundColor(Color.parseColor("#EEEEEE"));
@@ -711,13 +711,13 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                             }
                         }
                         if (cancel != null) {
-                            LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(1));
+                            LayoutParams lineParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(1));
                             View lineView = new View(getContext());
                             lineView.setLayoutParams(lineParams);
                             lineView.setBackgroundColor(Color.parseColor("#EEEEEE"));
                             textLinearLayout.addView(lineView);
 
-                            cancel.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(40)));
+                            cancel.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(40)));
                             textLinearLayout.addView(cancel);
                         }
                     }
@@ -725,15 +725,15 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                     break;
                 case ActionSheet:
                     Space space = new Space(getContext());
-                    space.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+                    space.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
                     addView(space);
                     cardParams.setMargins(dipToPx(20), 0, dipToPx(20), 0);
                     textLinearLayout.setOrientation(VERTICAL);
                     for (int i = 0; i < textViews.size(); i++) {
-                        textViews.get(i).setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(40)));
+                        textViews.get(i).setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(40)));
                         textLinearLayout.addView(textViews.get(i));
                         if (i < textViews.size() - 1) {
-                            LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(1));
+                            LayoutParams lineParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(1));
                             View lineView = new View(getContext());
                             lineView.setLayoutParams(lineParams);
                             lineView.setBackgroundColor(Color.parseColor("#EEEEEE"));
@@ -741,7 +741,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                         }
                     }
                     if (cancel != null) {
-                        LinearLayout.LayoutParams cancelParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        LayoutParams cancelParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         cancelParams.setMargins(dipToPx(20), dipToPx(10), dipToPx(20), dipToPx(20));
                         cancelCardView = new CardView(getContext());
                         cancelCardView.setLayoutParams(cancelParams);
@@ -749,7 +749,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                         cancelCardView.setRadius(dipToPx(8));
                         cancelCardView.setCardBackgroundColor(Color.WHITE);
 
-                        cancel.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(40)));
+                        cancel.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(40)));
                         cancelCardView.addView(cancel);
                     }
 
@@ -760,7 +760,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             linearContent.addView(cardView);
             if (cancelCardView == null) {
                 Space space = new Space(getContext());
-                space.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(20)));
+                space.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPx(20)));
                 linearContent.addView(space);
             }
             else {
@@ -813,6 +813,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             }
         }
     }
+
     private FLTimer timer;
     public final void startTimer(long delay, long period, FLTimer.FLTimerListencener listencener) {
         stopTimer();
@@ -905,7 +906,6 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         view.setLayoutParams(layoutParams);
         view.setVisibility(View.VISIBLE);
-//        view.setAlpha(0);
         superLayout.addView(view);
     }
     public final void removeFullView(View view) {

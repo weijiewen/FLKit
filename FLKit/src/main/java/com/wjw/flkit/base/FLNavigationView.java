@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -17,7 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 public class FLNavigationView extends LinearLayout {
-    private static int navigationHeight = 48;
+    public static final int navigationHeight = 48;
     
     private static int defaultBackgroundColor = Color.parseColor("#00FFFFFF");
     private static int defaultForegroundColor = Color.BLACK;
@@ -51,6 +52,12 @@ public class FLNavigationView extends LinearLayout {
     public final void setTitle(String text) {
         textView.setText(text);
     }
+    public final void setTitleSize(int typedValue, int value) {
+        textView.setTextSize(typedValue, value);
+    }
+    public final void setTypeface(int style) {
+        textView.setTypeface(Typeface.defaultFromStyle(style));
+    }
     public FLNavigationView(Context context) {
         this(context, null);
     }
@@ -62,7 +69,7 @@ public class FLNavigationView extends LinearLayout {
     }
     public FLNavigationView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         setOrientation(HORIZONTAL);
         setBackgroundColor(defaultBackgroundColor);
 
@@ -72,18 +79,18 @@ public class FLNavigationView extends LinearLayout {
                 reloadTextMargins();
             }
         });
-        leftLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dipToPx(navigationHeight)));
+        leftLayout.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dipToPx(navigationHeight)));
         leftLayout.setOrientation(LinearLayout.HORIZONTAL);
         leftLayout.setGravity(Gravity.CENTER);
         addView(leftLayout);
 
         centerLayout = new LinearLayout(getContext());
-        centerLayout.setLayoutParams(new LinearLayout.LayoutParams(0, dipToPx(navigationHeight), 1));
+        centerLayout.setLayoutParams(new LayoutParams(0, dipToPx(navigationHeight), 1));
         centerLayout.setOrientation(HORIZONTAL);
         addView(centerLayout);
 
         textView = new TextView(getContext());
-        textView.setLayoutParams(new LinearLayout.LayoutParams(0, dipToPx(navigationHeight), 1));
+        textView.setLayoutParams(new LayoutParams(0, dipToPx(navigationHeight), 1));
         textView.setPadding(dipToPx(15), 0, dipToPx(15), 0);
         textView.setEllipsize(TextUtils.TruncateAt.END);
         textView.setTextColor(getForegroundColor());
@@ -98,18 +105,18 @@ public class FLNavigationView extends LinearLayout {
                 reloadTextMargins();
             }
         });
-        rightLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dipToPx(navigationHeight)));
+        rightLayout.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dipToPx(navigationHeight)));
         rightLayout.setOrientation(LinearLayout.HORIZONTAL);
         rightLayout.setGravity(Gravity.CENTER);
         addView(rightLayout);
     }
     private FLNavigationBackButton backButton;
-    public final void addBack(View.OnClickListener listener) {
+    public final void addBack(OnClickListener listener) {
         if (backButton != null) {
             leftLayout.removeView(backButton);
         }
         backButton = new FLNavigationBackButton(getContext());
-        backButton.setLayoutParams(new LinearLayout.LayoutParams(dipToPx(navigationHeight), dipToPx(navigationHeight)));
+        backButton.setLayoutParams(new LayoutParams(dipToPx(navigationHeight), dipToPx(navigationHeight)));
         backButton.setOnClickListener(listener);
         leftLayout.addView(backButton, 0);
     }
@@ -134,7 +141,7 @@ public class FLNavigationView extends LinearLayout {
         int rightWidth = rightLayout.getWidth();
         int marginLeft = rightWidth > leftWidth ? rightWidth - leftWidth : 0;
         int marginRight = leftWidth > rightWidth ? leftWidth - rightWidth : 0;
-        LinearLayout.LayoutParams params = (LayoutParams) textView.getLayoutParams();
+        LayoutParams params = (LayoutParams) textView.getLayoutParams();
         params.setMargins(marginLeft, 0, marginRight, 0);
         textView.setLayoutParams(params);
     }

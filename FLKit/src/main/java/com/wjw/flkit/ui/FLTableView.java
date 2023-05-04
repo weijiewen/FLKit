@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,6 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FLTableView extends RecyclerView {
+    private View headerView;
+
+    public void setHeaderView(View headerView) {
+        this.headerView = headerView;
+    }
+
     public interface ConfigLoading {
         View getLoadingView(Context context);
     }
@@ -127,9 +134,12 @@ public class FLTableView extends RecyclerView {
     public abstract static class FLCell extends ViewHolder {
         protected int section;
         protected int index;
+        private View cellView;
         private Context context;
         public FLCell(@NonNull View cellView) {
             super(cellView);
+            cellView.setBackgroundColor(Color.TRANSPARENT);
+            this.cellView = cellView;
             context = cellView.getContext();
         }
         public FLCell(@NonNull ViewGroup viewGroup, int layoutResId) {
@@ -140,6 +150,11 @@ public class FLTableView extends RecyclerView {
         public final Context getContext() {
             return context;
         }
+        protected void addChildClickViewIds(View.OnClickListener listener, int... args) {
+            for (int id : args) {
+                cellView.findViewById(id).setOnClickListener(listener);
+            }
+        };
         protected abstract void bindData(int section, int index);
     }
     public abstract static class FLBindingCell<Binding extends ViewBinding> extends FLCell {
@@ -170,6 +185,9 @@ public class FLTableView extends RecyclerView {
     }
     public final void reloadData() {
         reloadData(null, true, true);
+    }
+    public final void updateData() {
+        reloadData(null, true, false);
     }
     public interface Retry {
         void retryRequest();
@@ -235,15 +253,15 @@ public class FLTableView extends RecyclerView {
                 int itemCount = creatCell.itemCount(i);
                 if (itemCount > 0) {
                     count += itemCount;
-                }
-                if (creatSection != null) {
-                    count += 2;
+                    if (creatSection != null) {
+                        count += 2;
+                    }
                 }
                 itemCounts.add(itemCount);
             }
         }
 
-        boolean reload = isReload == null ? mainCount > count : isReload.booleanValue();
+        boolean reload = isReload == null ? mainCount >= count : isReload.booleanValue();
         if (!reload && (loadingView != null || errorView != null || emptyView != null)) {
             reload = true;
         }
@@ -286,9 +304,13 @@ public class FLTableView extends RecyclerView {
             public int getItemCount() {
                 int count = mainCount;
                 startIndex = 0;
+                if (headerView != null) {
+                    count += 1;
+                    startIndex += 1;
+                }
                 if (loadingView != null || errorView != null) {
-                    count = 1;
-                    startIndex = 1;
+                    count += 1;
+                    startIndex += 1;
                 }
                 else {
                     if (headerRefresh != null) {
@@ -316,8 +338,15 @@ public class FLTableView extends RecyclerView {
                     if (errorView != null) {
                         return ViewType.Error.value;
                     }
-                    if (position == 0 && headerRefresh != null) {
-                        return ViewType.RefreshHeader.value;
+                    if (headerRefresh != null) {
+                        if (position == 0) {
+                            return ViewType.RefreshHeader.value;
+                        } else if (headerView != null && position == 1) {
+                            return ViewType.HeaderView.value;
+                        }
+                    }
+                    else if (position == 0 && headerView != null) {
+                        return ViewType.HeaderView.value;
                     }
                     return ViewType.Empty.value;
                 }
@@ -361,6 +390,9 @@ public class FLTableView extends RecyclerView {
                 else if (viewType == ViewType.RefreshFooter.value) {
                     return new PlaceHolderViewHolder(footerRefresh);
                 }
+                else if (viewType == ViewType.HeaderView.value) {
+                    return new PlaceHolderViewHolder(headerView);
+                }
                 else if (viewType == ViewType.Header.value) {
                     ViewHolder viewHolder = creatSection.getHeader(parent);
                     if (viewHolder == null) {
@@ -399,7 +431,7 @@ public class FLTableView extends RecyclerView {
                                             header.bindData(header.sectionBinding, section);
                                         }
                                     } catch (Exception e) {
-                                        e.printStackTrace();
+
                                     }
                                     return;
                                 }
@@ -412,7 +444,7 @@ public class FLTableView extends RecyclerView {
                                             footer.bindData(footer.sectionBinding, section);
                                         }
                                     } catch (Exception e) {
-                                        e.printStackTrace();
+
                                     }
                                     return;
                                 }
@@ -509,7 +541,8 @@ public class FLTableView extends RecyclerView {
         RefreshFooter(99995),
         Header(99994),
         Footer(99993),
-        Cell(99992);
+        Cell(99992),
+        HeaderView(99991);
 
         private int value = 0;
         private ViewType(int value) {
@@ -533,6 +566,8 @@ public class FLTableView extends RecyclerView {
                     return Footer;
                 case 99992:
                     return Cell;
+                case 99991:
+                    return HeaderView;
                 default:
                     return null;
             }
@@ -541,16 +576,16 @@ public class FLTableView extends RecyclerView {
     private class PlaceholdView extends LinearLayout {
         public PlaceholdView(Context context) {
             super(context);
-            setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
+            setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
         }
     }
     private class LoadingView extends LinearLayout {
         public LoadingView(Context context) {
             super(context);
             setGravity(Gravity.CENTER);
-            setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             ProgressBar progressBar = new ProgressBar(context);
-            progressBar.setLayoutParams(new LinearLayout.LayoutParams(dipToPx(35), dipToPx(35)));
+            progressBar.setLayoutParams(new LayoutParams(dipToPx(35), dipToPx(35)));
             progressBar.setIndeterminateTintList(ColorStateList.valueOf(tintColor));
             addView(progressBar);
         }
@@ -560,7 +595,7 @@ public class FLTableView extends RecyclerView {
             super(context);
             setOrientation(VERTICAL);
             setGravity(Gravity.CENTER);
-            setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             TextView textView = new TextView(getContext());
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             textView.setTextColor(textColor);
@@ -568,7 +603,7 @@ public class FLTableView extends RecyclerView {
             textView.setMaxLines(99);
             textView.setPadding(dipToPx(70), 0, dipToPx(70), 0);
             textView.setGravity(Gravity.CENTER);
-            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            textView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             addView(textView);
 
             textView = new TextView(getContext());
@@ -578,7 +613,7 @@ public class FLTableView extends RecyclerView {
             textView.setMaxLines(1);
             textView.setPadding(dipToPx(10), dipToPx(15), dipToPx(10), dipToPx(15));
             textView.setGravity(Gravity.CENTER);
-            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            textView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             addView(textView);
             textView.setOnClickListener(new OnClickListener() {
                 @Override
@@ -600,15 +635,42 @@ public class FLTableView extends RecyclerView {
             if (emptyString == null || emptyString.isEmpty()) {
                 emptyString = "暂无数据";
             }
+            setOrientation(VERTICAL);
             setGravity(Gravity.CENTER);
-            setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
             TextView textView = new TextView(getContext());
-            textView.setTextSize(15);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             textView.setTextColor(textColor);
             textView.setText(emptyString);
             textView.setGravity(Gravity.CENTER);
-            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            addView(textView);
+
+            LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(dipToPx(15), dipToPx(0), dipToPx(15), dipToPx(0));
+
+            addView(textView, layoutParams);
+            reloadHeight();
+        }
+        private void reloadHeight() {
+            if (headerView != null) {
+                View thisView = this;
+                FLTableView.this.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int height = FLTableView.this.getMeasuredHeight();
+                        int headerHeight = headerView.getMeasuredHeight();
+                        Log.d("checkHeight", "run: " + height + " h " + headerHeight);
+                        if (height == 0 || headerHeight == 0) {
+                            reloadHeight();
+                        }
+                        else {
+                            ViewGroup.LayoutParams layoutParams = thisView.getLayoutParams();
+                            layoutParams.height = height - headerHeight;
+                            thisView.setLayoutParams(layoutParams);
+                        }
+                    }
+                });
+            }
         }
     }
     //header
@@ -745,6 +807,12 @@ public class FLTableView extends RecyclerView {
             changeRefreshing(false);
         }
     }
+    private String footerNoMoreString = "没有更多数据了";
+
+    public void setFooterNoMoreString(String footerNoMoreString) {
+        this.footerNoMoreString = footerNoMoreString;
+    }
+
     //footer
     private class FooterRefresh extends LinearLayout {
         private ConstraintLayout contentLayout;
@@ -859,7 +927,7 @@ public class FLTableView extends RecyclerView {
 
         private void setHasData(boolean hasData) {
             this.hasData = hasData;
-            textView.setText(hasData ? "上拉加载更多" : "我已经到底啦~");
+            textView.setText(hasData ? "上拉加载更多" : footerNoMoreString);
         }
         public boolean getHasData() { return hasData; }
     }
