@@ -1,16 +1,26 @@
 package com.wjw.flkit.base;
 
+import android.Manifest;
 import android.animation.Animator;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -24,17 +34,25 @@ import android.widget.RelativeLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.wjw.flkit.ui.FLImageBrowser;
 import com.wjw.flkit.unit.FLTimer;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public abstract class FLBaseActivity extends FragmentActivity implements View.OnClickListener {
     private static int defaultBackgroundColor = Color.parseColor("#F4F4F3");
@@ -910,5 +928,201 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
     }
     public final void removeFullView(View view) {
         superLayout.removeView(view);
+    }
+
+
+    public interface PickCallback {
+        void pickData(Bitmap image);
+    }
+    private PickCallback pickCallback;
+    private ActivityResultLauncher<Intent> cameraLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == RESULT_OK) {
+                if (pickCallback != null) {
+                    pickCallback.pickData((Bitmap) result.getData().getExtras().get("data"));
+                }
+            }
+            pickCallback = null;
+        }
+    });
+    private ActivityResultLauncher<Intent> albumLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == RESULT_OK) {
+                if (pickCallback != null) {
+                    Bitmap bitmap = null;
+                    String path = getUriPath(result.getData().getData());
+                    try {
+                        bitmap = BitmapFactory.decodeFile(path);
+                    } catch (Exception e) {
+
+                    }
+                    pickCallback.pickData(bitmap);
+                }
+            }
+            pickCallback = null;
+        }
+    });
+    private String getUriPath(Uri uri) {
+        String data = null;
+        if (null == uri)
+            return null;
+        final String scheme = uri.getScheme();
+        if (scheme == null)
+            data = uri.getPath();
+        else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
+            data = uri.getPath();
+        } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
+            Cursor cursor = getContentResolver().query(uri, new String[]{MediaStore.Images.ImageColumns.DATA}, null, null, null);
+            if (null != cursor) {
+                if (cursor.moveToFirst()) {
+                    int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+                    if (index > -1) {
+                        data = cursor.getString(index);
+                    }
+                }
+                cursor.close();
+            }
+        }
+        return data;
+    }
+
+    public void openCamera(PickCallback callback) {
+        pickCallback = callback;
+        Intent intent = new Intent(
+                MediaStore.ACTION_IMAGE_CAPTURE, null);
+        cameraLauncher.launch(intent);
+    }
+
+    public void openAlbum(PickCallback callback) {
+        pickCallback = callback;
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+        albumLauncher.launch(intent);
+    }
+
+    private HashMap<Integer, List<WeakReference<PermissionsResult>>> resultMap = new HashMap<>();
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+    };
+    private static final Integer REQUEST_PERMISSION_STORAGE_CODE = 0;
+    private static final Integer REQUEST_PERMISSION_CAMERA_CODE = 1;
+
+    public interface PermissionsResult {
+        void didGranted();
+
+        void didDenied();
+    }
+
+    public void requestStorage(PermissionsResult result) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            List<WeakReference<PermissionsResult>> results = resultMap.get(REQUEST_PERMISSION_STORAGE_CODE);
+            if (results == null) {
+                results = new ArrayList();
+                resultMap.put(REQUEST_PERMISSION_STORAGE_CODE, results);
+            }
+            results.add(new WeakReference<>(result));
+            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_STORAGE_CODE);
+        } else {
+            result.didGranted();
+        }
+    }
+
+    public void requestCamera(PermissionsResult result) {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            List results = resultMap.get(REQUEST_PERMISSION_CAMERA_CODE);
+            if (results == null) {
+                results = new ArrayList();
+                resultMap.put(REQUEST_PERMISSION_CAMERA_CODE, results);
+            }
+            results.add(new WeakReference<>(result));
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    REQUEST_PERMISSION_CAMERA_CODE);
+        } else {
+            result.didGranted();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        List<WeakReference<PermissionsResult>> results = resultMap.get(requestCode);
+        for (int i = 0; i < permissions.length; i++) {
+            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                if (results != null) {
+                    resultMap.remove(requestCode);
+                    for (WeakReference<PermissionsResult> result : results) {
+                        result.get().didDenied();
+                    }
+                }
+                return;
+            }
+        }
+        if (results != null) {
+            resultMap.remove(requestCode);
+            for (WeakReference<PermissionsResult> result : results) {
+                result.get().didGranted();
+            }
+        }
+    }
+
+    public boolean isPermissionInstall() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            boolean hasInstallPermission = getPackageManager().canRequestPackageInstalls();
+            return hasInstallPermission;
+        }
+        return true;
+    }
+
+    private static final Integer REQUEST_PERMISSION_INSTALL_CODE = 2;
+    private static final Integer REQUEST_PERMISSION_INSTALL_O_CODE = 3;
+
+    public void requestInstall(PermissionsResult result) {
+        List results = resultMap.get(REQUEST_PERMISSION_INSTALL_O_CODE);
+        if (results == null) {
+            results = new ArrayList();
+            resultMap.put(REQUEST_PERMISSION_INSTALL_O_CODE, results);
+        }
+        results.add(new WeakReference<>(result));
+        Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, REQUEST_PERMISSION_INSTALL_O_CODE);
+    }
+
+    public void installApk(Intent intent, PermissionsResult result) {
+        if (getPackageManager().queryIntentActivities(intent, 0).size() > 0) {
+            //如果APK安装界面存在，携带请求码跳转。使用forResult是为了处理用户 取消 安装的事件。外面这层判断理论上来说可以不要，但是由于国内的定制，这个加上还是比较保险的
+            List results = resultMap.get(REQUEST_PERMISSION_INSTALL_CODE);
+            if (results == null) {
+                results = new ArrayList();
+                resultMap.put(REQUEST_PERMISSION_INSTALL_CODE, results);
+            }
+            results.add(new WeakReference<>(result));
+            startActivityForResult(intent, REQUEST_PERMISSION_INSTALL_CODE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_PERMISSION_INSTALL_CODE || requestCode == REQUEST_PERMISSION_INSTALL_O_CODE) {
+            List<WeakReference<PermissionsResult>> results = resultMap.get(requestCode);
+            if (results != null) {
+                resultMap.remove(requestCode);
+                for (WeakReference<PermissionsResult> result : results) {
+                    if (result.get() != null) {
+                        if (resultCode == RESULT_OK) {
+                            result.get().didGranted();
+                        } else {
+                            result.get().didDenied();
+                        }
+                    }
+                }
+            }
+        }
     }
 }
