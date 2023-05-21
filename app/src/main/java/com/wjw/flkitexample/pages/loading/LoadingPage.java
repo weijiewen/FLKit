@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
@@ -72,7 +73,12 @@ public class LoadingPage extends FLTabBarActivity.FLTabBarPage<PageLoadingBindin
                                     getActivity().openCamera(new FLBaseActivity.PickCallback() {
                                         @Override
                                         public void pickData(Bitmap image) {
-                                            Log.d("", "pickData: ");
+                                            getActivity().browserImage(0, 1, new FLBaseActivity.BrowserImageListence() {
+                                                @Override
+                                                public void config(int index, ImageView imageView) {
+                                                    imageView.setImageBitmap(image);
+                                                }
+                                            });
                                         }
                                     });
                                 }
@@ -103,7 +109,12 @@ public class LoadingPage extends FLTabBarActivity.FLTabBarPage<PageLoadingBindin
                                     getActivity().openAlbum(new FLBaseActivity.PickCallback() {
                                         @Override
                                         public void pickData(Bitmap image) {
-                                            Log.d("", "pickData: ");
+                                            getActivity().browserImage(0, 1, new FLBaseActivity.BrowserImageListence() {
+                                                @Override
+                                                public void config(int index, ImageView imageView) {
+                                                    imageView.setImageBitmap(image);
+                                                }
+                                            });
                                         }
                                     });
                                 }

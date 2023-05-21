@@ -90,7 +90,7 @@ public class ExamplePage extends FLTabBarActivity.FLTabBarPage<PageExampleBindin
             @Nullable
             @Override
             public FLTableViewBaseSection getFooter(@NonNull ViewGroup parent) {
-                return new FLTableViewBaseSection(FLTableViewBaseSection.PlaceholderView(parent, getActivity().dipToPx(10)));
+                return FLTableViewBaseSection.placeholderView(parent, getActivity().dipToPx(10));
             }
         };
         binding.tableView.setCreatSection(creatSection);

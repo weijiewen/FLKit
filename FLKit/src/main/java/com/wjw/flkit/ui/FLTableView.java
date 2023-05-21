@@ -102,10 +102,10 @@ public class FLTableView extends RecyclerView {
     }
     public static class FLTableViewBaseSection extends ViewHolder {
         protected int section;
-        public static View PlaceholderView(ViewGroup parent, int height) {
+        public static FLTableViewBaseSection placeholderView(ViewGroup parent, int height) {
             View view = new LinearLayout(parent.getContext());
             view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
-            return view;
+            return new FLTableViewBaseSection(view);
         }
         public FLTableViewBaseSection(@NonNull View itemView) {
             super(itemView);
