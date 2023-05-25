@@ -924,7 +924,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         view.setLayoutParams(layoutParams);
         view.setVisibility(View.VISIBLE);
-        annexLayout.addView(view);
+        superLayout.addView(view, superLayout.indexOfChild(annexLayout));
     }
     public final void removeFullView(View view) {
         superLayout.removeView(view);
