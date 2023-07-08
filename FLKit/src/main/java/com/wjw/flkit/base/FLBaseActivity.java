@@ -206,7 +206,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                 navigationView.addLeftItem(backImage);
             }
         }
-        didLoad();
+        didLoad(savedInstanceState);
     }
 
     @Override
@@ -224,6 +224,10 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
 
     protected boolean addNavigation() {
         return true;
+    }
+
+    protected void didLoad(@Nullable Bundle savedInstanceState) {
+        didLoad();
     }
 
     @Override
