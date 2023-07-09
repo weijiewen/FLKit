@@ -1108,18 +1108,28 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
     private static final Integer REQUEST_PERMISSION_FORGROUND_LOCATION = 4;
     private static final Integer REQUEST_PERMISSION_BACKGROUND_LOCATION = 5;
     public void requestFrogroundLocation(PermissionsResult result) {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                    checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                result.didGranted();
+                return;
+            }
             List results = resultMap.get(REQUEST_PERMISSION_FORGROUND_LOCATION);
             if (results == null) {
                 results = new ArrayList();
                 resultMap.put(REQUEST_PERMISSION_FORGROUND_LOCATION, results);
             }
             results.add(new WeakReference<>(result));
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_FORGROUND_LOCATION);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_PERMISSION_FORGROUND_LOCATION);
         }
     }
     public void requestBackgroundLocation(PermissionsResult result) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                result.didGranted();
+                return;
+            }
             List results = resultMap.get(REQUEST_PERMISSION_BACKGROUND_LOCATION);
             if (results == null) {
                 results = new ArrayList();
