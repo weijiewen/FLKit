@@ -1110,20 +1110,43 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         }
     }
 
+    private static final Integer REQUEST_PERMISSION_FORGROUND_LOCATION = 4;
+    private static final Integer REQUEST_PERMISSION_BACKGROUND_LOCATION = 5;
+    public void requestFrogroundLocation(PermissionsResult result) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            List results = resultMap.get(REQUEST_PERMISSION_FORGROUND_LOCATION);
+            if (results == null) {
+                results = new ArrayList();
+                resultMap.put(REQUEST_PERMISSION_FORGROUND_LOCATION, results);
+            }
+            results.add(new WeakReference<>(result));
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_FORGROUND_LOCATION);
+        }
+    }
+    public void requestBackgroundLocation(PermissionsResult result) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            List results = resultMap.get(REQUEST_PERMISSION_BACKGROUND_LOCATION);
+            if (results == null) {
+                results = new ArrayList();
+                resultMap.put(REQUEST_PERMISSION_BACKGROUND_LOCATION, results);
+            }
+            results.add(new WeakReference<>(result));
+            requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_PERMISSION_BACKGROUND_LOCATION);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_PERMISSION_INSTALL_CODE || requestCode == REQUEST_PERMISSION_INSTALL_O_CODE) {
-            List<WeakReference<PermissionsResult>> results = resultMap.get(requestCode);
-            if (results != null) {
-                resultMap.remove(requestCode);
-                for (WeakReference<PermissionsResult> result : results) {
-                    if (result.get() != null) {
-                        if (resultCode == RESULT_OK) {
-                            result.get().didGranted();
-                        } else {
-                            result.get().didDenied();
-                        }
+        List<WeakReference<PermissionsResult>> results = resultMap.get(requestCode);
+        if (results != null) {
+            resultMap.remove(requestCode);
+            for (WeakReference<PermissionsResult> result : results) {
+                if (result.get() != null) {
+                    if (resultCode == RESULT_OK) {
+                        result.get().didGranted();
+                    } else {
+                        result.get().didDenied();
                     }
                 }
             }
