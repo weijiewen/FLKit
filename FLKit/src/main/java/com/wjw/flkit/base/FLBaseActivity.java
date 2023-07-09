@@ -1056,21 +1056,16 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         List<WeakReference<PermissionsResult>> results = resultMap.get(requestCode);
-        for (int i = 0; i < permissions.length; i++) {
-            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                if (results != null) {
-                    resultMap.remove(requestCode);
-                    for (WeakReference<PermissionsResult> result : results) {
-                        result.get().didDenied();
-                    }
-                }
-                return;
-            }
-        }
         if (results != null) {
             resultMap.remove(requestCode);
             for (WeakReference<PermissionsResult> result : results) {
-                result.get().didGranted();
+                if (result.get() != null) {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        result.get().didGranted();
+                    } else {
+                        result.get().didDenied();
+                    }
+                }
             }
         }
     }
@@ -1134,6 +1129,8 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_PERMISSION_BACKGROUND_LOCATION);
         }
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
