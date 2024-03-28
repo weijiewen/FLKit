@@ -103,6 +103,12 @@ public class FLCardView extends CardView {
         progressView = new ConstraintLayout(getContext());
         progressView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         progressView.setBackgroundColor(backgroundColor);
+        progressView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         addView(progressView);
 
         ConstraintLayout.LayoutParams progressBarParams = new ConstraintLayout.LayoutParams(0, 0);

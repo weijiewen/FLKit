@@ -2,6 +2,7 @@ package com.wjw.flkitexample.pages.controls.activities;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -50,6 +51,7 @@ public class SmscodeActivity extends FLBindingActivity<ActivitySmscodeBinding> {
                 }
             }
         });
+        binding.phone.setText("15000000000");
         binding.sendSmscode.setOnClickListener(this);
     }
 
@@ -60,13 +62,14 @@ public class SmscodeActivity extends FLBindingActivity<ActivitySmscodeBinding> {
                 String phone = binding.phone.getText().toString();
                 if (phone.length() == 11) {
                     binding.sendSmscode.startLoading();
+                    Log.d("111", "didClick: 12312");
                     FLAsyncTask.start(new FLAsyncTask.FLAsyncCallback() {
                         @Override
                         public void doInBack() {
                             try {
-                                Thread.sleep(1000);
+                                Thread.sleep(2000);
                             } catch (Exception e) {
-                                
+
                             }
                         }
 
