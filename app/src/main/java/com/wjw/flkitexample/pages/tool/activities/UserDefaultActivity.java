@@ -83,7 +83,7 @@ public class UserDefaultActivity extends FLBindingActivity<ActivityUserDefaultBi
             JSONObject jsonObject = new JSONObject(FLUserDefault.userDefault.getMap(this));
             string = jsonObject.toString(4);
         } catch (JSONException e) {
-            e.printStackTrace();
+            
         }
         if (string == null) {
             string = "null";

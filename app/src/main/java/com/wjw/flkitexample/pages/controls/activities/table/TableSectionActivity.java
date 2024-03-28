@@ -97,7 +97,7 @@ public class TableSectionActivity extends FLBindingActivity<ActivityTableSection
                 try {
                     Thread.sleep(1000);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    
                 }
             }
 

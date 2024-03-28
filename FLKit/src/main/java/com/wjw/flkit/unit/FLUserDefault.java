@@ -77,7 +77,7 @@ public class FLUserDefault implements Serializable {
                 hashMap = (HashMap) objectInputStream.readObject();
                 objectInputStream.close();
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                
             }
             if (hashMap == null) {
                 hashMap = new HashMap();
@@ -95,7 +95,7 @@ public class FLUserDefault implements Serializable {
                 objectOutputStream.writeObject(map);
                 objectOutputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                
             }
         }
     }

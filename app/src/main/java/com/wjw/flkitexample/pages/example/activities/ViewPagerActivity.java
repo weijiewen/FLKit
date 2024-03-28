@@ -214,7 +214,7 @@ public class ViewPagerActivity extends FLBindingActivity<ActivityViewPagerBindin
                                 new ViewPagerData(name + "，index：" + (page + 19))
                         ));
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        
                     }
                 }
 

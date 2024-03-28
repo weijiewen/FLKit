@@ -72,7 +72,7 @@ public class ApiManager {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            
         }
     }
 
@@ -113,7 +113,12 @@ public class ApiManager {
             source.request(Long.MAX_VALUE);
             Buffer buffer = source.getBuffer();
             String string = buffer.clone().readString(Charset.forName("UTF-8"));
-            HashMap result = JSON.parseObject(string, HashMap.class);
+            HashMap result = null;
+            try {
+                result = JSONObject.parseObject(string, HashMap.class);
+            } catch (Exception e) {
+
+            }
             if (result == null) {
                 result = new HashMap();
             }

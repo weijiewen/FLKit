@@ -21,7 +21,7 @@ public class FLLog {
             JSONObject jsonObject = new JSONObject(map);
             string = jsonObject.toString(4);
         } catch (JSONException e) {
-            e.printStackTrace();
+            
         }
         if (string == null) {
             string = "null";

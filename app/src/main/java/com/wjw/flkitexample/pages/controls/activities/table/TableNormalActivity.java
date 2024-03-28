@@ -78,7 +78,7 @@ public class TableNormalActivity extends FLBindingActivity<ActivityTableNormalBi
                 try {
                     Thread.sleep(1000);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    
                 }
             }
 

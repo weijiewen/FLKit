@@ -86,7 +86,7 @@ public class FLZXingActivity extends FLBaseActivity implements SurfaceHolder.Cal
             bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
             imageView.setImageBitmap(bitmap);
         } catch (WriterException e) {
-            e.printStackTrace();
+            
         }
     }
     public static String getQRCode(String path) {
@@ -109,11 +109,11 @@ public class FLZXingActivity extends FLBaseActivity implements SurfaceHolder.Cal
             Result result = reader.decode(new BinaryBitmap(new HybridBinarizer(new RGBLuminanceSource(width, height, pixels))), hints);
             return result.getText();
         } catch (NotFoundException e) {
-            e.printStackTrace();
+            
         } catch (ChecksumException e) {
-            e.printStackTrace();
+            
         } catch (FormatException e) {
-            e.printStackTrace();
+            
         }
         return null;
     }

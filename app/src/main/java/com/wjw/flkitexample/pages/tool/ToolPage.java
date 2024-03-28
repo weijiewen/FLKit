@@ -89,7 +89,7 @@ public class ToolPage extends FLTabBarActivity.FLTabBarPage<PageToolBinding> {
 
                                     @Override
                                     public void onError(Throwable e) {
-                                        e.printStackTrace();
+                                        
                                         getActivity().showTip("请求失败" + e.getMessage());
                                     }
                                 });

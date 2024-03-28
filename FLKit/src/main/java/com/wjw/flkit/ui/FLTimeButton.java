@@ -226,7 +226,7 @@ public class FLTimeButton extends FLCardView {
                 objectOutputStream.writeObject(cacheHashMap);
                 objectOutputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                
             }
         }
     }
@@ -238,7 +238,7 @@ public class FLTimeButton extends FLCardView {
             cacheHashMap = (HashMap<String, FLSmscodeCache>) objectInputStream.readObject();
             objectInputStream.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            
         }
         if (cacheHashMap == null) {
             cacheHashMap = new HashMap<>();
