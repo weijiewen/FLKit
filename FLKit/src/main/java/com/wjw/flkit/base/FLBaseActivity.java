@@ -170,10 +170,10 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         superLayout.addView(view);
-        superLayout.addView(annexLayout);
         if (navigationView != null) {
             superLayout.addView(navigationView);
         }
+        superLayout.addView(annexLayout);
         setContentView(superLayout);
 
         if (!isTaskRoot() && navigationView != null) {
@@ -936,13 +936,13 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         view.setVisibility(View.VISIBLE);
         superLayout.addView(view, superLayout.indexOfChild(annexLayout));
     }
-    public final void addFullViewAboveNavigation(View view) {
+    public final void addFullViewBelowNavigation(View view) {
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         view.setLayoutParams(layoutParams);
         view.setVisibility(View.VISIBLE);
-        superLayout.addView(view);
+        superLayout.addView(view, superLayout.indexOfChild(navigationView));
     }
     public final void removeFullView(View view) {
         superLayout.removeView(view);
