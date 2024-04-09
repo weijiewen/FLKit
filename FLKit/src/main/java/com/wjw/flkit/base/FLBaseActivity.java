@@ -212,14 +212,20 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
     @Override
     public final void onBackPressed() {
         if (dialogContent == null && progressBar == null) {
-            if (willBackPressed()) {
-                super.onBackPressed();
-            }
+            willBackPressed(new WillBackCallback() {
+                @Override
+                public void backPressed() {
+                    FLBaseActivity.super.onBackPressed();
+                }
+            });
         }
     }
 
-    protected boolean willBackPressed() {
-        return true;
+    public interface WillBackCallback {
+        void backPressed();
+    }
+    protected void willBackPressed(WillBackCallback backCallback) {
+        backCallback.backPressed();
     }
 
     protected boolean addNavigation() {
