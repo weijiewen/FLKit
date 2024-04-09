@@ -200,7 +200,7 @@ public abstract class FLTabBarActivity extends FLBaseActivity {
                     rootParams.topMargin = getActivity().getStatusHeight();
                     break;
                 case NavigationBar:
-                    rootParams.topMargin = getActivity().getStatusHeight() + getActivity().dipToPx(44);
+                    rootParams.topMargin = getActivity().getNavigationHeight();
                     break;
             }
             binding.getRoot().setLayoutParams(rootParams);

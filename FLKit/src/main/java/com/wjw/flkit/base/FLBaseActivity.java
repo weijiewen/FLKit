@@ -163,7 +163,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                 rootParams.topMargin = getStatusHeight();
                 break;
             case NavigationBar:
-                rootParams.topMargin = getStatusHeight() + dipToPx(44);
+                rootParams.topMargin = getNavigationHeight();
                 break;
         }
         view.setLayoutParams(rootParams);
@@ -935,6 +935,14 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         view.setLayoutParams(layoutParams);
         view.setVisibility(View.VISIBLE);
         superLayout.addView(view, superLayout.indexOfChild(annexLayout));
+    }
+    public final void addFullViewAboveNavigation(View view) {
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        view.setLayoutParams(layoutParams);
+        view.setVisibility(View.VISIBLE);
+        superLayout.addView(view);
     }
     public final void removeFullView(View view) {
         superLayout.removeView(view);
