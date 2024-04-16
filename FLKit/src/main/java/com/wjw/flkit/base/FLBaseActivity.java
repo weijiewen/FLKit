@@ -935,6 +935,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         view.setLayoutParams(layoutParams);
         view.setVisibility(View.VISIBLE);
         superLayout.addView(view, superLayout.indexOfChild(annexLayout));
+        view.setVisibility(View.INVISIBLE);
     }
     public final void addFullViewBelowNavigation(View view) {
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -943,6 +944,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         view.setLayoutParams(layoutParams);
         view.setVisibility(View.VISIBLE);
         superLayout.addView(view, superLayout.indexOfChild(navigationView));
+        view.setVisibility(View.INVISIBLE);
     }
     public final void removeFullView(View view) {
         superLayout.removeView(view);
