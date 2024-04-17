@@ -182,9 +182,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                     @Override
                     public void onClick(View view) {
                         endEdit();
-                        if (dialogContent == null && progressBar == null) {
-                            finish();
-                        }
+                        onBackPressed();
                     }
                 });
             }
