@@ -3,9 +3,12 @@ package com.wjw.flkitexample.pages.base;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -44,6 +47,40 @@ public class BasePage extends FLTabBarActivity.FLTabBarPage<PageBaseBinding> {
     @Override
     protected void didLoad() {
         setStatusStyle(FLBaseActivity.StatusStyle.light);
+        TextView moreText = new TextView(getActivity());
+        moreText.setTextColor(Color.WHITE);
+        moreText.setText("更多");
+        moreText.setGravity(Gravity.CENTER);
+        moreText.setLayoutParams(new LinearLayout.LayoutParams(getActivity().dipToPx(50), ViewGroup.LayoutParams.MATCH_PARENT));
+        moreText.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().showPopup(v, new FLBaseActivity.ConfigPopup() {
+                    @Override
+                    public void loadPopup(FLBaseActivity.PopupConfig config) {
+                        config.addItem("测试弹窗1", new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                getActivity().showTip("测试弹窗1");
+                            }
+                        });
+                        config.addItem("测试弹窗2", new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                getActivity().showTip("测试弹窗2");
+                            }
+                        });
+                        config.addItem("测试弹窗3", new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                getActivity().showTip("测试弹窗3");
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        navigationView.addRightItem(moreText);
         datas = Arrays.asList(
                 "dialog弹窗",
                 "loading-tip弹窗",
@@ -97,6 +134,35 @@ public class BasePage extends FLTabBarActivity.FLTabBarPage<PageBaseBinding> {
                             fullView.show();
                             break;
                     }
+                }
+            });
+            cellBinding.getRoot().setOnLongClickListener(new OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    getActivity().showPopup(v, new FLBaseActivity.ConfigPopup() {
+                        @Override
+                        public void loadPopup(FLBaseActivity.PopupConfig config) {
+                            config.addItem("测试1", new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    getActivity().showTip("测试1");
+                                }
+                            });
+                            config.addItem("测试2", new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    getActivity().showTip("测试2");
+                                }
+                            });
+                            config.addItem("测试3", new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    getActivity().showTip("测试3");
+                                }
+                            });
+                        }
+                    });
+                    return true;
                 }
             });
         }

@@ -2,6 +2,7 @@ package com.wjw.flkit.base;
 
 import android.Manifest;
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,12 +22,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -39,6 +42,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -836,6 +840,198 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
                     }
                 });
                 cancel = textView;
+            }
+        }
+    }
+    public void showPopup(View touchView, ConfigPopup config) {
+        endEdit();
+        PopupView popupView = new PopupView(getActivity());
+        PopupConfig popupConfig = new PopupConfig(popupView);
+        config.loadPopup(popupConfig);
+        addFullView(popupView);
+        popupView.show(touchView, popupConfig);
+    }
+
+    public enum PopupOrientation {
+        HORIZONTAL, VERTICAL;
+    }
+    public interface ConfigPopup {
+        void loadPopup(PopupConfig config);
+    }
+    public class PopupConfig {
+        private PopupView popupView;
+        private PopupConfig(PopupView popupView) {
+            this.popupView = popupView;
+        }
+        public void setOrientation(PopupOrientation orientation) {
+            this.orientation = orientation == PopupOrientation.HORIZONTAL ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL;
+        }
+
+        public void setMaskColor(int maskColor) {
+            this.maskColor = maskColor;
+        }
+
+        public void setPopupColor(int popupColor) {
+            this.popupColor = popupColor;
+        }
+
+        public void setImageHeight(int imageHeight) {
+            this.imageHeight = imageHeight;
+        }
+
+        public void setTextSize(int textSize) {
+            this.textSize = textSize;
+        }
+
+        public void setTextColor(int textColor) {
+            this.textColor = textColor;
+        }
+
+        public void addItem(String text, View.OnClickListener listener) {
+            addItem(0, text, listener);
+        }
+        public void addItem(String text, int textColor, View.OnClickListener listener) {
+            addItem(0, text, textColor, listener);
+        }
+        public void addItem(@DrawableRes int image, String text, View.OnClickListener listener) {
+            addItem(image, text, textColor, listener);
+        }
+        public void addItem(@DrawableRes int image, String text, int textColor, View.OnClickListener listener) {
+            PopupView.PopupItemView itemView = new PopupView.PopupItemView(getActivity(), this);
+            if (image != 0) {
+                itemView.imageView.setImageResource(image);
+            }
+            else {
+                itemView.imageView.setVisibility(View.GONE);
+            }
+            itemView.textView.setTextColor(textColor);
+            itemView.textView.setText(text);
+            addItem(itemView, listener);
+        }
+        public void addItem(View itemView, View.OnClickListener listener) {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onClick(v);
+                    popupView.animate().alpha(0).setDuration(300);
+                    popupView.cardView.animate().scaleY(0).setDuration(300);
+                }
+            });
+            itemViewList.add(itemView);
+        }
+        private int orientation = LinearLayout.VERTICAL;
+        private int maskColor = Color.parseColor("#11000000");
+        private int popupColor = Color.parseColor("#FFFFFF");
+        private int imageHeight = 14;
+        private int textSize = 14;
+        private int textColor = Color.parseColor("#333333");
+        private List<View> itemViewList = new ArrayList<>();
+    }
+    private static class PopupView extends FrameLayout {
+        FLBaseActivity context;
+        public PopupView(@NonNull FLBaseActivity context) {
+            super(context);
+            this.context = context;
+            setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            cardView = new CardView(context);
+            cardView.setRadius(context.dipToPx(4));
+            cardView.setCardElevation(context.dipToPx(1));
+            addView(cardView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            itemLayout = new LinearLayout(context);
+            itemLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            itemLayout.setPadding(0, context.dipToPx(4), 0, context.dipToPx(4));
+            cardView.addView(itemLayout);
+            animate().setListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(@NonNull Animator animation) {}
+                @Override
+                public void onAnimationEnd(@NonNull Animator animation) {
+                    if (getAlpha() < 0.5) {
+                        context.removeFullView(PopupView.this);
+                    }
+                }
+                @Override
+                public void onAnimationCancel(@NonNull Animator animation) {}
+                @Override
+                public void onAnimationRepeat(@NonNull Animator animation) {}
+            });
+            setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    animate().alpha(0).setDuration(100);
+                    cardView.animate().scaleY(0).setDuration(100);
+                }
+            });
+        }
+        public void show(View showView, PopupConfig config) {
+            setBackgroundColor(config.maskColor);
+            cardView.setCardBackgroundColor(config.popupColor);
+            itemLayout.setOrientation(config.orientation);
+            itemLayout.removeAllViews();
+            for (int i = 0; i < config.itemViewList.size(); i ++) {
+                View itemview = config.itemViewList.get(i);
+                itemLayout.addView(itemview, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                if (i < config.itemViewList.size() - 1) {
+                    int lineWidth = config.orientation == LinearLayout.HORIZONTAL ? context.dipToPx(1) : ViewGroup.LayoutParams.MATCH_PARENT;
+                    int lineHeight = config.orientation == LinearLayout.VERTICAL ? context.dipToPx(1) : ViewGroup.LayoutParams.MATCH_PARENT;
+                    LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(lineWidth, lineHeight);
+                    View line = new View(getContext());
+                    line.setBackgroundColor(Color.parseColor("#F0F0F0"));
+                    itemLayout.addView(line, lineParams);
+                }
+            }
+            cardView.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            Activity activity = (Activity) getContext();
+
+            DisplayMetrics dm = new DisplayMetrics();
+            activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+            int screenWidth = dm.widthPixels;
+            int screenHeight = dm.heightPixels;
+
+            int width = cardView.getMeasuredWidth();
+            int height = cardView.getMeasuredHeight();
+
+            int[] location = new int[2];
+            showView.getLocationOnScreen(location);
+            int x = location[0] + showView.getWidth() / 2 - width / 2;
+            int y = location[1] + showView.getHeight() - context.dipToPx(5);
+            if (x < 0) {
+                x = context.dipToPx(5);
+            } else if (x + width > screenWidth) {
+                x = screenWidth - width - context.dipToPx(5);
+            }
+            if (y + height > screenHeight) {
+                y = y - height + context.dipToPx(5);
+            }
+            FrameLayout.LayoutParams cardParams = (LayoutParams) cardView.getLayoutParams();
+            cardParams.setMargins(x, y, 0, 0);
+            cardView.setPivotY(0);
+            setAlpha(0);
+            cardView.setScaleY(0);
+            setVisibility(VISIBLE);
+            animate().alpha(1).setDuration(100);
+            cardView.animate().scaleY(1).setDuration(100);
+        }
+        private CardView cardView;
+        private LinearLayout itemLayout;
+        private static class PopupItemView extends LinearLayout {
+            private ImageView imageView;
+            private TextView textView;
+            public PopupItemView(FLBaseActivity context, PopupConfig config) {
+                super(context);
+                setOrientation(HORIZONTAL);
+                setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                setGravity(Gravity.CENTER_VERTICAL);
+                setPadding(context.dipToPx(15), context.dipToPx(6), context.dipToPx(15), context.dipToPx(6));
+                LinearLayout.LayoutParams imageParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, context.dipToPx(config.imageHeight));
+                imageParams.setMargins(0, 0, context.dipToPx(5), 0);
+                imageView = new ImageView(context);
+                imageView.setLayoutParams(imageParams);
+                addView(imageView);
+                textView = new TextView(context);
+                textView.setTextColor(config.textColor);
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, config.textSize);
+                addView(textView);
             }
         }
     }
