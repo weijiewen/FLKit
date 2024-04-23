@@ -213,6 +213,10 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
 
     @Override
     public final void onBackPressed() {
+        if (imageBrowser != null) {
+            dismissImageBrowser();
+            return;
+        }
         if (dialogContent == null && progressBar == null) {
             willBackPressed(new WillBackCallback() {
                 @Override
@@ -1057,7 +1061,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         void config(int index, ImageView imageView);
     }
     public final void browserImage(int showIndex, int size, BrowserImageListence listence) {
-        dismissImageBrowser(-1);
+        dismissImageBrowser();
         imageBrowserStatusStyle = getStatusStyle();
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -1072,7 +1076,7 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
 
             @Override
             public void touch(int index) {
-                dismissImageBrowser(index);
+                dismissImageBrowser();
             }
         });
         browser.setBackgroundColor(Color.BLACK);
@@ -1113,11 +1117,10 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         browser.animate().translationY(0).alpha(1).setDuration(300);
     }
 
-    private void dismissImageBrowser(int index) {
+    private void dismissImageBrowser() {
         if (imageBrowser != null) {
             FLImageBrowser browser = imageBrowser;
             imageBrowser = null;
-            ImageView sourceView = null;
             browser.animate().translationY(superLayout.getHeight()).alpha(0.f).setDuration(300);
         }
     }
