@@ -1,20 +1,13 @@
 package com.wjw.flkitexample.pages.controls.activities.table;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkit.ui.FLTableView;
 import com.wjw.flkit.unit.FLAsyncTask;
-import com.wjw.flkitexample.R;
 import com.wjw.flkitexample.databinding.ActivityTableErrorBinding;
 import com.wjw.flkitexample.databinding.ViewTableErrorBinding;
 
@@ -34,7 +27,7 @@ public class TableErrorActivity extends FLBindingActivity<ActivityTableErrorBind
     protected void didLoad() {
         binding.tableView.setConfigErrorView(new FLTableView.ConfigError() {
             @Override
-            public FLTableView.FLTableErrorView getErrorView(Context context, String error) {
+            public FLTableView.FLBindingErrorView getErrorView(Context context, String error) {
                 return new ErrorView(context, error);
             }
         });
@@ -69,7 +62,9 @@ public class TableErrorActivity extends FLBindingActivity<ActivityTableErrorBind
     protected void didClick(View view) {
 
     }
-    private class ErrorView extends FLTableView.FLTableErrorView<ViewTableErrorBinding> {
+    private class ErrorView extends FLTableView.FLBindingErrorView<ViewTableErrorBinding> {
+
+
         public ErrorView(Context context, String error) {
             super(context, error);
             errorBinding.error.setText(error);

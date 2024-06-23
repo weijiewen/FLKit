@@ -6,20 +6,17 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -33,39 +30,207 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FLTableView extends RecyclerView {
-    private View headerView;
+    /**
+     * 控件已经创建, 子类重写进行全局配置
+     * @param context
+     */
+    public void didLoad(@NonNull Context context) {
+        setLayoutManager(new LinearLayoutManager(context));
+    }
 
-    public void setHeaderView(View headerView) {
+    /**
+     * 需要展示错误提示，子类重写可自定义提示
+     * @param message 错误信息
+     */
+    public void tableNeedShowToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT);
+    }
+
+    /**
+     * 创建cell (viewHolder)
+     * @param creatCell new CreatCell对象
+     */
+    public final void setCreatCell(CreatCell creatCell) {
+        setCreatCell("暂无数据", creatCell);
+    }
+
+    /**
+     * 创建cell (viewHolder)
+     * @param empty 没有数据文字，配置 configEmpty 会覆盖此值
+     * @param creatCell new CreatCell对象
+     */
+    public final void setCreatCell(String empty, CreatCell creatCell) {
+        this.empty = empty;
+        this.creatCell = creatCell;
+    }
+
+    /**
+     * 创建section (分组头部)
+     * @param creatSection new CreatSection对象
+     */
+    public final void setCreatSection(CreatSection creatSection) {
+        this.creatSection = creatSection;
+    }
+
+    /**
+     * 请求失败刷新方法，会重载列表，显示error和重试按钮，有数据时自行提示toast
+     * @param error 要显示的错误信息
+     * @param retry 点击重试回调
+     */
+    public final void reloadData(String error, Retry retry) {
+        this.retry = retry;
+        reloadData(error, true, null);
+    }
+
+    /**
+     * 请求成功刷新方法，会重载列表，addFooterRefresh后 hasMore传true 上拉加载可触发，传入false 上拉加载不可触发并显示setFooterNoMoreString文字
+     * @param hasMore
+     */
+    public final void reloadData(boolean hasMore) {
+        reloadData(null, hasMore, null);
+    }
+
+    /**
+     * 重载列表
+     */
+    public final void reloadData() {
+        reloadData(null, true, true);
+    }
+
+    /**
+     * 更新列表，不会重新加载，删除数据时用 reloadData
+     */
+    public final void updateData() {
+        reloadData(null, true, false);
+    }
+
+    /**
+     * 添加下拉刷新
+     * @param action 下拉刷新触发回调
+     */
+    public final void addHeaderRefresh(RefreshInterface action) {
+        addHeaderRefresh(new HeaderRefreshView(getContext()), action);
+    }
+
+    /**
+     * 添加下拉刷新
+     * @param header 刷新控件
+     * @param action 下拉刷新触发回调
+     */
+    public final void addHeaderRefresh(FLHeaderRefreshView header, RefreshInterface action) {
+        headerRefresh = header;
+        headerAction = action;
+    }
+
+    /**
+     * 添加上拉加载
+     * @param action 上拉加载触发回调
+     */
+    public final void addFooterRefresh(RefreshInterface action) {
+        addFooterRefresh(new FooterRefreshView(getContext()), action);
+    }
+
+    /**
+     * 添加上拉加载
+     * @param footer 刷新控件
+     * @param action 上拉加载触发回调
+     */
+    public final void addFooterRefresh(FLFooterRefreshView footer, RefreshInterface action) {
+        footerRefresh = footer;
+        footerAction = action;
+    }
+
+    /**
+     * 显示loading，调用reloadData取消loading
+     */
+    public final void startLoading() {
+        if (!isRefreshing()) {
+            if (configLoading != null) {
+                loadingView = configLoading.getLoadingView(getContext());
+            }
+            if (loadingView == null) {
+                loadingView = new LoadingView(getContext());
+            }
+            mainCount = 0;
+            reloadAdapter();
+        }
+    }
+
+    /**
+     * 设置header
+     * @param headerView header视图
+     */
+    public final void setHeaderView(View headerView) {
         this.headerView = headerView;
     }
+
+    /**
+     * 配置自定义loading
+     * @param configLoading 配置回调
+     */
+    public final void setConfigLoading(ConfigLoading configLoading) {
+        this.configLoading = configLoading;
+    }
+
+    /**
+     * 配置自定义empty空数据
+     * @param configEmpty 配置回调
+     */
+    public final void setConfigEmpty(ConfigEmpty configEmpty) {
+        this.configEmpty = configEmpty;
+    }
+    /**
+     * 配置自定义error错误
+     * @param configErrorView 配置回调
+     */
+    public final void setConfigErrorView(ConfigError configErrorView) {
+        this.configError = configErrorView;
+    }
+
+    /**
+     * 设置上拉加载没有数据文字
+     * @param footerNoMoreString 没有数据文字
+     */
+    public final void setFooterNoMoreString(String footerNoMoreString) {
+        this.footerNoMoreString = footerNoMoreString;
+    }
+
+    /**
+     * 设置所有loading颜色
+     * @param color 颜色
+     */
+    public final void setLoadingTintColor(int color) {
+        this.tintColor = color;
+    }
+
+    /**
+     * 设置所有文字颜色
+     * @param textColor 颜色
+     */
+    public final void setTextColor(int textColor) {
+        this.textColor = textColor;
+    }
+
+
+    private View headerView;
 
     public interface ConfigLoading {
         View getLoadingView(Context context);
     }
     private ConfigLoading configLoading;
 
-    public void setConfigLoading(ConfigLoading configLoading) {
-        this.configLoading = configLoading;
-    }
     public interface ConfigEmpty {
         View getEmptyView(Context context);
     }
     private ConfigEmpty configEmpty;
 
-    public void setConfigEmpty(ConfigEmpty configEmpty) {
-        this.configEmpty = configEmpty;
-    }
     public interface ConfigError {
-        FLTableErrorView getErrorView(Context context, String error);
+        FLBindingErrorView getErrorView(Context context, String error);
     }
     private ConfigError configError;
-
-    public void setConfigErrorView(ConfigError configErrorView) {
-        this.configError = configErrorView;
-    }
-    public static abstract class FLTableErrorView<Binding extends ViewBinding> extends LinearLayout {
+    public static abstract class FLBindingErrorView<Binding extends ViewBinding> extends LinearLayout {
         protected Binding errorBinding;
-        public FLTableErrorView(Context context, String error) {
+        public FLBindingErrorView(Context context, String error) {
             super(context);
             setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             errorBinding = getBinding();
@@ -93,9 +258,6 @@ public class FLTableView extends RecyclerView {
     }
     private CreatSection creatSection;
 
-    public void setCreatSection(CreatSection creatSection) {
-        this.creatSection = creatSection;
-    }
     public interface CreatCell<T extends FLCell> {
         int itemCount(int section);
         T getCell(@NonNull ViewGroup parent);
@@ -123,13 +285,6 @@ public class FLTableView extends RecyclerView {
         protected abstract void bindData(Binding sectionBinding, int section);
     }
     private CreatCell creatCell;
-    public void setCreatCell(CreatCell creatCell) {
-        setCreatCell("暂无数据", creatCell);
-    }
-    public void setCreatCell(String empty, CreatCell creatCell) {
-        this.empty = empty;
-        this.creatCell = creatCell;
-    }
     //baseViewHolder
     public abstract static class FLCell extends ViewHolder {
         protected int section;
@@ -165,55 +320,17 @@ public class FLTableView extends RecyclerView {
         }
     }
     private int tintColor = Color.parseColor("#247BEF");
-    public void setTintColor(int color) {
-        this.tintColor = color;
-    }
-    private int textColor = Color.BLACK;
-    public void setTextColor(int textColor) {
-        this.textColor = textColor;
-    }
-    public final void startLoading() {
-        if (!isRefreshing()) {
-            if (configLoading != null) {
-                loadingView = configLoading.getLoadingView(getContext());
-            }
-            if (loadingView == null) {
-                loadingView = new LoadingView(getContext());
-            }
-            reloadAdapter();
-        }
-    }
-    public final void reloadData() {
-        reloadData(null, true, true);
-    }
-    public final void updateData() {
-        reloadData(null, true, false);
-    }
+    private int textColor = Color.parseColor("#BBBBBB");
     public interface Retry {
         void retryRequest();
     }
     private Retry retry;
-    public final void reloadData(String error, Retry retry) {
-        this.retry = retry;
-        reloadData(error, true, null);
-    }
-    public final void reloadData(boolean hasMore) {
-        reloadData(null, hasMore, null);
-    }
     public interface RefreshInterface {
         void enterRefreshing();
     }
-    public void addHeaderRefresh(RefreshInterface action) {
-        headerRefresh = new HeaderRefresh(getContext());
-        headerAction = action;
-    }
-    public void addFooterRefresh(RefreshInterface action) {
-        footerRefresh = new FooterRefresh(getContext());
-        footerAction = action;
-    }
-    private HeaderRefresh headerRefresh;
+    private FLHeaderRefreshView headerRefresh;
     private RefreshInterface headerAction;
-    private FooterRefresh footerRefresh;
+    private FLFooterRefreshView footerRefresh;
     private RefreshInterface footerAction;
     private boolean isRefreshing() {
         if (headerRefresh != null && headerRefresh.refreshing) {
@@ -272,7 +389,7 @@ public class FLTableView extends RecyclerView {
         if (count == 0) {
             if (error != null && !error.isEmpty()) {
                 if (configError != null) {
-                    FLTableErrorView tableErrorView = configError.getErrorView(getContext(), error);
+                    FLBindingErrorView tableErrorView = configError.getErrorView(getContext(), error);
                     tableErrorView.retry = retry;
                     errorView = tableErrorView;
                 }
@@ -291,11 +408,16 @@ public class FLTableView extends RecyclerView {
             reloadAdapter();
             return;
         }
-        if (adapter == null || reload) {
-            reloadAdapter();
+        else if (error != null && !error.isEmpty()) {
+            tableNeedShowToast(error);
         }
         else {
-            adapter.notifyDataSetChanged();
+            if (adapter == null || reload) {
+                reloadAdapter();
+            }
+            else {
+                adapter.notifyDataSetChanged();
+            }
         }
     }
     private void reloadAdapter() {
@@ -473,7 +595,7 @@ public class FLTableView extends RecyclerView {
     }
     public FLTableView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setLayoutManager(new LinearLayoutManager(context));
+        didLoad(context);
     }
     private float lastY = -1;
     private float sumOffSet;
@@ -523,6 +645,36 @@ public class FLTableView extends RecyclerView {
         }
         return super.onTouchEvent(e);
     }
+
+    int mLastX, mLastY;
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN: {
+                getParent().requestDisallowInterceptTouchEvent(true);
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                int deltaX = x - mLastX;
+                if (Math.abs(deltaX) > dipToPx(15)) {
+                    getParent().requestDisallowInterceptTouchEvent(false);
+                }
+                break;
+            }
+            case MotionEvent.ACTION_UP: {
+                getParent().requestDisallowInterceptTouchEvent(false);
+                break;
+            }
+            default:
+                break;
+        }
+        mLastX = x;
+        mLastY = y;
+        return super.dispatchTouchEvent(event);
+    }
+
     private int dipToPx(float dpValue) {
         final float scale = getContext().getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
@@ -659,7 +811,6 @@ public class FLTableView extends RecyclerView {
                     public void run() {
                         int height = FLTableView.this.getMeasuredHeight();
                         int headerHeight = headerView.getMeasuredHeight();
-                        Log.d("checkHeight", "run: " + height + " h " + headerHeight);
                         if (height == 0 || headerHeight == 0) {
                             reloadHeight();
                         }
@@ -673,46 +824,135 @@ public class FLTableView extends RecyclerView {
             }
         }
     }
+    public abstract class FLHeaderRefreshView extends LinearLayout {
+        private int headerHeight;
+        private boolean refreshing;
+        private boolean readyRefresh;
+
+        public FLHeaderRefreshView(Context context) {
+            this(context, null);
+        }
+
+        public FLHeaderRefreshView(Context context, @Nullable AttributeSet attrs) {
+            this(context, attrs, 0);
+        }
+
+        public FLHeaderRefreshView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+            this(context, attrs, defStyleAttr, 0);
+        }
+
+        public FLHeaderRefreshView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+            headerHeight = headerHeight();
+            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
+            setLayoutParams(layoutParams);
+        }
+
+        public abstract int headerHeight();
+        public abstract void refreshReadyChange(boolean ready);
+        public abstract void refreshStateChange(boolean isRefreshing);
+        public void onMove(float offSet, float sumOffSet) {
+            if (getVisibleHeight() > 0 || offSet > 0) {
+                setVisibleHeight((int) offSet + getVisibleHeight());
+                if (!refreshing) { // 未处于刷新状态，更新文字
+                    if (getVisibleHeight() > headerHeight) {
+                        if (!readyRefresh) {
+                            readyRefresh = true;
+                            refreshReadyChange(true);
+                        }
+                    } else {
+                        if (readyRefresh) {
+                            readyRefresh = false;
+                            refreshReadyChange(false);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void changeRefreshing(boolean refreshing) {
+            if (this.refreshing == refreshing && refreshing) {
+                if (getVisibleHeight() > 0) {
+                    smoothScrollTo(0);
+                }
+                return;
+            }
+            this.refreshing = refreshing;
+            smoothScrollTo(refreshing ? headerHeight : 0);
+            this.refreshStateChange(refreshing);
+
+            if (readyRefresh) {
+                readyRefresh = false;
+                refreshReadyChange(false);
+            }
+        }
+
+        private void smoothScrollTo(int destHeight) {
+            ValueAnimator animator = ValueAnimator.ofInt(getVisibleHeight(), destHeight);
+            animator.setDuration(300).start();
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    setVisibleHeight((int) animation.getAnimatedValue());
+                }
+            });
+            animator.start();
+        }
+
+        private void setVisibleHeight(int height) {
+            if (height < 0) height = 0;
+            ViewGroup.LayoutParams layoutParams = getLayoutParams();
+            layoutParams.height = height;
+            setLayoutParams(layoutParams);
+        }
+        private int getVisibleHeight() { return getLayoutParams().height; }
+        private void enterRefresh() { changeRefreshing(true); }
+        public void endRefresh() {
+            changeRefreshing(false);
+        }
+    }
     //header
-    private class HeaderRefresh extends LinearLayout {
+    private class HeaderRefreshView extends FLHeaderRefreshView {
         private ConstraintLayout contentLayout;
         private ProgressBar progressBar;
         private TextView textView;
 
-        private int headerHeight;
-        private boolean refreshing;
-        private boolean readyRefresh;
-        public HeaderRefresh(Context context) {
-            this(context, null);
-        }
-
-        public HeaderRefresh(Context context, @Nullable AttributeSet attrs) {
-            this(context, attrs, 0);
-        }
-
-        public HeaderRefresh(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
-            init();//初始化视图
-        }
-
-        private void init() {
-            LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.setMargins(0, 0, 0, 0);
-            this.setLayoutParams(layoutParams);
-            this.setPadding(0, 0, 0, 0);
+        public HeaderRefreshView(Context context) {
+            super(context);
             createView();
+        }
+
+        @Override
+        public int headerHeight() {
+            return dipToPx(getContext(), 50);
+        }
+
+        @Override
+        public void refreshReadyChange(boolean ready) {
+            textView.setText(ready ? "松开刷新" : "下拉刷新");
+        }
+
+        @Override
+        public void refreshStateChange(boolean isRefreshing) {
+            if (isRefreshing) {
+                textView.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+            }
+            else {
+                textView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+            }
         }
 
         @SuppressLint("ResourceType")
         private void createView() {
-            headerHeight = dipToPx(getContext(), 50);
             //将Header高度设置为0
             contentLayout = new ConstraintLayout(getContext());
             contentLayout.setId(99);
-            addView(contentLayout, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
+            addView(contentLayout, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             ConstraintSet set = new ConstraintSet();
             set.constrainDefaultWidth(10, ConstraintSet.MATCH_CONSTRAINT);
-            set.constrainDefaultHeight(10, headerHeight);
+            set.constrainDefaultHeight(10, ConstraintSet.MATCH_CONSTRAINT);
 
             textView = new TextView(getContext());
             textView.setTextColor(textColor);
@@ -744,116 +984,106 @@ public class FLTableView extends RecyclerView {
             final float scale = context.getResources().getDisplayMetrics().density;
             return (int) (pxValue * scale + 0.5f);
         }
-
-        public void onMove(float offSet, float sumOffSet) {
-            if (getVisibleHeight() > 0 || offSet > 0) {
-                setVisibleHeight((int) offSet + getVisibleHeight());
-                if (!refreshing) { // 未处于刷新状态，更新文字
-                    if (getVisibleHeight() > headerHeight) {
-                        readyRefresh = true;
-                        textView.setText("松开刷新");
-                    } else {
-                        readyRefresh = false;
-                        textView.setText("下拉刷新");
-                    }
-                }
-            }
-        }
-
-        private void changeRefreshing(boolean refreshing) {
-            if (this.refreshing == refreshing && refreshing) {
-                if (getVisibleHeight() > 0) {
-                    smoothScrollTo(0);
-                }
-                return;
-            }
-            this.refreshing = refreshing;
-            if (refreshing) {
-                textView.setVisibility(View.INVISIBLE);
-                progressBar.setVisibility(View.VISIBLE);
-                smoothScrollTo(headerHeight);
-            }
-            else {
-                textView.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.INVISIBLE);
-                smoothScrollTo(0);
-            }
-            readyRefresh = false;
-        }
-
-        private void smoothScrollTo(int destHeight) {
-            ValueAnimator animator = ValueAnimator.ofInt(getVisibleHeight(), destHeight);
-            animator.setDuration(300).start();
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    setVisibleHeight((int) animation.getAnimatedValue());
-                }
-            });
-            animator.start();
-        }
-
-        private void setVisibleHeight(int height) {
-            if (height < 0) height = 0;
-            LayoutParams layoutParams = (LayoutParams) contentLayout.getLayoutParams();
-            layoutParams.height = height;
-            contentLayout.setLayoutParams(layoutParams);
-        }
-        private int getVisibleHeight() { return contentLayout.getLayoutParams().height; }
-        private void enterRefresh() { changeRefreshing(true); }
-
-        public boolean refreshing() { return refreshing; }
-        public void endRefresh() {
-            changeRefreshing(false);
-        }
-    }
-    private String footerNoMoreString = "没有更多数据了";
-
-    public void setFooterNoMoreString(String footerNoMoreString) {
-        this.footerNoMoreString = footerNoMoreString;
     }
 
-    //footer
-    private class FooterRefresh extends LinearLayout {
-        private ConstraintLayout contentLayout;
-        private ProgressBar progressBar;
-        private TextView textView;
-
+    public abstract class FLFooterRefreshView extends LinearLayout {
+        public abstract int footerHeight();
+        public abstract void refreshHasDataChange(boolean hasData);
+        public abstract void refreshStateChange(boolean isRefreshing);
         private int footerHeight;
         private boolean refreshing;
         private boolean enable = true;
         private boolean hasData = true;
-        public FooterRefresh(Context context) {
-            this(context, null);
+        private void changeRefreshing(boolean refreshing) {
+            if (this.refreshing == refreshing) {
+                return;
+            }
+            this.refreshing = refreshing;
+            refreshStateChange(refreshing);
         }
 
-        public FooterRefresh(Context context, @Nullable AttributeSet attrs) {
-            this(context, attrs, 0);
+        private void setVisibleHeight(int height) {
+            if (getLayoutParams().height == height) {
+                return;
+            }
+            if (height < 0) height = 0;
+            LayoutParams layoutParams = (LayoutParams) getLayoutParams();
+            layoutParams.height = height;
+            setLayoutParams(layoutParams);
+        }
+        private void enterRefresh() { changeRefreshing(true); }
+
+        public void endRefresh(boolean hasData) {
+            changeRefreshing(false);
+            setHasData(hasData);
         }
 
-        public FooterRefresh(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
-            init();//初始化视图
+        public void setEnable(boolean enable) {
+            this.enable = enable;
+            setVisibleHeight(enable ? footerHeight : 0);
+        }
+        private void setHasData(boolean hasData) {
+            if (this.hasData != hasData) {
+                this.hasData = hasData;
+                this.refreshHasDataChange(hasData);
+            }
+        }
+        public boolean getHasData() { return hasData; }
+        public FLFooterRefreshView(Context context) {this(context, null);}
+
+        public FLFooterRefreshView(Context context, @Nullable AttributeSet attrs) {this(context, attrs, 0);}
+
+        public FLFooterRefreshView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {this(context, attrs, defStyleAttr, 0);}
+
+        public FLFooterRefreshView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+            footerHeight = footerHeight();
+            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, footerHeight);
+            setLayoutParams(layoutParams);
+        }
+    }
+    private String footerNoMoreString = "我已经到底了";
+    //footer
+    private class FooterRefreshView extends FLFooterRefreshView {
+        private ConstraintLayout contentLayout;
+        private ProgressBar progressBar;
+        private TextView textView;
+
+        @Override
+        public int footerHeight() {
+            return dipToPx(getContext(), 50);
         }
 
-        private void init() {
-            LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.setMargins(0, 0, 0, 0);
-            this.setLayoutParams(layoutParams);
-            this.setPadding(0, 0, 0, 0);
-            createView();
+        @Override
+        public void refreshHasDataChange(boolean hasData) {
+            textView.setText(hasData ? "上拉加载更多" : footerNoMoreString);
+        }
+
+        @Override
+        public void refreshStateChange(boolean isRefreshing) {
+            if (isRefreshing) {
+                textView.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+            }
+            else {
+                textView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        }
+
+        public FooterRefreshView(Context context) {
+            super(context);
+            creatView();
         }
 
         @SuppressLint("ResourceType")
-        private void createView() {
-            footerHeight = dipToPx(getContext(), 50);
-            //将Header高度设置为0
+        private void creatView() {
             contentLayout = new ConstraintLayout(getContext());
             contentLayout.setId(99);
-            addView(contentLayout, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, footerHeight));
+            addView(contentLayout, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             ConstraintSet set = new ConstraintSet();
             set.constrainDefaultWidth(10, ConstraintSet.MATCH_CONSTRAINT);
-            set.constrainDefaultHeight(10, footerHeight);
+            set.constrainDefaultHeight(10, ConstraintSet.MATCH_CONSTRAINT);
 
             textView = new TextView(getContext());
             textView.setTextColor(textColor);
@@ -886,49 +1116,5 @@ public class FLTableView extends RecyclerView {
             final float scale = context.getResources().getDisplayMetrics().density;
             return (int) (pxValue * scale + 0.5f);
         }
-
-        private void changeRefreshing(boolean refreshing) {
-            if (this.refreshing == refreshing) {
-                return;
-            }
-            this.refreshing = refreshing;
-            if (refreshing) {
-                textView.setVisibility(View.INVISIBLE);
-                progressBar.setVisibility(View.VISIBLE);
-            }
-            else {
-                textView.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.INVISIBLE);
-            }
-        }
-
-        private void setVisibleHeight(int height) {
-            if (contentLayout.getLayoutParams().height == height) {
-                return;
-            }
-            if (height < 0) height = 0;
-            LayoutParams layoutParams = (LayoutParams) contentLayout.getLayoutParams();
-            layoutParams.height = height;
-            contentLayout.setLayoutParams(layoutParams);
-        }
-        private void enterRefresh() { changeRefreshing(true); }
-
-        public boolean refreshing() { return refreshing; }
-        public void endRefresh(boolean hasData) {
-            changeRefreshing(false);
-            setHasData(hasData);
-        }
-
-        public void setEnable(boolean enable) {
-            this.enable = enable;
-            setVisibleHeight(enable ? footerHeight : 0);
-        }
-        private boolean getEnable() { return enable; }
-
-        private void setHasData(boolean hasData) {
-            this.hasData = hasData;
-            textView.setText(hasData ? "上拉加载更多" : footerNoMoreString);
-        }
-        public boolean getHasData() { return hasData; }
     }
 }
