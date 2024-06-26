@@ -14,6 +14,7 @@ import com.wjw.flkit.base.FLTabBarActivity;
 import com.wjw.flkitexample.databinding.CellMainBinding;
 import com.wjw.flkitexample.databinding.PageControlsBinding;
 import com.wjw.flkitexample.pages.controls.activities.CardViewsActivity;
+import com.wjw.flkitexample.pages.controls.activities.FlexLayoutActivity;
 import com.wjw.flkitexample.pages.controls.activities.SmscodeActivity;
 import com.wjw.flkitexample.pages.controls.activities.TableViewActivity;
 
@@ -41,7 +42,8 @@ public class ControlsPage extends FLTabBarActivity.FLTabBarPage<PageControlsBind
         strings = Arrays.asList(
                 "列表",
                 "验证码倒计时",
-                "FLCardView"
+                "FLCardView",
+                "FLFlexLayout"
         );
         FLTableView.CreatCell<Cell> creatCell = new FLTableView.CreatCell<Cell>() {
             @Override
@@ -76,6 +78,10 @@ public class ControlsPage extends FLTabBarActivity.FLTabBarPage<PageControlsBind
                         case 2:
                             //"FLCardView"
                             getActivity().startActivity(new Intent(getActivity(), CardViewsActivity.class));
+                            break;
+                        case 3:
+                            //"FLFlexLayout"
+                            getActivity().startActivity(new Intent(getActivity(), FlexLayoutActivity.class));
                             break;
                     }
                 }

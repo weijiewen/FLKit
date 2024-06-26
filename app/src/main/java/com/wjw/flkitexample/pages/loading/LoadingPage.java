@@ -1,5 +1,6 @@
 package com.wjw.flkitexample.pages.loading;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -67,7 +68,7 @@ public class LoadingPage extends FLTabBarActivity.FLTabBarPage<PageLoadingBindin
                 public void onClick(View view) {
                     switch (index) {
                         case 0:
-                            getActivity().requestCamera(new FLBaseActivity.PermissionsResult() {
+                            getActivity().requestPermission(Manifest.permission.CAMERA, new FLBaseActivity.PermissionsResult() {
                                 @Override
                                 public void didGranted() {
                                     getActivity().openCamera(new FLBaseActivity.PickCallback() {
@@ -103,7 +104,7 @@ public class LoadingPage extends FLTabBarActivity.FLTabBarPage<PageLoadingBindin
                             });
                             break;
                         case 2:
-                            getActivity().requestStorage(new FLBaseActivity.PermissionsResult() {
+                            getActivity().requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new FLBaseActivity.PermissionsResult() {
                                 @Override
                                 public void didGranted() {
                                     getActivity().openAlbum(new FLBaseActivity.PickCallback() {

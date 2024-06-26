@@ -30,14 +30,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FLTableView extends RecyclerView {
-    /**
-     * 控件已经创建, 子类重写进行全局配置
-     * @param context
-     */
-    public void didLoad(@NonNull Context context) {
+
+    public FLTableView(@NonNull Context context) {
+        this(context, null);
+    }
+    public FLTableView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+    public FLTableView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        setOverScrollMode(View.OVER_SCROLL_NEVER);
+        setVerticalScrollBarEnabled(false);
         setLayoutManager(new LinearLayoutManager(context));
     }
-
     /**
      * 需要展示错误提示，子类重写可自定义提示
      * @param message 错误信息
@@ -586,16 +591,6 @@ public class FLTableView extends RecyclerView {
             }
         };
         setAdapter(adapter);
-    }
-    public FLTableView(@NonNull Context context) {
-        this(context, null);
-    }
-    public FLTableView(@NonNull Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-    public FLTableView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        didLoad(context);
     }
     private float lastY = -1;
     private float sumOffSet;

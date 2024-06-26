@@ -31,4 +31,8 @@
         <attr name="linearOrientation" />
         <attr name="linearColors" />
     </declare-styleable>
+    <declare-styleable name="FLFlexLayout">
+        <attr name="horizontalSpace" format="dimension"/>
+        <attr name="verticalSpace" format="dimension"/>
+    </declare-styleable>
 </resources>

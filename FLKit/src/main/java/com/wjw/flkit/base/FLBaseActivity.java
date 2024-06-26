@@ -55,6 +55,7 @@ import com.wjw.flkit.unit.FLTimer;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -388,6 +389,9 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         showTip(Color.WHITE, tip, dipTextSize, colorId);
     }
     public final void showTip(@ColorInt int backgroundColor, String tip, int dipTextSize, @ColorInt int colorId) {
+        if (tip == null || tip.isEmpty()) {
+            return;
+        }
         dismissLoading(false);
         RelativeLayout.LayoutParams linearParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         linearParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -1219,50 +1223,11 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
         albumLauncher.launch(intent);
     }
 
-    private HashMap<Integer, List<WeakReference<PermissionsResult>>> resultMap = new HashMap<>();
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-    };
-    private static final Integer REQUEST_PERMISSION_STORAGE_CODE = 0;
-    private static final Integer REQUEST_PERMISSION_CAMERA_CODE = 1;
-
+    private HashMap<Object, List<WeakReference<PermissionsResult>>> resultMap = new HashMap<>();
     public interface PermissionsResult {
         void didGranted();
 
         void didDenied();
-    }
-
-    public void requestStorage(PermissionsResult result) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            List<WeakReference<PermissionsResult>> results = resultMap.get(REQUEST_PERMISSION_STORAGE_CODE);
-            if (results == null) {
-                results = new ArrayList();
-                resultMap.put(REQUEST_PERMISSION_STORAGE_CODE, results);
-            }
-            results.add(new WeakReference<>(result));
-            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_STORAGE_CODE);
-        } else {
-            result.didGranted();
-        }
-    }
-
-    public void requestCamera(PermissionsResult result) {
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            List results = resultMap.get(REQUEST_PERMISSION_CAMERA_CODE);
-            if (results == null) {
-                results = new ArrayList();
-                resultMap.put(REQUEST_PERMISSION_CAMERA_CODE, results);
-            }
-            results.add(new WeakReference<>(result));
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA},
-                    REQUEST_PERMISSION_CAMERA_CODE);
-        } else {
-            result.didGranted();
-        }
     }
 
     @Override
@@ -1282,7 +1247,6 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             }
         }
     }
-
     public boolean isPermissionInstall() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             boolean hasInstallPermission = getPackageManager().canRequestPackageInstalls();
@@ -1317,44 +1281,26 @@ public abstract class FLBaseActivity extends FragmentActivity implements View.On
             startActivityForResult(intent, REQUEST_PERMISSION_INSTALL_CODE);
         }
     }
-
-    private static final Integer REQUEST_PERMISSION_FORGROUND_LOCATION = 4;
-    private static final Integer REQUEST_PERMISSION_BACKGROUND_LOCATION = 5;
-    public void requestFrogroundLocation(PermissionsResult result) {
-
+    public void requestPermission(String manifestPermission, PermissionsResult result) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                     checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 result.didGranted();
                 return;
             }
-            List results = resultMap.get(REQUEST_PERMISSION_FORGROUND_LOCATION);
+            byte[] byteArray = manifestPermission.getBytes();
+            int hashCode = Arrays.hashCode(byteArray);
+            int uniqueNumber = Math.abs(hashCode);
+            List results = resultMap.get(uniqueNumber);
             if (results == null) {
                 results = new ArrayList();
-                resultMap.put(REQUEST_PERMISSION_FORGROUND_LOCATION, results);
+                resultMap.put(uniqueNumber, results);
             }
             results.add(new WeakReference<>(result));
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_PERMISSION_FORGROUND_LOCATION);
+
+            requestPermissions(new String[]{manifestPermission}, uniqueNumber);
         }
     }
-    public void requestBackgroundLocation(PermissionsResult result) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                result.didGranted();
-                return;
-            }
-            List results = resultMap.get(REQUEST_PERMISSION_BACKGROUND_LOCATION);
-            if (results == null) {
-                results = new ArrayList();
-                resultMap.put(REQUEST_PERMISSION_BACKGROUND_LOCATION, results);
-            }
-            results.add(new WeakReference<>(result));
-            requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, REQUEST_PERMISSION_BACKGROUND_LOCATION);
-        }
-    }
-
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

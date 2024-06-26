@@ -15,54 +15,78 @@ import java.util.HashMap;
 
 public class FLUserDefault implements Serializable {
     public static FLUserDefault userDefault = new FLUserDefault();
-    public void put(Context context, String key, Integer value) {
+    public final void put(Context context, String key, Integer value) {
         readMap(context).put(key, value);
         writeMap(context);
     }
-    public void put(Context context, String key, Float value) {
+    public final void put(Context context, String key, Float value) {
         readMap(context).put(key, value);
         writeMap(context);
     }
-    public void put(Context context, String key, Double value) {
+    public final void put(Context context, String key, Double value) {
         readMap(context).put(key, value);
         writeMap(context);
     }
-    public void put(Context context, String key, Boolean value) {
+    public final void put(Context context, String key, Boolean value) {
         readMap(context).put(key, value);
         writeMap(context);
     }
-    public void put(Context context, String key, String value) {
+    public final void put(Context context, String key, String value) {
         readMap(context).put(key, value);
         writeMap(context);
     }
-    public void put(Context context, String key, Serializable value) {
+    public final void put(Context context, String key, Serializable value) {
         readMap(context).put(key, value);
         writeMap(context);
     }
-    public Integer getInt(Context context, String key) {
+    public final Integer getInt(Context context, String key) {
         return (Integer) readMap(context).get(key);
     }
-    public Float getFloat(Context context, String key) {
+    public final Float getFloat(Context context, String key) {
         return (Float) readMap(context).get(key);
     }
-    public Double getDouble(Context context, String key) {
+    public final Double getDouble(Context context, String key) {
         return (Double) readMap(context).get(key);
     }
-    public Boolean getBoolean(Context context, String key) {
+    public final Boolean getBoolean(Context context, String key) {
         return (Boolean) readMap(context).get(key);
     }
-    public String getString(Context context, String key) {
+    public final String getString(Context context, String key) {
         return (String) readMap(context).get(key);
     }
-    public Serializable getSerializable(Context context, String key) {
+    public final Serializable getSerializable(Context context, String key) {
         return (Serializable) readMap(context).get(key);
     }
-    public void remove(Context context, String key) {
+    public final void remove(Context context, String key) {
         readMap(context).remove(key);
         writeMap(context);
     }
-    public HashMap getMap(Context context) {
+    public final HashMap getMap(Context context) {
         return (HashMap) readMap(context).clone();
+    }
+    public final static String getLocalString(Context context, String fileName) {
+        String data = null;
+        try {
+            String path = context.getFilesDir().getAbsolutePath() + "/" + fileName;
+            ObjectInputStream objectInputStream =
+                    new ObjectInputStream( new FileInputStream( new File(path) ) );
+            data = (String) objectInputStream.readObject();
+            objectInputStream.close();
+        } catch (IOException | ClassNotFoundException e) {
+
+        }
+        return data;
+    }
+    public final static void saveLocalString(Context context, String fileName, String data) {
+        try {
+            String path = context.getFilesDir().getAbsolutePath() + "/" + fileName;
+            ObjectOutputStream objectOutputStream =
+                    new ObjectOutputStream( new FileOutputStream(new File(path)));
+            objectOutputStream.writeObject(data);
+            objectOutputStream.close();
+        } catch (IOException e) {
+
+        }
     }
     private final String fileName = "FLUserDefault";
     private HashMap map;
@@ -71,7 +95,7 @@ public class FLUserDefault implements Serializable {
         if (map == null) {
             HashMap hashMap = null;
             try {
-                String path = context.getCacheDir().getAbsolutePath() + "/" + fileName;
+                String path = context.getFilesDir().getAbsolutePath() + "/" + fileName;
                 ObjectInputStream objectInputStream =
                         new ObjectInputStream( new FileInputStream( new File(path) ) );
                 hashMap = (HashMap) objectInputStream.readObject();
@@ -89,7 +113,7 @@ public class FLUserDefault implements Serializable {
     private void writeMap(Context context) {
         if (map != null) {
             try {
-                String path = context.getCacheDir().getAbsolutePath() + "/" + fileName;
+                String path = context.getFilesDir().getAbsolutePath() + "/" + fileName;
                 ObjectOutputStream objectOutputStream =
                         new ObjectOutputStream( new FileOutputStream(new File(path)));
                 objectOutputStream.writeObject(map);

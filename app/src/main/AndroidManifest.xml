@@ -25,6 +25,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".pages.controls.activities.FlexLayoutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.tool.activities.FlexActivity"
+            android:exported="false" />
+        <activity
             android:name=".pages.tool.activities.RegexInputActivity"
             android:exported="false" />
         <activity
