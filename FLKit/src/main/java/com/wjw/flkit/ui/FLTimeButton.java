@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -133,22 +134,14 @@ public class FLTimeButton extends FLCardView {
     public FLTimeButton(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         readCache();
-        ConstraintLayout constraintLayout = new ConstraintLayout(context);
-        constraintLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        constraintLayout.setBackgroundColor(Color.parseColor("#00000000"));
-        addView(constraintLayout);
 
-        ConstraintLayout.LayoutParams textParams = new ConstraintLayout.LayoutParams(0, 0);
-        textParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID;
-        textParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
-        textParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-        textParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
         textView = new TextView(context);
-        textView.setLayoutParams(textParams);
+        textView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        textView.setGravity(Gravity.CENTER);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             textView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
         }
-        constraintLayout.addView(textView);
+        addView(textView);
 
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.FLTimeButton, defStyleAttr, 0);
         setCardBackgroundColor(array.getColor(R.styleable.FLTimeButton_cardBackgroundColor, Color.WHITE));

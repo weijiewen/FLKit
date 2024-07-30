@@ -1,9 +1,8 @@
 package com.wjw.flkitexample.pages.controls.activities.table;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkit.ui.FLTableView;
-import com.wjw.flkit.unit.FLAsyncTask;
 import com.wjw.flkitexample.databinding.ActivityTableNormalBinding;
 import com.wjw.flkitexample.databinding.CellTableViewBinding;
 
@@ -72,18 +70,9 @@ public class TableNormalActivity extends FLBindingActivity<ActivityTableNormalBi
         }
         binding.tableView.startLoading();
         int finalCurrenPage = currenPage;
-        FLAsyncTask.start(new FLAsyncTask.FLAsyncCallback() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void doInBack() {
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    
-                }
-            }
-
-            @Override
-            public void doInMain() {
+            public void run() {
                 if (new Random().nextInt(2) == 0) {
                     if (finalCurrenPage == 0) {
                         if (new Random().nextInt(2) == 0) {
@@ -111,7 +100,7 @@ public class TableNormalActivity extends FLBindingActivity<ActivityTableNormalBi
                     });
                 }
             }
-        });
+        }, 1000);
     }
 
     private class TableViewCell extends FLTableView.FLBindingCell<CellTableViewBinding> {

@@ -1,5 +1,6 @@
 package com.wjw.flkitexample.pages.controls.activities;
 
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -7,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.wjw.flkit.unit.FLAnimation;
-import com.wjw.flkit.unit.FLAsyncTask;
 import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkitexample.R;
@@ -63,22 +63,13 @@ public class SmscodeActivity extends FLBindingActivity<ActivitySmscodeBinding> {
                 if (phone.length() == 11) {
                     binding.sendSmscode.startLoading();
                     Log.d("111", "didClick: 12312");
-                    FLAsyncTask.start(new FLAsyncTask.FLAsyncCallback() {
+                    new Handler().postDelayed(new Runnable() {
                         @Override
-                        public void doInBack() {
-                            try {
-                                Thread.sleep(2000);
-                            } catch (Exception e) {
-
-                            }
-                        }
-
-                        @Override
-                        public void doInMain() {
+                        public void run() {
                             binding.sendSmscode.stopLoading();
                             binding.sendSmscode.startTimer(phone, "123");
                         }
-                    });
+                    }, 2000);
                 }
                 else {
                     showTip("请输入手机号");

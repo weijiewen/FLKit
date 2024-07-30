@@ -2,6 +2,7 @@ package com.wjw.flkitexample.pages.controls.activities.table;
 
 
 import android.graphics.Color;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.wjw.flkit.unit.FLAsyncTask;
 import com.wjw.flkit.ui.FLTableView;
 import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
@@ -91,18 +91,9 @@ public class TableSectionActivity extends FLBindingActivity<ActivityTableSection
         if (reload) {
             binding.tableView.startLoading();
         }
-        FLAsyncTask.start(new FLAsyncTask.FLAsyncCallback() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void doInBack() {
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    
-                }
-            }
-
-            @Override
-            public void doInMain() {
+            public void run() {
                 if (reload) {
                     value = 1;
                 }
@@ -125,7 +116,7 @@ public class TableSectionActivity extends FLBindingActivity<ActivityTableSection
                 }
                 binding.tableView.reloadData(datas.size() < 3);
             }
-        });
+        }, 1000);
     }
     private class Header extends FLTableView.FLTableViewSection<SectionHeaderBinding> {
         public Header(@NonNull SectionHeaderBinding binding) {

@@ -6,6 +6,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,7 +20,6 @@ import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLBindingFragment;
 import com.wjw.flkit.base.FLNavigationView;
 import com.wjw.flkit.ui.FLTableView;
-import com.wjw.flkit.unit.FLAsyncTask;
 import com.wjw.flkitexample.databinding.ActivityViewPagerBinding;
 import com.wjw.flkitexample.databinding.CellMainBinding;
 import com.wjw.flkitexample.databinding.FragmentViewPagerBinding;
@@ -185,44 +185,35 @@ public class ViewPagerActivity extends FLBindingActivity<ActivityViewPagerBindin
             addDatas(result);
         }
         private void addDatas(Result result) {
-            FLAsyncTask.start(new FLAsyncTask.FLAsyncCallback() {
+            new Handler().postDelayed(new Runnable() {
                 @Override
-                public void doInBack() {
-                    try {
-                        Thread.sleep(300);
-                        int page = datas.size();
-                        datas.addAll(Arrays.asList(
-                                new ViewPagerData(name + "，index：" + page),
-                                new ViewPagerData(name + "，index：" + (page + 1)),
-                                new ViewPagerData(name + "，index：" + (page + 2)),
-                                new ViewPagerData(name + "，index：" + (page + 3)),
-                                new ViewPagerData(name + "，index：" + (page + 4)),
-                                new ViewPagerData(name + "，index：" + (page + 5)),
-                                new ViewPagerData(name + "，index：" + (page + 6)),
-                                new ViewPagerData(name + "，index：" + (page + 7)),
-                                new ViewPagerData(name + "，index：" + (page + 8)),
-                                new ViewPagerData(name + "，index：" + (page + 9)),
-                                new ViewPagerData(name + "，index：" + (page + 10)),
-                                new ViewPagerData(name + "，index：" + (page + 11)),
-                                new ViewPagerData(name + "，index：" + (page + 12)),
-                                new ViewPagerData(name + "，index：" + (page + 13)),
-                                new ViewPagerData(name + "，index：" + (page + 14)),
-                                new ViewPagerData(name + "，index：" + (page + 15)),
-                                new ViewPagerData(name + "，index：" + (page + 16)),
-                                new ViewPagerData(name + "，index：" + (page + 17)),
-                                new ViewPagerData(name + "，index：" + (page + 18)),
-                                new ViewPagerData(name + "，index：" + (page + 19))
-                        ));
-                    } catch (InterruptedException e) {
-                        
-                    }
-                }
-
-                @Override
-                public void doInMain() {
+                public void run() {
+                    int page = datas.size();
+                    datas.addAll(Arrays.asList(
+                            new ViewPagerData(name + "，index：" + page),
+                            new ViewPagerData(name + "，index：" + (page + 1)),
+                            new ViewPagerData(name + "，index：" + (page + 2)),
+                            new ViewPagerData(name + "，index：" + (page + 3)),
+                            new ViewPagerData(name + "，index：" + (page + 4)),
+                            new ViewPagerData(name + "，index：" + (page + 5)),
+                            new ViewPagerData(name + "，index：" + (page + 6)),
+                            new ViewPagerData(name + "，index：" + (page + 7)),
+                            new ViewPagerData(name + "，index：" + (page + 8)),
+                            new ViewPagerData(name + "，index：" + (page + 9)),
+                            new ViewPagerData(name + "，index：" + (page + 10)),
+                            new ViewPagerData(name + "，index：" + (page + 11)),
+                            new ViewPagerData(name + "，index：" + (page + 12)),
+                            new ViewPagerData(name + "，index：" + (page + 13)),
+                            new ViewPagerData(name + "，index：" + (page + 14)),
+                            new ViewPagerData(name + "，index：" + (page + 15)),
+                            new ViewPagerData(name + "，index：" + (page + 16)),
+                            new ViewPagerData(name + "，index：" + (page + 17)),
+                            new ViewPagerData(name + "，index：" + (page + 18)),
+                            new ViewPagerData(name + "，index：" + (page + 19))
+                    ));
                     result.result();
                 }
-            });
+            }, 300);
         }
     }
     private class ViewPagerData {

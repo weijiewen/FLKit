@@ -2,16 +2,10 @@ package com.wjw.flkit.unit;
 
 import android.util.Log;
 
-import com.wjw.flkit.BuildConfig;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class FLLog {
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -21,7 +15,7 @@ public class FLLog {
             JSONObject jsonObject = new JSONObject(map);
             string = jsonObject.toString(4);
         } catch (JSONException e) {
-            
+
         }
         if (string == null) {
             string = "null";
@@ -29,11 +23,31 @@ public class FLLog {
         else {
             string = string.replace("\\/", "/");
         }
-        Log.d("network", "一一一一一一一一一一一一一一一一一一一一一一 开始 一一一一一一一一一一一一一一一一一一一一一一");
-        String[] lines = string.split(LINE_SEPARATOR);
-        for (int i = 0; i < lines.length; i ++) {
-            Log.d("network", "|" + lines[i]);
-        }
-        Log.d("network", "一一一一一一一一一一一一一一一一一一一一一一 结束 一一一一一一一一一一一一一一一一一一一一一一");
+        String finalString = string;
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                Log.d("fllog", "一一一一一一一一一一一一一一一一一一一一一一 开始 一一一一一一一一一一一一一一一一一一一一一一");
+                String[] lines = finalString.split(LINE_SEPARATOR);
+                int onceLineCount = 3;
+                for (int i = 0; i < lines.length; i += onceLineCount) {
+                    String line = "";
+                    for (int onceI = 0; onceI < onceLineCount; onceI ++) {
+
+                        if (i + onceI < lines.length) {
+                            if (!line.isEmpty()) {
+                                line += LINE_SEPARATOR;
+                            }
+                            line += lines[i + onceI];
+                        }
+                    }
+
+                    Log.d("fllog", line);
+                }
+                Log.d("fllog", "一一一一一一一一一一一一一一一一一一一一一一 结束 一一一一一一一一一一一一一一一一一一一一一一");
+            }
+        }.start();
+
     }
 }
