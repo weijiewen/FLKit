@@ -15,7 +15,7 @@ import com.wjw.flkit.base.FLTabBarActivity;
 import com.wjw.flkitexample.databinding.CellMainBinding;
 import com.wjw.flkitexample.databinding.PageToolBinding;
 import com.wjw.flkitexample.network.loader.TestLoader;
-import com.wjw.flkitexample.network.respon.BaseObjectRespon;
+import com.wjw.flkitexample.network.respon.ObjectRespon;
 import com.wjw.flkitexample.pages.tool.activities.AnimationActivity;
 import com.wjw.flkitexample.pages.tool.activities.RedisActivity;
 import com.wjw.flkitexample.pages.tool.activities.RegexInputActivity;
@@ -81,9 +81,9 @@ public class ToolPage extends FLTabBarActivity.FLTabBarPage<PageToolBinding> {
                             case 1:
                                 //"请求结果输出"
                                 getActivity().showLoading();
-                                TestLoader.getTest().subscribe(new BlockingBaseObserver<BaseObjectRespon<JSONObject>>() {
+                                TestLoader.getTest().subscribe(new BlockingBaseObserver<ObjectRespon<JSONObject>>() {
                                     @Override
-                                    public void onNext(BaseObjectRespon<JSONObject> jsonObjectBaseObjectRespon) {
+                                    public void onNext(ObjectRespon<JSONObject> jsonObjectBaseObjectRespon) {
                                         getActivity().showTip("请求成功");
                                     }
 
