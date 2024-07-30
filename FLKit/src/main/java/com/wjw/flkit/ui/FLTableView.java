@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -67,6 +68,14 @@ public class FLTableView extends RecyclerView {
     public final void setCreatCell(String empty, CreatCell creatCell) {
         this.empty = empty;
         this.creatCell = creatCell;
+    }
+
+    /**
+     * cell 事件
+     * @param eventCell new EventCell对象
+     */
+    public final void setEventCell(EventCell eventCell) {
+        this.eventCell = eventCell;
     }
 
     /**
@@ -267,6 +276,15 @@ public class FLTableView extends RecyclerView {
         int itemCount(int section);
         T getCell(@NonNull ViewGroup parent);
     }
+    public interface CreatDataCell<T extends FLDataBindingCell, Data> extends CreatCell<T> {
+        Data getData(FLDataBindingCell cell);
+    }
+    private CreatCell creatCell;
+
+    public interface EventCell<T extends FLCell> {
+        void cellOnClick(T cell);
+    }
+    private EventCell eventCell;
     public static class FLTableViewBaseSection extends ViewHolder {
         protected int section;
         public static FLTableViewBaseSection placeholderView(ViewGroup parent, int height) {
@@ -289,9 +307,8 @@ public class FLTableView extends RecyclerView {
         }
         protected abstract void bindData(Binding sectionBinding, int section);
     }
-    private CreatCell creatCell;
     //baseViewHolder
-    public abstract static class FLCell extends ViewHolder {
+    public abstract class FLCell extends ViewHolder {
         protected int section;
         protected int index;
         private View cellView;
@@ -301,6 +318,14 @@ public class FLTableView extends RecyclerView {
             cellView.setBackgroundColor(Color.TRANSPARENT);
             this.cellView = cellView;
             context = cellView.getContext();
+            cellView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (eventCell != null) {
+                        eventCell.cellOnClick(FLCell.this);
+                    }
+                }
+            });
         }
         public FLCell(@NonNull ViewGroup viewGroup, int layoutResId) {
             super(LayoutInflater.from(viewGroup.getContext())
@@ -317,11 +342,21 @@ public class FLTableView extends RecyclerView {
         };
         protected abstract void bindData(int section, int index);
     }
-    public abstract static class FLBindingCell<Binding extends ViewBinding> extends FLCell {
+    public abstract class FLBindingCell<Binding extends ViewBinding> extends FLCell {
         public final Binding cellBinding;
         public FLBindingCell(@NonNull Binding cellBinding) {
             super(cellBinding.getRoot());
             this.cellBinding = cellBinding;
+        }
+    }
+    public abstract class FLDataBindingCell<Binding extends ViewBinding, Data> extends FLBindingCell<Binding> {
+        private Data data;
+        public FLDataBindingCell(@NonNull Binding cellBinding) {
+            super(cellBinding);
+        }
+
+        public final Data getData() {
+            return data;
         }
     }
     private int tintColor = Color.parseColor("#247BEF");
@@ -586,6 +621,11 @@ public class FLTableView extends RecyclerView {
                     FLCell cell = (FLCell) holder;
                     cell.section = section;
                     cell.index = cellIndex;
+                    if (creatCell != null && creatCell instanceof CreatDataCell && cell instanceof FLDataBindingCell) {
+                        FLDataBindingCell dataBindingCell = (FLDataBindingCell) cell;
+                        CreatDataCell creatDataCell = (CreatDataCell) creatCell;
+                        dataBindingCell.data = creatDataCell.getData(dataBindingCell);
+                    }
                     cell.bindData(section, cellIndex);
                 }
             }
