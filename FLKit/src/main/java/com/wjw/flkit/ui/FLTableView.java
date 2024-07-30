@@ -308,7 +308,7 @@ public class FLTableView extends RecyclerView {
         protected abstract void bindData(Binding sectionBinding, int section);
     }
     //baseViewHolder
-    public abstract class FLCell extends ViewHolder {
+    public abstract static class FLCell extends ViewHolder {
         protected int section;
         protected int index;
         private View cellView;
@@ -318,14 +318,6 @@ public class FLTableView extends RecyclerView {
             cellView.setBackgroundColor(Color.TRANSPARENT);
             this.cellView = cellView;
             context = cellView.getContext();
-            cellView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (eventCell != null) {
-                        eventCell.cellOnClick(FLCell.this);
-                    }
-                }
-            });
         }
         public FLCell(@NonNull ViewGroup viewGroup, int layoutResId) {
             super(LayoutInflater.from(viewGroup.getContext())
@@ -342,14 +334,14 @@ public class FLTableView extends RecyclerView {
         };
         protected abstract void bindData(int section, int index);
     }
-    public abstract class FLBindingCell<Binding extends ViewBinding> extends FLCell {
+    public abstract static class FLBindingCell<Binding extends ViewBinding> extends FLCell {
         public final Binding cellBinding;
         public FLBindingCell(@NonNull Binding cellBinding) {
             super(cellBinding.getRoot());
             this.cellBinding = cellBinding;
         }
     }
-    public abstract class FLDataBindingCell<Binding extends ViewBinding, Data> extends FLBindingCell<Binding> {
+    public abstract static class FLDataBindingCell<Binding extends ViewBinding, Data> extends FLBindingCell<Binding> {
         private Data data;
         public FLDataBindingCell(@NonNull Binding cellBinding) {
             super(cellBinding);
@@ -569,7 +561,18 @@ public class FLTableView extends RecyclerView {
                     }
                     return viewHolder;
                 }
-                return creatCell.getCell(parent);
+                FLCell cell = creatCell.getCell(parent);
+                if (!cell.cellView.hasOnClickListeners()) {
+                    cell.cellView.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (eventCell != null) {
+                                eventCell.cellOnClick(cell);
+                            }
+                        }
+                    });
+                }
+                return cell;
             }
 
             @Override

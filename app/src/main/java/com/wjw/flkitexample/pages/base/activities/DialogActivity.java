@@ -10,6 +10,7 @@ import com.wjw.flkit.ui.FLTableView;
 import com.wjw.flkit.base.FLBaseActivity;
 import com.wjw.flkit.base.FLBindingActivity;
 import com.wjw.flkit.base.FLNavigationView;
+import com.wjw.flkit.ui.FLTableView.FLBindingCell;
 import com.wjw.flkitexample.databinding.ActivityDialogBinding;
 import com.wjw.flkitexample.databinding.CellMainBinding;
 
@@ -59,7 +60,13 @@ public class DialogActivity extends FLBindingActivity<ActivityDialogBinding> {
     protected void didClick(View view) {
 
     }
-    private class DialogCell extends FLTableView.FLBindingCell<CellMainBinding> {
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    private class DialogCell extends FLBindingCell<CellMainBinding> {
         public DialogCell(@NonNull CellMainBinding cellBinding) {
             super(cellBinding);
             String tip = "塞德里克飞机上课了巨额罚款了解放了快速减肥了苦涩就发了苦涩解放啦卡死机而非卢卡斯荆防颗粒撒巨额罚款拉瑟九分裤阿里kg九色鹿开发塞德里克飞机上课了巨额罚款了解放了快速减肥了苦涩就发了苦涩解放啦卡死机而非卢卡斯荆防颗粒撒巨额罚款拉瑟九分裤阿里kg九色鹿开发";
