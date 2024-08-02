@@ -120,6 +120,11 @@ public class FLNavigationView extends LinearLayout {
         backButton.setOnClickListener(listener);
         leftLayout.addView(backButton, 0);
     }
+    public final void removeBack() {
+        if (backButton != null) {
+            leftLayout.removeView(backButton);
+        }
+    }
     public final void addLeftItem(View view) {
         leftLayout.addView(view);
     }
