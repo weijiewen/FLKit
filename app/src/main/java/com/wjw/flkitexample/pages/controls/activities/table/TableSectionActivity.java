@@ -156,41 +156,40 @@ public class TableSectionActivity extends FLBindingActivity<ActivityTableSection
 
         public Cell(@NonNull CellTableViewBinding cellBinding) {
             super(cellBinding);
-            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    getActivity().showTip(cellBinding.text.getText().toString());
-                }
-            });
-            cellBinding.getRoot().setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    getActivity().showDialogAlert(FLDialogStyle.ActionSheet, null, null, new FLAlertDialogConfig() {
-                        @Override
-                        public void addItems(FLAlertDialog dialog) {
-                            dialog.addItem("删除", 15, Color.RED, new FLAlertDialogTouch() {
-                                @Override
-                                public void touch() {
-                                    datas.get(section).remove(index);
-                                    binding.tableView.reloadData();
-                                }
-                            });
-                            dialog.addCancel(new FLAlertDialogTouch() {
-                                @Override
-                                public void touch() {
-
-                                }
-                            });
-                        }
-                    });
-                    return true;
-                }
-            });
         }
 
         @Override
         protected void bindData(int section, int index) {
             cellBinding.text.setText("section：" + section + " index：" + index + " value：" + datas.get(section).get(index));
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            getActivity().showTip(cellBinding.text.getText().toString());
+        }
+
+        @Override
+        protected void onLongPress(int section, int index) {
+            super.onLongPress(section, index);
+            getActivity().showDialogAlert(FLDialogStyle.ActionSheet, null, null, new FLAlertDialogConfig() {
+                @Override
+                public void addItems(FLAlertDialog dialog) {
+                    dialog.addItem("删除", 15, Color.RED, new FLAlertDialogTouch() {
+                        @Override
+                        public void touch() {
+                            datas.get(section).remove(index);
+                            binding.tableView.reloadData();
+                        }
+                    });
+                    dialog.addCancel(new FLAlertDialogTouch() {
+                        @Override
+                        public void touch() {
+
+                        }
+                    });
+                }
+            });
         }
     }
 }

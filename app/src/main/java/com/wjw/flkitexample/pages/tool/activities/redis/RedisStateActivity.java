@@ -62,12 +62,6 @@ public class RedisStateActivity extends FLBindingActivity<ActivityRedisStateBind
     private class Cell extends FLTableView.FLBindingCell<CellRedisStateBinding> implements FLRedis.FLRedisListener<Integer, Boolean> {
         public Cell(@NonNull CellRedisStateBinding cellBinding) {
             super(cellBinding);
-            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    datas.get(index).setSelected(!datas.get(index).getSelected());
-                }
-            });
         }
 
         @Override
@@ -76,6 +70,12 @@ public class RedisStateActivity extends FLBindingActivity<ActivityRedisStateBind
             FLRedis.addListener(Data.class, data.id, this);
             cellBinding.textId.setText("id：" + data.id);
             cellBinding.image.setImageResource(data.getSelected() ? R.mipmap.yxysctb : R.mipmap.yxywsctb);
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            datas.get(index).setSelected(!datas.get(index).getSelected());
         }
 
         @Override

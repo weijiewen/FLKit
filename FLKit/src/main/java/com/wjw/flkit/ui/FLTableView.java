@@ -5,13 +5,17 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.Size;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -49,7 +53,7 @@ public class FLTableView extends RecyclerView {
      * @param message 错误信息
      */
     public void tableNeedShowToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT);
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -71,14 +75,6 @@ public class FLTableView extends RecyclerView {
     }
 
     /**
-     * cell 事件
-     * @param eventCell new EventCell对象
-     */
-    public final void setEventCell(EventCell eventCell) {
-        this.eventCell = eventCell;
-    }
-
-    /**
      * 创建section (分组头部)
      * @param creatSection new CreatSection对象
      */
@@ -94,6 +90,14 @@ public class FLTableView extends RecyclerView {
     public final void reloadData(String error, Retry retry) {
         this.retry = retry;
         reloadData(error, true, null);
+    }
+
+    /**
+     * 更新单条
+     * @param position 下标
+     */
+    public final void updateData(int position) {
+        adapter.notifyItemChanged(position);
     }
 
     /**
@@ -210,6 +214,14 @@ public class FLTableView extends RecyclerView {
     }
 
     /**
+     * 设置上拉加载通用文字
+     * @param footerNormalString 通用文字
+     */
+    public void setFooterNormalString(String footerNormalString) {
+        this.footerNormalString = footerNormalString;
+    }
+
+    /**
      * 设置所有loading颜色
      * @param color 颜色
      */
@@ -225,6 +237,14 @@ public class FLTableView extends RecyclerView {
         this.textColor = textColor;
     }
 
+    private boolean canScroll = true;
+    /**
+     * 设置是否可以滑动
+     * @param canScroll 可以滑动
+     */
+    public void setCanScroll(boolean canScroll) {
+        this.canScroll = canScroll;
+    }
 
     private View headerView;
 
@@ -281,10 +301,6 @@ public class FLTableView extends RecyclerView {
     }
     private CreatCell creatCell;
 
-    public interface EventCell<T extends FLCell> {
-        void cellOnClick(T cell);
-    }
-    private EventCell eventCell;
     public static class FLTableViewBaseSection extends ViewHolder {
         protected int section;
         public static FLTableViewBaseSection placeholderView(ViewGroup parent, int height) {
@@ -308,16 +324,42 @@ public class FLTableView extends RecyclerView {
         protected abstract void bindData(Binding sectionBinding, int section);
     }
     //baseViewHolder
+    private int openPosition = -1;
     public abstract static class FLCell extends ViewHolder {
+        private static final String TAG = "";
+        protected int position;
         protected int section;
         protected int index;
         private View cellView;
         private Context context;
+        @SuppressLint("ClickableViewAccessibility")
         public FLCell(@NonNull View cellView) {
-            super(cellView);
-            cellView.setBackgroundColor(Color.TRANSPARENT);
+            super(loadRootView(cellView));
+            this.context = cellView.getContext();
             this.cellView = cellView;
-            context = cellView.getContext();
+            this.sideView = loadSideView();
+            FrameLayout parent = (FrameLayout) cellView.getParent();
+            parent.setBackgroundColor(Color.TRANSPARENT);
+            if (this.sideView != null) {
+                parent.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        parent.addView(sideView);
+                        sideView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                sideView.setTranslationX(parent.getWidth());
+                            }
+                        });
+                    }
+                });
+            }
+            cellView.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return cellViewOnTouch(motionEvent);
+                }
+            });
         }
         public FLCell(@NonNull ViewGroup viewGroup, int layoutResId) {
             super(LayoutInflater.from(viewGroup.getContext())
@@ -327,12 +369,133 @@ public class FLTableView extends RecyclerView {
         public final Context getContext() {
             return context;
         }
-        protected void addChildClickViewIds(View.OnClickListener listener, int... args) {
+        protected void addChildClickViewIds(OnClickListener listener, int... args) {
             for (int id : args) {
                 cellView.findViewById(id).setOnClickListener(listener);
             }
-        };
+        }
         protected abstract void bindData(int section, int index);
+        protected void onClick(int section, int index) {}
+        protected void onLongPress(int section, int index) {}
+        protected View loadSideView() {
+            return null;
+        }
+        private void bindCellData() {
+            bindData(section, index);
+            FrameLayout parent = (FrameLayout) cellView.getParent();
+            if (this.sideView != null) {
+                sideView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        cellView.animate().translationX(0).setDuration(0);
+                        sideView.animate().translationX(parent.getWidth()).setDuration(0);
+                        if (getTableView().openPosition == position) {
+                            cellView.animate().translationX(-sideView.getWidth());
+                            sideView.animate().translationX(parent.getWidth() - sideView.getWidth());
+                        }
+                    }
+                });
+            }
+        }
+        private FLTableView getTableView() {
+            ViewParent parant = cellView.getParent();
+            while (!(parant instanceof FLTableView)) {
+                parant = parant.getParent();
+            }
+            return (FLTableView) parant;
+        }
+        private static View loadRootView(View cellView) {
+            FrameLayout layout = new FrameLayout(cellView.getContext());
+            layout.setClipChildren(true);
+            layout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            layout.addView(cellView);
+            return layout;
+        }
+
+        private boolean didMove = false;
+        private long timestamp;
+        private int lastX;
+        private int lastY;
+        private View sideView;
+        private int openState;
+        private int lastSideX;
+        private boolean cellViewOnTouch(MotionEvent motionEvent) {
+            FLTableView tableView = getTableView();
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    didMove = false;
+                    timestamp = System.currentTimeMillis();
+                    lastX = (int) motionEvent.getRawX();
+                    lastY = (int) motionEvent.getRawY();
+                    openState = 0;
+
+                    if (sideView != null) {
+                        lastSideX = (int) cellView.getTranslationX();
+                    }
+                    long currentTimestamp = timestamp;
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (currentTimestamp == timestamp && !didMove) {
+                                onLongPress(section, index);
+                            }
+                        }
+                    }, 300);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    int longX = (int) motionEvent.getRawX();
+                    int longY = (int) motionEvent.getRawY();
+                    Log.d(TAG, "cellViewOnTouch: " + new Size(longX, longY) + "  " + new Size(lastX, lastY));
+                    if (Math.abs(longX - lastX) > 1 || Math.abs(longY - lastY) > 1) {
+                        didMove = true;
+                    }
+                    if (sideView != null && !didMove) {
+                        int dx = (int) motionEvent.getRawX() - lastX;
+                        int dy = (int) motionEvent.getRawY() - lastY;
+                        if (openState == 0 && Math.abs(dy) < 5 && Math.abs(dx) > 10) {
+                            tableView.canScroll = false;
+                            openState = 1;
+                            int oldPosition = tableView.openPosition;
+                            tableView.openPosition = position;
+                            if (oldPosition > - 1 && oldPosition != position) {
+                                tableView.updateData(oldPosition);
+                            }
+                        }
+                        if (openState == 1) {
+                            int x = lastSideX + dx;
+                            if (x < -sideView.getWidth()) {
+                                x = -sideView.getWidth();
+                            } else if (x > 0) {
+                                x = 0;
+                                tableView.openPosition = -1;
+                            }
+                            cellView.setTranslationX(x);
+                            sideView.setTranslationX(cellView.getWidth() + x);
+                        }
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    tableView.canScroll = true;
+                    Log.d(TAG, "cellViewOnTouch: " + System.currentTimeMillis() + "  " + timestamp);
+                    if (!didMove && System.currentTimeMillis() - timestamp < 200) {
+                        timestamp = 0;
+                        onClick(section, index);
+                        return true;
+                    }
+                    if (openState == 1) {
+                        if (cellView.getTranslationX() > (float) -sideView.getWidth() / 2 || didMove) {
+                            cellView.animate().translationX(0).setDuration(100);
+                            sideView.animate().translationX(cellView.getWidth()).setDuration(100);
+                            tableView.openPosition = -1;
+                        } else {
+                            cellView.animate().translationX(-sideView.getWidth()).setDuration(100);
+                            sideView.animate().translationX(cellView.getWidth() - sideView.getWidth()).setDuration(100);
+                        }
+                    }
+                    break;
+            }
+            return true;
+        }
     }
     public abstract static class FLBindingCell<Binding extends ViewBinding> extends FLCell {
         public final Binding cellBinding;
@@ -438,7 +601,6 @@ public class FLTableView extends RecyclerView {
                 }
             }
             reloadAdapter();
-            return;
         }
         else if (error != null && !error.isEmpty()) {
             tableNeedShowToast(error);
@@ -562,21 +724,11 @@ public class FLTableView extends RecyclerView {
                     return viewHolder;
                 }
                 FLCell cell = creatCell.getCell(parent);
-                if (!cell.cellView.hasOnClickListeners()) {
-                    cell.cellView.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (eventCell != null) {
-                                eventCell.cellOnClick(cell);
-                            }
-                        }
-                    });
-                }
                 return cell;
             }
 
             @Override
-            public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
                 if (startIndex <= position && position < endIndex) {
                     int index = position - startIndex;
                     int section = 0;
@@ -622,6 +774,7 @@ public class FLTableView extends RecyclerView {
                         cellIndex -= 1;
                     }
                     FLCell cell = (FLCell) holder;
+                    cell.position = position;
                     cell.section = section;
                     cell.index = cellIndex;
                     if (creatCell != null && creatCell instanceof CreatDataCell && cell instanceof FLDataBindingCell) {
@@ -629,13 +782,14 @@ public class FLTableView extends RecyclerView {
                         CreatDataCell creatDataCell = (CreatDataCell) creatCell;
                         dataBindingCell.data = creatDataCell.getData(dataBindingCell);
                     }
-                    cell.bindData(section, cellIndex);
+                    cell.bindCellData();
                 }
             }
         };
         setAdapter(adapter);
     }
     private float lastY = -1;
+    private float currentY = -1;
     private float sumOffSet;
     @Override
     public boolean onTouchEvent(MotionEvent e) {
@@ -645,13 +799,21 @@ public class FLTableView extends RecyclerView {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 lastY = e.getRawY();
+                currentY = lastY;
                 sumOffSet = 0;
                 break;
             case MotionEvent.ACTION_MOVE:
                 float deltaY = (e.getRawY() - lastY) / 2;//为了防止滑动幅度过大，将实际手指滑动的距离除以2
+                if (openPosition > -1 && Math.abs(e.getRawY() - currentY) > 100) {
+                    int oldPosition = openPosition;
+                    openPosition = -1;
+                    updateData(oldPosition);
+                }
                 lastY = e.getRawY();
                 sumOffSet += deltaY;//计算总的滑动的距离
-                if (headerRefresh != null && headerRefresh.getParent() != null && deltaY > 0) {
+                LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
+                int position = manager.findFirstVisibleItemPosition();
+                if (headerRefresh != null && headerRefresh.getParent() != null && (deltaY > 0 || position == 0)) {
                     if ((footerRefresh == null || !footerRefresh.refreshing) && !headerRefresh.refreshing) {
                         headerRefresh.onMove(deltaY, sumOffSet);
                         if (headerRefresh.getVisibleHeight() > 0) {
@@ -997,6 +1159,7 @@ public class FLTableView extends RecyclerView {
             textView.setTextSize(14);
             textView.setGravity(Gravity.CENTER);
             textView.setId(100);
+            textView.setText("下拉刷新");
             contentLayout.addView(textView);
             set.connect(textView.getId(), ConstraintSet.LEFT, contentLayout.getId(), ConstraintSet.LEFT, 0);
             set.connect(textView.getId(), ConstraintSet.TOP, contentLayout.getId(), ConstraintSet.TOP, 0);
@@ -1081,6 +1244,7 @@ public class FLTableView extends RecyclerView {
         }
     }
     private String footerNoMoreString = "我已经到底了";
+    private String footerNormalString = "上拉加载更多";
     //footer
     private class FooterRefreshView extends FLFooterRefreshView {
         private ConstraintLayout contentLayout;
@@ -1094,7 +1258,7 @@ public class FLTableView extends RecyclerView {
 
         @Override
         public void refreshHasDataChange(boolean hasData) {
-            textView.setText(hasData ? "上拉加载更多" : footerNoMoreString);
+            textView.setText(hasData ? footerNormalString : footerNoMoreString);
         }
 
         @Override
@@ -1111,11 +1275,11 @@ public class FLTableView extends RecyclerView {
 
         public FooterRefreshView(Context context) {
             super(context);
-            creatView();
+            createView();
         }
 
         @SuppressLint("ResourceType")
-        private void creatView() {
+        private void createView() {
             contentLayout = new ConstraintLayout(getContext());
             contentLayout.setId(99);
             addView(contentLayout, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -1128,7 +1292,7 @@ public class FLTableView extends RecyclerView {
             textView.setTextSize(14);
             textView.setGravity(Gravity.CENTER);
             textView.setId(100);
-            textView.setText("上拉加载更多");
+            textView.setText(footerNormalString);
             contentLayout.addView(textView);
             set.connect(textView.getId(), ConstraintSet.LEFT, contentLayout.getId(), ConstraintSet.LEFT, 0);
             set.connect(textView.getId(), ConstraintSet.TOP, contentLayout.getId(), ConstraintSet.TOP, 0);

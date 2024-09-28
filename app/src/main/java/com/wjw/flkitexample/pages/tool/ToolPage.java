@@ -69,52 +69,52 @@ public class ToolPage extends FLTabBarActivity.FLTabBarPage<PageToolBinding> {
     private class TableViewCell extends FLTableView.FLBindingCell<CellMainBinding> {
         public TableViewCell(@NonNull CellMainBinding cellBinding) {
             super(cellBinding);
-            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (section == 0) {
-                        switch (index) {
-                            case 0:
-                                //"动画"
-                                getActivity().startActivity(new Intent(getActivity(), AnimationActivity.class));
-                                break;
-                            case 1:
-                                //"请求结果输出"
-                                getActivity().showLoading();
-                                TestLoader.getTest().subscribe(new BlockingBaseObserver<ObjectRespon<JSONObject>>() {
-                                    @Override
-                                    public void onNext(ObjectRespon<JSONObject> jsonObjectBaseObjectRespon) {
-                                        getActivity().showTip("请求成功");
-                                    }
-
-                                    @Override
-                                    public void onError(Throwable e) {
-                                        
-                                        getActivity().showTip("请求失败" + e.getMessage());
-                                    }
-                                });
-                                break;
-                            case 2:
-                                //"UserDefault"
-                                getActivity().startActivity(new Intent(getActivity(), UserDefaultActivity.class));
-                                break;
-                            case 3:
-                                //"Redis全局缓存"
-                                getActivity().startActivity(new Intent(getActivity(), RedisActivity.class));
-                                break;
-                            case 4:
-                                //"RegexInput输入限制"
-                                getActivity().startActivity(new Intent(getActivity(), RegexInputActivity.class));
-                                break;
-                        }
-                    }
-                }
-            });
         }
 
         @Override
         protected void bindData(int section, int index) {
             cellBinding.text.setText(datas.get(index));
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            if (section == 0) {
+                switch (index) {
+                    case 0:
+                        //"动画"
+                        getActivity().startActivity(new Intent(getActivity(), AnimationActivity.class));
+                        break;
+                    case 1:
+                        //"请求结果输出"
+                        getActivity().showLoading();
+                        TestLoader.getTest().subscribe(new BlockingBaseObserver<ObjectRespon<JSONObject>>() {
+                            @Override
+                            public void onNext(ObjectRespon<JSONObject> jsonObjectBaseObjectRespon) {
+                                getActivity().showTip("请求成功");
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+                                getActivity().showTip("请求失败" + e.getMessage());
+                            }
+                        });
+                        break;
+                    case 2:
+                        //"UserDefault"
+                        getActivity().startActivity(new Intent(getActivity(), UserDefaultActivity.class));
+                        break;
+                    case 3:
+                        //"Redis全局缓存"
+                        getActivity().startActivity(new Intent(getActivity(), RedisActivity.class));
+                        break;
+                    case 4:
+                        //"RegexInput输入限制"
+                        getActivity().startActivity(new Intent(getActivity(), RegexInputActivity.class));
+                        break;
+                }
+            }
         }
     }
 }

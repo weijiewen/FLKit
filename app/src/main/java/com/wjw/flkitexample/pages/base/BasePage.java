@@ -105,71 +105,70 @@ public class BasePage extends FLTabBarActivity.FLTabBarPage<PageBaseBinding> {
     private class BaseCell extends FLTableView.FLBindingCell<CellMainBinding> {
         public BaseCell(@NonNull CellMainBinding cellBinding) {
             super(cellBinding);
-            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switch (index) {
-                        case 0:
-                            getActivity().startActivity(new Intent(getActivity(), DialogActivity.class));
-                            break;
-                        case 1:
-                            getActivity().startActivity(new Intent(getActivity(), LoadingActivity.class));
-                            break;
-                        case 2:
-                            getActivity().startActivity(new Intent(getActivity(), ImageBrowserActivity.class));
-                            break;
-                        case 3:
-                            BaseDemoFullView fullView = new BaseDemoFullView(getActivity(), new BaseDemoFullView.BaseDemoFull() {
-                                @Override
-                                public void remove(BaseDemoFullView view) {
-                                    getActivity().removeFullView(view);
-                                }
-
-                                @Override
-                                public void confirm() {
-
-                                }
-                            });
-                            getActivity().addFullView(fullView);
-                            fullView.show();
-                            break;
-                    }
-                }
-            });
-            cellBinding.getRoot().setOnLongClickListener(new OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    getActivity().showPopup(v, new FLBaseActivity.ConfigPopup() {
-                        @Override
-                        public void loadPopup(FLBaseActivity.PopupConfig config) {
-                            config.addItem("测试1", new OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    getActivity().showTip("测试1");
-                                }
-                            });
-                            config.addItem("测试2", new OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    getActivity().showTip("测试2");
-                                }
-                            });
-                            config.addItem("测试3", new OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    getActivity().showTip("测试3");
-                                }
-                            });
-                        }
-                    });
-                    return true;
-                }
-            });
         }
 
         @Override
         protected void bindData(int section, int index) {
             cellBinding.text.setText(datas.get(index));
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            switch (index) {
+                case 0:
+                    getActivity().startActivity(new Intent(getActivity(), DialogActivity.class));
+                    break;
+                case 1:
+                    getActivity().startActivity(new Intent(getActivity(), LoadingActivity.class));
+                    break;
+                case 2:
+                    getActivity().startActivity(new Intent(getActivity(), ImageBrowserActivity.class));
+                    break;
+                case 3:
+                    BaseDemoFullView fullView = new BaseDemoFullView(getActivity(), new BaseDemoFullView.BaseDemoFull() {
+                        @Override
+                        public void remove(BaseDemoFullView view) {
+                            getActivity().removeFullView(view);
+                        }
+
+                        @Override
+                        public void confirm() {
+
+                        }
+                    });
+                    getActivity().addFullView(fullView);
+                    fullView.show();
+                    break;
+            }
+        }
+
+        @Override
+        protected void onLongPress(int section, int index) {
+            super.onLongPress(section, index);
+            getActivity().showPopup(cellBinding.getRoot(), new FLBaseActivity.ConfigPopup() {
+                @Override
+                public void loadPopup(FLBaseActivity.PopupConfig config) {
+                    config.addItem("测试1", new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getActivity().showTip("测试1");
+                        }
+                    });
+                    config.addItem("测试2", new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getActivity().showTip("测试2");
+                        }
+                    });
+                    config.addItem("测试3", new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getActivity().showTip("测试3");
+                        }
+                    });
+                }
+            });
         }
     }
 

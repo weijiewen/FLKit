@@ -69,19 +69,6 @@ public class ImageBrowserActivity extends FLBindingActivity<ActivityImageBrowser
 
         public ImageCell(@NonNull CellImageBinding cellImageBinding) {
             super(cellImageBinding);
-            cellImageBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    getActivity().browserImage(index, datas.size(), new BrowserImageListence() {
-                        @Override
-                        public void config(int index, ImageView imageView) {
-                            Glide.with(getActivity())
-                                    .load(datas.get(index))
-                                    .into(imageView);
-                        }
-                    });
-                }
-            });
         }
 
         @Override
@@ -89,6 +76,19 @@ public class ImageBrowserActivity extends FLBindingActivity<ActivityImageBrowser
             Glide.with(getActivity())
                     .load(datas.get(index))
                     .into(cellBinding.image);
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            getActivity().browserImage(index, datas.size(), new BrowserImageListence() {
+                @Override
+                public void config(int index, ImageView imageView) {
+                    Glide.with(getActivity())
+                            .load(datas.get(index))
+                            .into(imageView);
+                }
+            });
         }
     }
 }

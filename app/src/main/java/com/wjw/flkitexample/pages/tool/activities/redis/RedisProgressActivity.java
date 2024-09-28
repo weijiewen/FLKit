@@ -63,12 +63,6 @@ public class RedisProgressActivity extends FLBindingActivity<ActivityRedisProgre
 
         public Cell(@NonNull CellRedisProgressBinding cellBinding) {
             super(cellBinding);
-            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    datas.get(index).download();
-                }
-            });
         }
 
         @Override
@@ -78,6 +72,12 @@ public class RedisProgressActivity extends FLBindingActivity<ActivityRedisProgre
             cellBinding.text.setText("id：" + data.id);
             cellBinding.progress.setProgress((int) (1000 * data.getProgress()));
             cellBinding.progressText.setText((int) (data.getProgress() * 100) + "/100");
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            datas.get(index).download();
         }
 
         @Override

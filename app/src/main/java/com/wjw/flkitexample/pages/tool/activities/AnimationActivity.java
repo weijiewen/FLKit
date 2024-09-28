@@ -64,52 +64,52 @@ public class AnimationActivity extends FLBindingActivity<ActivityAnimationBindin
 
         public Cell(@NonNull CellMainBinding cellMainBinding) {
             super(cellMainBinding);
-            cellMainBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switch (index) {
-                        case 0:
-                            //"水平震动"
-                            FLAnimation.startHorizontalVibrate(cellMainBinding.getRoot());
-                            break;
-                        case 1:
-                            //"水平震动-设置振幅",
-                            FLAnimation.startHorizontalVibrate(cellMainBinding.getRoot(), 20);
-                            break;
-                        case 2:
-                            //"旋转震动"
-                            FLAnimation.startRotateVibrate(cellMainBinding.getRoot());
-                            break;
-                        case 3:
-                            //"旋转震动-设置振幅"
-                            FLAnimation.startRotateVibrate(cellMainBinding.getRoot(), 20);
-                            break;
-                        case 4:
-                            //"缩放震动"
-                            FLAnimation.startScaleVibrate(cellMainBinding.getRoot());
-                            break;
-                        case 5:
-                            //"缩放震动-设置振幅"
-                            FLAnimation.startScaleVibrate(cellMainBinding.getRoot(), 0.5F);
-                            break;
-                        case 6:
-                            //"盖章动画"
-                            startActivity(new Intent(getActivity(), StampActivity.class));
-                            break;
-                        case 7:
-                            //"盖章动画-设置振幅"
-                            Intent intent = new Intent(getActivity(), StampActivity.class);
-                            intent.putExtra("value", 4.F);
-                            startActivity(intent);
-                            break;
-                    }
-                }
-            });
         }
 
         @Override
         protected void bindData(int section, int index) {
             cellBinding.text.setText(strings.get(index));
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            switch (index) {
+                case 0:
+                    //"水平震动"
+                    FLAnimation.startHorizontalVibrate(cellBinding.getRoot());
+                    break;
+                case 1:
+                    //"水平震动-设置振幅",
+                    FLAnimation.startHorizontalVibrate(cellBinding.getRoot(), 20);
+                    break;
+                case 2:
+                    //"旋转震动"
+                    FLAnimation.startRotateVibrate(cellBinding.getRoot());
+                    break;
+                case 3:
+                    //"旋转震动-设置振幅"
+                    FLAnimation.startRotateVibrate(cellBinding.getRoot(), 20);
+                    break;
+                case 4:
+                    //"缩放震动"
+                    FLAnimation.startScaleVibrate(cellBinding.getRoot());
+                    break;
+                case 5:
+                    //"缩放震动-设置振幅"
+                    FLAnimation.startScaleVibrate(cellBinding.getRoot(), 0.5F);
+                    break;
+                case 6:
+                    //"盖章动画"
+                    startActivity(new Intent(getActivity(), StampActivity.class));
+                    break;
+                case 7:
+                    //"盖章动画-设置振幅"
+                    Intent intent = new Intent(getActivity(), StampActivity.class);
+                    intent.putExtra("value", 4.F);
+                    startActivity(intent);
+                    break;
+            }
         }
     }
 }

@@ -67,33 +67,33 @@ public class TableViewActivity extends FLBindingActivity<ActivityTableViewBindin
 
         public Cell(@NonNull CellMainBinding cellBinding) {
             super(cellBinding);
-            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switch (index) {
-                        case 0:
-                            startActivity(new Intent(getActivity(), TableNormalActivity.class));
-                            break;
-                        case 1:
-                            startActivity(new Intent(getActivity(), TableSectionActivity.class));
-                            break;
-                        case 2:
-                            startActivity(new Intent(getActivity(), TableLoadingActivity.class));
-                            break;
-                        case 3:
-                            startActivity(new Intent(getActivity(), TableEmptyActivity.class));
-                            break;
-                        case 4:
-                            startActivity(new Intent(getActivity(), TableErrorActivity.class));
-                            break;
-                    }
-                }
-            });
         }
 
         @Override
         protected void bindData(int section, int index) {
             cellBinding.text.setText(strings.get(index));
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            switch (index) {
+                case 0:
+                    startActivity(new Intent(getActivity(), TableNormalActivity.class));
+                    break;
+                case 1:
+                    startActivity(new Intent(getActivity(), TableSectionActivity.class));
+                    break;
+                case 2:
+                    startActivity(new Intent(getActivity(), TableLoadingActivity.class));
+                    break;
+                case 3:
+                    startActivity(new Intent(getActivity(), TableEmptyActivity.class));
+                    break;
+                case 4:
+                    startActivity(new Intent(getActivity(), TableErrorActivity.class));
+                    break;
+            }
         }
     }
 }

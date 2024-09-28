@@ -114,52 +114,52 @@ public class ImagePickerActivity extends FLBindingActivity<ActivityImagePickerBi
 
         public Cell(@NonNull CellMainBinding cellMainBinding) {
             super(cellMainBinding);
-            cellMainBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switch (index) {
-                        case 0:
-                            ImageSelector.builder()
-                                    .useCamera(true)
-                                    .setSingle(true)
-                                    .start(getActivity(), 1);
-                            break;
-                        case 1:
-                            ImageSelector.builder()
-                                    .useCamera(true)
-                                    .setCrop(true)
-                                    .setCropRatio(1.0f)
-                                    .setSingle(true)
-                                    .start(getActivity(), 1);
-                            break;
-                        case 2:
-                            ImageSelector.builder()
-                                    .useCamera(true)
-                                    .setSingle(false)
-                                    .setMaxSelectCount(9)
-                                    .setSelected(new ArrayList<>()) // 把已选的图片传入默认选中。
-                                    .start(getActivity(), 1); // 打开相册
-                            break;
-                        case 3:
-                            ImageSelector.builder()
-                                    .onlyTakePhoto(true)  // 仅拍照，不打开相册
-                                    .start(getActivity(), 1);
-                            break;
-                        case 4:
-                            ImageSelector.builder()
-                                    .setCrop(true) // 设置是否使用图片剪切功能。
-                                    .setCropRatio(1.0f) // 图片剪切的宽高比,默认1.0f。宽固定为手机屏幕的宽。
-                                    .onlyTakePhoto(true)  // 仅拍照，不打开相册
-                                    .start(getActivity(), 1);
-                            break;
-                    }
-                }
-            });
         }
 
         @Override
         protected void bindData(int section, int index) {
             cellBinding.text.setText(strings.get(index));
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            switch (index) {
+                case 0:
+                    ImageSelector.builder()
+                            .useCamera(true)
+                            .setSingle(true)
+                            .start(getActivity(), 1);
+                    break;
+                case 1:
+                    ImageSelector.builder()
+                            .useCamera(true)
+                            .setCrop(true)
+                            .setCropRatio(1.0f)
+                            .setSingle(true)
+                            .start(getActivity(), 1);
+                    break;
+                case 2:
+                    ImageSelector.builder()
+                            .useCamera(true)
+                            .setSingle(false)
+                            .setMaxSelectCount(9)
+                            .setSelected(new ArrayList<>()) // 把已选的图片传入默认选中。
+                            .start(getActivity(), 1); // 打开相册
+                    break;
+                case 3:
+                    ImageSelector.builder()
+                            .onlyTakePhoto(true)  // 仅拍照，不打开相册
+                            .start(getActivity(), 1);
+                    break;
+                case 4:
+                    ImageSelector.builder()
+                            .setCrop(true) // 设置是否使用图片剪切功能。
+                            .setCropRatio(1.0f) // 图片剪切的宽高比,默认1.0f。宽固定为手机屏幕的宽。
+                            .onlyTakePhoto(true)  // 仅拍照，不打开相册
+                            .start(getActivity(), 1);
+                    break;
+            }
         }
     }
 }

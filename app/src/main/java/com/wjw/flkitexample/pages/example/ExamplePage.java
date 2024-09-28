@@ -126,40 +126,40 @@ public class ExamplePage extends FLTabBarActivity.FLTabBarPage<PageExampleBindin
 
         public Cell(@NonNull CellMainBinding cellMainBinding) {
             super(cellMainBinding);
-            cellMainBinding.getRoot().setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switch (section) {
-                        case 0:
-                            switch (index) {
-                                case 0:
-                                    getActivity().startActivity(new Intent(getActivity(), KeyboardActivity.class));
-                                    break;
-                                case 1:
-                                    getActivity().startActivity(new Intent(getActivity(), ImagePickerActivity.class));
-                                    break;
-                                case 2:
-                                    getActivity().startActivity(new Intent(getActivity(), QRCodeActivity.class));
-                                    break;
-                                case 3:
-                                    getActivity().startActivity(new Intent(getActivity(), BannerActivity.class));
-                                    break;
-                                case 4:
-                                    getActivity().startActivity(new Intent(getActivity(), ViewPagerActivity.class));
-                                    break;
-                            }
-                            break;
-                        case 1:
-                            break;
-                    }
-                }
-            });
         }
 
         @Override
         protected void bindData(int section, int index) {
             List list = (List) datas.get(section).get("list");
             cellBinding.text.setText((CharSequence) list.get(index));
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            switch (section) {
+                case 0:
+                    switch (index) {
+                        case 0:
+                            getActivity().startActivity(new Intent(getActivity(), KeyboardActivity.class));
+                            break;
+                        case 1:
+                            getActivity().startActivity(new Intent(getActivity(), ImagePickerActivity.class));
+                            break;
+                        case 2:
+                            getActivity().startActivity(new Intent(getActivity(), QRCodeActivity.class));
+                            break;
+                        case 3:
+                            getActivity().startActivity(new Intent(getActivity(), BannerActivity.class));
+                            break;
+                        case 4:
+                            getActivity().startActivity(new Intent(getActivity(), ViewPagerActivity.class));
+                            break;
+                    }
+                    break;
+                case 1:
+                    break;
+            }
         }
     }
 }

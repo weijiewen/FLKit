@@ -63,34 +63,34 @@ public class ControlsPage extends FLTabBarActivity.FLTabBarPage<PageControlsBind
 
         public Cell(@NonNull CellMainBinding cellMainBinding) {
             super(cellMainBinding);
-            cellMainBinding.getRoot().setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switch (index) {
-                        case 0:
-                            //"列表"
-                            getActivity().startActivity(new Intent(getActivity(), TableViewActivity.class));
-                            break;
-                        case 1:
-                            //"验证码倒计时"
-                            getActivity().startActivity(new Intent(getActivity(), SmscodeActivity.class));
-                            break;
-                        case 2:
-                            //"FLCardView"
-                            getActivity().startActivity(new Intent(getActivity(), CardViewsActivity.class));
-                            break;
-                        case 3:
-                            //"FLFlexLayout"
-                            getActivity().startActivity(new Intent(getActivity(), FlexLayoutActivity.class));
-                            break;
-                    }
-                }
-            });
         }
 
         @Override
         protected void bindData(int section, int index) {
             cellBinding.text.setText(strings.get(index));
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            switch (index) {
+                case 0:
+                    //"列表"
+                    getActivity().startActivity(new Intent(getActivity(), TableViewActivity.class));
+                    break;
+                case 1:
+                    //"验证码倒计时"
+                    getActivity().startActivity(new Intent(getActivity(), SmscodeActivity.class));
+                    break;
+                case 2:
+                    //"FLCardView"
+                    getActivity().startActivity(new Intent(getActivity(), CardViewsActivity.class));
+                    break;
+                case 3:
+                    //"FLFlexLayout"
+                    getActivity().startActivity(new Intent(getActivity(), FlexLayoutActivity.class));
+                    break;
+            }
         }
     }
 }

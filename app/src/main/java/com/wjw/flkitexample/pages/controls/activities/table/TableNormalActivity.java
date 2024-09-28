@@ -107,17 +107,17 @@ public class TableNormalActivity extends FLBindingActivity<ActivityTableNormalBi
 
         public TableViewCell(@NonNull CellTableViewBinding cellBinding) {
             super(cellBinding);
-            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showTip(String.valueOf(index));
-                }
-            });
         }
 
         @Override
         protected void bindData(int section, int index) {
             cellBinding.text.setText(String.valueOf(index));
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            showTip(String.valueOf(index));
         }
     }
 }

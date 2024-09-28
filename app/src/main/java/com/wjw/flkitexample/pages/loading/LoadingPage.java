@@ -63,77 +63,77 @@ public class LoadingPage extends FLTabBarActivity.FLTabBarPage<PageLoadingBindin
     private class LoadingCell extends FLTableView.FLBindingCell<CellMainBinding> {
         public LoadingCell(@NonNull CellMainBinding cellBinding) {
             super(cellBinding);
-            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switch (index) {
-                        case 0:
-                            getActivity().requestPermission(Manifest.permission.CAMERA, new FLBaseActivity.PermissionsResult() {
-                                @Override
-                                public void didGranted() {
-                                    getActivity().openCamera(new FLBaseActivity.PickCallback() {
-                                        @Override
-                                        public void pickData(Bitmap image) {
-                                            getActivity().browserImage(0, 1, new FLBaseActivity.BrowserImageListence() {
-                                                @Override
-                                                public void config(int index, ImageView imageView) {
-                                                    imageView.setImageBitmap(image);
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void didDenied() {
-
-                                }
-                            });
-                            break;
-                        case 1:
-                            getActivity().requestInstall(new FLBaseActivity.PermissionsResult() {
-                                @Override
-                                public void didGranted() {
-
-                                }
-
-                                @Override
-                                public void didDenied() {
-
-                                }
-                            });
-                            break;
-                        case 2:
-                            getActivity().requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new FLBaseActivity.PermissionsResult() {
-                                @Override
-                                public void didGranted() {
-                                    getActivity().openAlbum(new FLBaseActivity.PickCallback() {
-                                        @Override
-                                        public void pickData(Bitmap image) {
-                                            getActivity().browserImage(0, 1, new FLBaseActivity.BrowserImageListence() {
-                                                @Override
-                                                public void config(int index, ImageView imageView) {
-                                                    imageView.setImageBitmap(image);
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void didDenied() {
-
-                                }
-                            });
-                            break;
-                    }
-                }
-            });
         }
 
         @Override
         protected void bindData(int section, int index) {
             cellBinding.text.setText(datas.get(index));
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            switch (index) {
+                case 0:
+                    getActivity().requestPermission(Manifest.permission.CAMERA, new FLBaseActivity.PermissionsResult() {
+                        @Override
+                        public void didGranted() {
+                            getActivity().openCamera(new FLBaseActivity.PickCallback() {
+                                @Override
+                                public void pickData(Bitmap image) {
+                                    getActivity().browserImage(0, 1, new FLBaseActivity.BrowserImageListence() {
+                                        @Override
+                                        public void config(int index, ImageView imageView) {
+                                            imageView.setImageBitmap(image);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void didDenied() {
+
+                        }
+                    });
+                    break;
+                case 1:
+                    getActivity().requestInstall(new FLBaseActivity.PermissionsResult() {
+                        @Override
+                        public void didGranted() {
+
+                        }
+
+                        @Override
+                        public void didDenied() {
+
+                        }
+                    });
+                    break;
+                case 2:
+                    getActivity().requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, new FLBaseActivity.PermissionsResult() {
+                        @Override
+                        public void didGranted() {
+                            getActivity().openAlbum(new FLBaseActivity.PickCallback() {
+                                @Override
+                                public void pickData(Bitmap image) {
+                                    getActivity().browserImage(0, 1, new FLBaseActivity.BrowserImageListence() {
+                                        @Override
+                                        public void config(int index, ImageView imageView) {
+                                            imageView.setImageBitmap(image);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void didDenied() {
+
+                        }
+                    });
+                    break;
+            }
         }
     }
 }

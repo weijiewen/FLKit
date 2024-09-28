@@ -64,75 +64,75 @@ public class LoadingActivity extends FLBindingActivity<ActivityLoadingBinding> {
 
         public LoadingCell(@NonNull CellMainBinding cellBinding) {
             super(cellBinding);
+        }
+
+        @Override
+        protected void bindData(int section, int index) {
+            cellBinding.text.setText(datas.get(index));
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
             String tip = "塞德里克飞机上课了巨额罚款了解放了快速减肥了苦涩就发了苦涩解放啦卡死机而非卢卡斯荆防颗粒撒巨额罚款拉瑟九分裤阿里kg九色鹿开发塞德里克飞机上课了巨额罚款了解放了快速减肥了苦涩就发了苦涩解放啦卡死机而非卢卡斯荆防颗粒撒巨额罚款拉瑟九分裤阿里kg九色鹿开发";
-            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switch (index) {
-                        case 0:
-                            //"loading加载"
+            switch (index) {
+                case 0:
+                    //"loading加载"
+                    getActivity().showLoading();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            getActivity().dismissLoading();
+                        }
+                    }, 1000);
+                    break;
+                case 1:
+                    //"tip提示"
+                    getActivity().showTip(tip);
+                    break;
+                case 2:
+                    //"loading后提示"
+                    getActivity().showLoading();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            getActivity().showTip(tip);
+                        }
+                    }, 1000);
+                    break;
+                case 3:
+                    //"提示时loading"
+                    getActivity().showTip(tip);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
                             getActivity().showLoading();
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     getActivity().dismissLoading();
                                 }
-                            }, 1000);
-                            break;
-                        case 1:
-                            //"tip提示"
-                            getActivity().showTip(tip);
-                            break;
-                        case 2:
-                            //"loading后提示"
-                            getActivity().showLoading();
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    getActivity().showTip(tip);
-                                }
-                            }, 1000);
-                            break;
-                        case 3:
-                            //"提示时loading"
-                            getActivity().showTip(tip);
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    getActivity().showLoading();
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            getActivity().dismissLoading();
-                                        }
-                                    }, 1200);
-                                }
-                            }, 1000);
-                            break;
-                        case 4:
-                            //"进度提示loading"
-                            getActivity().showProgress();
-                            getActivity().startTimer(500, 500, new FLTimer.FLTimerListencener() {
-                                @Override
-                                public void run() {
-                                    progress += 0.1;
-                                    getActivity().changeProgress(progress);
-                                    if (progress >= 1) {
-                                        progress = 0;
-                                        getActivity().stopTimer();
-                                        getActivity().dismissLoading();
-                                    }
-                                }
-                            });
-                            break;
-                    }
-                }
-            });
-        }
-
-        @Override
-        protected void bindData(int section, int index) {
-            cellBinding.text.setText(datas.get(index));
+                            }, 1200);
+                        }
+                    }, 1000);
+                    break;
+                case 4:
+                    //"进度提示loading"
+                    getActivity().showProgress();
+                    getActivity().startTimer(500, 500, new FLTimer.FLTimerListencener() {
+                        @Override
+                        public void run() {
+                            progress += 0.1;
+                            getActivity().changeProgress(progress);
+                            if (progress >= 1) {
+                                progress = 0;
+                                getActivity().stopTimer();
+                                getActivity().dismissLoading();
+                            }
+                        }
+                    });
+                    break;
+            }
         }
     }
 }

@@ -59,24 +59,24 @@ public class RedisActivity extends FLBindingActivity<ActivityRedisBinding> {
 
         public Cell(@NonNull CellMainBinding cellBinding) {
             super(cellBinding);
-            cellBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    switch (index) {
-                        case 0:
-                            getActivity().startActivity(new Intent(getActivity(), RedisStateActivity.class));
-                            break;
-                        case 1:
-                            getActivity().startActivity(new Intent(getActivity(), RedisProgressActivity.class));
-                            break;
-                    }
-                }
-            });
         }
 
         @Override
         protected void bindData(int section, int index) {
             cellBinding.text.setText(strings.get(index));
+        }
+
+        @Override
+        protected void onClick(int section, int index) {
+            super.onClick(section, index);
+            switch (index) {
+                case 0:
+                    getActivity().startActivity(new Intent(getActivity(), RedisStateActivity.class));
+                    break;
+                case 1:
+                    getActivity().startActivity(new Intent(getActivity(), RedisProgressActivity.class));
+                    break;
+            }
         }
     }
 }
